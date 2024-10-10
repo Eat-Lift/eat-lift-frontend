@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.orange[400],
         title: const Text(
           'Pàgina principal',
           style: TextStyle(
@@ -25,10 +25,10 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
                 );
               },
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.orange[400],
               child: const Icon(Icons.login),
             ),
           ),
