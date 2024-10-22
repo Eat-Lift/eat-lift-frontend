@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import '../custom_widgets/custom_textfield.dart';
+import '../custom_widgets/password_textfield.dart';
 import '../custom_widgets/custom_button.dart';
 import '../custom_widgets/wrapped_image.dart';
 import '../custom_widgets/relative_sizedbox.dart';
+import 'recover_password.dart';
+import 'signin.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void signIn() {}
+  void logIn() {}
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,8 @@ class RegisterPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const RelativeSizedBox(height: 1),
+              
               const Icon(
                 Icons.lock,
                 size: 100,
@@ -29,7 +34,7 @@ class RegisterPage extends StatelessWidget {
               const RelativeSizedBox(height: 0.5),
 
               Text(
-                "Benvingut!",
+                "Inicia Sessió",
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontSize: 24,
@@ -46,7 +51,7 @@ class RegisterPage extends StatelessWidget {
 
               const RelativeSizedBox(height:0.5),
 
-              CustomTextfield(
+              PasswordTextfield(
                 controller: passwordController,
                 hintText: "Contrasenya",
                 obscureText: true,
@@ -59,13 +64,26 @@ class RegisterPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      "Has oblidat la teva contrasenya?",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      )
-                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        "Has oblidat la teva contrasenya?",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        )
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RecoverPasswordPage()),
+                        );
+                      }, 
+                    ),                  
                   ],
                 ),
               ),
@@ -73,8 +91,8 @@ class RegisterPage extends StatelessWidget {
               const RelativeSizedBox(height: 1),
 
               CustomButton(
-                text: "Inicia Sessió",
-                onTap: signIn,
+                text: "Iniciar Sessió",
+                onTap: logIn,
               ),
 
               const RelativeSizedBox(height: 5),
@@ -113,15 +131,30 @@ class RegisterPage extends StatelessWidget {
                     ),
                   ),
                   const RelativeSizedBox(width: 2),
-                  const Text(
-                    "Registra't",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
+                    child: const Text(
+                      "Registra't",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SigninPage()),
+                      );
+                    }, 
                   ),
                 ],
               ),
+
+              const RelativeSizedBox(height: 1),
             ],
           ),
         ),

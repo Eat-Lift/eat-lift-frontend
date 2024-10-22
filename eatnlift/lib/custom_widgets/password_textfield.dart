@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class CustomTextfield extends StatelessWidget {
+class PasswordTextfield extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
 
-  const CustomTextfield(
+  const PasswordTextfield(
     {super.key,
     required this.controller,
     required this.hintText,
@@ -13,13 +13,36 @@ class CustomTextfield extends StatelessWidget {
   });
 
   @override
+  PasswordTextfieldState createState() => PasswordTextfieldState();
+}
+
+class PasswordTextfieldState extends State<PasswordTextfield> {
+  bool _isObscure = true; // Initially, obscure text is true
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscure = widget.obscureText; // Initialize based on the passed obscureText value
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: TextField(
-        controller: controller,
-        obscureText: obscureText,
+        controller: widget.controller,
+        obscureText: _isObscure,
         decoration: InputDecoration(
+          suffixIcon: IconButton(
+          icon: Icon(
+            _isObscure ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _isObscure = !_isObscure;
+            });
+          },
+        ),
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(
               color: Colors.white,
@@ -34,7 +57,7 @@ class CustomTextfield extends StatelessWidget {
           ),
           fillColor: Colors.grey.shade200,
           filled: true,
-          hintText: hintText,
+          hintText: widget.hintText,
           hintStyle: TextStyle(color: Colors.grey[500])
         ),
       ),
