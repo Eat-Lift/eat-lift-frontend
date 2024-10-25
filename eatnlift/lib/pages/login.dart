@@ -4,16 +4,65 @@ import '../custom_widgets/password_textfield.dart';
 import '../custom_widgets/custom_button.dart';
 import '../custom_widgets/wrapped_image.dart';
 import '../custom_widgets/relative_sizedbox.dart';
-import 'recover_password.dart';
 import 'signin.dart';
+import '../custom_widgets/messages_box.dart';
+import 'recover_password.dart';
+import '../services/api_user_service.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void logIn() {}
+  Map<String, dynamic> response = {};
+
+  void logIn(BuildContext context) async {
+    bool emptyField = false;
+
+    response = {};
+
+    // Check if any fields are empty
+    if (usernameController.text.isEmpty) {
+      if (response.containsKey('errors')) {
+        response['errors'].add("Username field must be filled");
+      } else {
+        response['errors'] = ["Username field must be filled"];
+      }
+      emptyField = true;
+    } 
+    if (passwordController.text.isEmpty) {
+      if (response.containsKey('errors')) {
+        response['errors'].add("Password field must be filled");
+      } else {
+        response['errors'] = ["Password field must be filled"];
+      }
+      emptyField = true;
+    }
+
+    if (emptyField) {
+      setState(() {});
+      return;
+    }
+
+    // Perform the registration API call
+    final apiService = ApiUserService();
+    final result = await apiService.logIn(
+      usernameController.text,
+      passwordController.text
+    );
+
+    // Update errorrs or success state
+    setState(() {
+        response = result;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +73,6 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const RelativeSizedBox(height: 1),
-              
               const Icon(
                 Icons.lock,
                 size: 100,
@@ -41,7 +88,7 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
 
-              const RelativeSizedBox(height: 5),
+              response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 5),
 
               CustomTextfield(
                 controller: usernameController,
@@ -92,11 +139,22 @@ class LoginPage extends StatelessWidget {
 
               CustomButton(
                 text: "Iniciar Sessió",
-                onTap: logIn,
+                onTap: () => logIn(context),
               ),
 
-              const RelativeSizedBox(height: 5),
-
+              if (response.isNotEmpty && !response["success"]) ...[
+                const RelativeSizedBox(height: 3),
+                MessagesBox(
+                  messages: response["errors"],
+                  height: 6,
+                  color: Colors.red,
+                ),
+                const RelativeSizedBox(height: 3),
+              ]
+              else ...[
+                const RelativeSizedBox(height: 5),
+              ],
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -110,7 +168,8 @@ class LoginPage extends StatelessWidget {
                 ],
               ),
 
-              const RelativeSizedBox(height: 5),
+              response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 5),
+              
 
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +178,7 @@ class LoginPage extends StatelessWidget {
                 ]
               ),
 
-              const RelativeSizedBox(height: 5),
+              response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 3),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

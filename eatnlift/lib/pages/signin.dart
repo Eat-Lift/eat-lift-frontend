@@ -7,70 +7,72 @@ import '../custom_widgets/messages_box.dart';
 import '../services/api_user_service.dart';
 
 class SigninPage extends StatefulWidget {
-  SigninPage({super.key});
+  const SigninPage({super.key});
 
   @override
-  _SigninPageState createState() => _SigninPageState();
+  SigninPageState createState() => SigninPageState();
 }
 
-class _SigninPageState extends State<SigninPage> {
+class SigninPageState extends State<SigninPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final repeatPasswordController = TextEditingController();
 
-  Map<String, dynamic> errors = {};
+  Map<String, dynamic> response = {};
 
-  Future<Map<String, dynamic>?> signIn(BuildContext context) async {
+ void signIn(BuildContext context) async {
     bool emptyField = false;
 
-    errors = {};
+    response = {};
 
     // Check if any fields are empty
     if (usernameController.text.isEmpty) {
-      setState(() {
-        errors.addAll({"username": ["Username field must be filled"]});
-      });
+      if (response.containsKey('errors')) {
+        response['errors'].add("Repeat password field must be filled");
+      } else {
+        response['errors'] = ["Repeat password field must be filled"];
+      }
       emptyField = true;
     } 
     if (emailController.text.isEmpty) {
-      setState(() {
-        errors.addAll({"email": ["Email field must be filled"]});
-      });
+      if (response.containsKey('errors')) {
+        response['errors'].add("Email field must be filled");
+      } else {
+        response['errors'] = ["Email field must be filled"];
+      }
       emptyField = true;
     }
     if (passwordController.text.isEmpty) {
-      setState(() {
-        errors.addAll({"password": ["Password field must be filled"]});
-      });
+      if (response.containsKey('errors')) {
+        response['errors'].add("Password field must be filled");
+      } else {
+        response['errors'] = ["Password field must be filled"];
+      }
       emptyField = true;
     }
     if (repeatPasswordController.text.isEmpty) {
-      setState(() {
-        if (errors.containsKey('password')) {
-          errors['password'].add("Repeat password field must be filled");
-        } else {
-          errors['password'] = ["Repeat password field must be filled"];
-        }
-      });
-      emptyField = true;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Repeat password field must be filled");
+      } else {
+        response['errors'] = ["Repeat password field must be filled"];
+      }
+    emptyField = true;
     }
 
-    if (emptyField) return null;
+    if (emptyField) {
+      setState(() {});
+      return;
+    }
 
     // Check if the email format is valid
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
-      setState((){
-        errors.addAll({"email": ["Entera a valid email adress"]});
-      });
-      return null;
+      response.addAll({"errors": ["Entera a valid email adress"]});
     }
 
     // Check if passwords match
     if (passwordController.text != repeatPasswordController.text) {
-      setState((){
-        errors.addAll({"password": ["Passwords do not match"]});
-      });
+      response.addAll({"errors": ["Passwords do not match"]});
       return null;
     }
 
@@ -82,12 +84,10 @@ class _SigninPageState extends State<SigninPage> {
       passwordController.text,
     );
 
-    // Update errors state
+    // Update errorrs or success state
     setState(() {
-      errors = result;
+        response = result;
     });
-
-    return result;
   }
 
   @override
@@ -156,11 +156,16 @@ class _SigninPageState extends State<SigninPage> {
 
               const RelativeSizedBox(height: 2),
 
-              MessagesBox(
-                messages: errors,
-                height: 20,
-                color: Colors.red,
-              ),
+              if (response.isNotEmpty && !response["success"]) ...[
+                MessagesBox(
+                  messages: response["errors"],
+                  height: 16,
+                  color: Colors.red,
+                ),
+              ]
+              else ...[
+                RelativeSizedBox(height: 20)
+              ]
             ],
           ),
         ),

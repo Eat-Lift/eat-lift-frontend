@@ -18,39 +18,57 @@ class ApiUserService{
     if (response.statusCode == 201) {
       final responseData = jsonDecode(response.body);
       return {
-        "success": true,
+        "successful": true,
         "token": responseData["token"],
-        "usename": responseData["username"],
-        "email": responseData["email"],
-        "password": responseData["password"],
       };
     } else {
       final responseData = jsonDecode(response.body);
+      List<String> errors = [];
+      if (responseData["username"] != null) {
+        errors.addAll(List<String>.from(responseData["username"]));
+      }
+      if (responseData["email"] != null) {
+        errors.addAll(List<String>.from(responseData["email"]));
+      }
+      if (responseData["password"] != null) {
+        errors.addAll(List<String>.from(responseData["password"]));
+      }
       return {
-        "success": false,
-        "usename": responseData["username"],
-        "email": responseData["email"],
-        "password": responseData["password"],
+        "successful": false,
+        "errors": errors,
       };
     }
   }
 
-  Future<String?> login(String email, String password) async {
+  Future<Map<String, dynamic>> logIn(String username, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        'email': email,
+        'username': username,
         'password': password,
       }),
     );
 
     if (response.statusCode == 200){
       final responseData = jsonDecode(response.body);
-      String token = responseData['token'];
-
-      return token; 
+      return {
+        "success": true,
+        "token": responseData["token"],
+      }; 
     } else {
-      return null;
+      final responseData = jsonDecode(response.body);
+      List<String> errors = [];
+      if (responseData["detail"] != null) {
+        errors.add(responseData["detail"]);
+      }
+      if (responseData["error"] != null) {
+        errors.add(responseData["error"]);
+      }
+      return {
+        "successful": false,
+        "errors": errors,
+      };
     }
   }
 }

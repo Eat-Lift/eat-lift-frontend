@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MessagesBox extends StatelessWidget {
-  final Map<String, dynamic> messages;
+  final List<String> messages;
   final double height;
   final Color color;
 
@@ -33,18 +33,17 @@ class MessagesBox extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: messages.entries
-            .where((entry) => entry.value is List)
-            .expand<Widget>((entry) => entry.value.map<Widget>((message) => Padding(
+            children: messages
+            .map<Widget>((message) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    '${entry.key}: $message',
+                    message, // Just the message, no key prefix
                     style: TextStyle(
                       color: color,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                )))
+                ))
             .toList(),
           ),
         ),
