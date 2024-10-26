@@ -21,41 +21,46 @@ class SigninPageState extends State<SigninPage> {
 
   Map<String, dynamic> response = {};
 
- void signIn(BuildContext context) async {
+ void signin(BuildContext context) async {
     bool emptyField = false;
+    bool wrongField = false;
 
     response = {};
 
     // Check if any fields are empty
     if (usernameController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Repeat password field must be filled");
+        response['errors'].add("Es requereix el nom d'usuari");
       } else {
-        response['errors'] = ["Repeat password field must be filled"];
+        response['errors'] = ["Es requereix el nom d'usuari"];
       }
       emptyField = true;
     } 
     if (emailController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Email field must be filled");
+        response['errors'].add("Es requereix el correu electrònic");
       } else {
-        response['errors'] = ["Email field must be filled"];
+        response['errors'] = ["Es requereix el correu electrònic"];
       }
       emptyField = true;
     }
     if (passwordController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Password field must be filled");
+        response['errors'].add("Es requereix la contrasenya");
       } else {
-        response['errors'] = ["Password field must be filled"];
+        response['errors'] = ["Es requereix la contrasenya"];
       }
       emptyField = true;
     }
     if (repeatPasswordController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Repeat password field must be filled");
+        response['errors'].add("Es requereix la confirmació de la contrasenya");
       } else {
-        response['errors'] = ["Repeat password field must be filled"];
+        response['errors'] = ["Es requereix la confirmació de la contrasenya"];
       }
     emptyField = true;
     }
@@ -67,18 +72,34 @@ class SigninPageState extends State<SigninPage> {
 
     // Check if the email format is valid
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
-      response.addAll({"errors": ["Entera a valid email adress"]});
+      response["success"] = false;
+      wrongField = true;
+      if (response.containsKey('errors')) {
+        response['errors'].add("El correu electrònic no és vàlid");
+      } else {
+        response['errors'] = ["El correu electrònic no és vàlid"];
+      }
     }
 
     // Check if passwords match
     if (passwordController.text != repeatPasswordController.text) {
-      response.addAll({"errors": ["Passwords do not match"]});
-      return null;
+      response["success"] = false;
+      wrongField = true;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Les contrasenyes no coincideixen");
+      } else {
+        response['errors'] = ["Les contrasenyes no coincideixen"];
+      }
+    }
+
+    if (wrongField) {
+      setState(() {});
+      return;
     }
 
     // Perform the registration API call
     final apiService = ApiUserService();
-    final result = await apiService.signIn(
+    final result = await apiService.signin(
       usernameController.text,
       emailController.text,
       passwordController.text,
@@ -151,7 +172,7 @@ class SigninPageState extends State<SigninPage> {
 
               CustomButton(
                 text: "Registrar-se",
-                onTap: () => signIn(context),
+                onTap: () => signin(context),
               ),
 
               const RelativeSizedBox(height: 2),
