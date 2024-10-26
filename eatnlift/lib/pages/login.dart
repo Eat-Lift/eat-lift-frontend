@@ -29,6 +29,7 @@ class LoginPageState extends State<LoginPage> {
 
     // Check if any fields are empty
     if (usernameController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
         response['errors'].add("Username field must be filled");
       } else {
@@ -37,6 +38,7 @@ class LoginPageState extends State<LoginPage> {
       emptyField = true;
     } 
     if (passwordController.text.isEmpty) {
+      response["success"] = false;
       if (response.containsKey('errors')) {
         response['errors'].add("Password field must be filled");
       } else {
@@ -52,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
 
     // Perform the registration API call
     final apiService = ApiUserService();
-    final result = await apiService.logIn(
+    final result = await apiService.login(
       usernameController.text,
       passwordController.text
     );
@@ -152,7 +154,7 @@ class LoginPageState extends State<LoginPage> {
                 const RelativeSizedBox(height: 3),
               ]
               else ...[
-                const RelativeSizedBox(height: 5),
+                const RelativeSizedBox(height: 3),
               ],
               
               Row(
