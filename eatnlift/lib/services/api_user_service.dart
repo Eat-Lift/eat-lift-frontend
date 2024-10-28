@@ -21,6 +21,7 @@ class ApiUserService{
       return {
         "success": true,
         "token": responseData["token"],
+        "user": responseData["user"],
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -49,6 +50,7 @@ class ApiUserService{
       return {
         "success": true,
         "token": responseData["token"],
+        "user": responseData["user"],
       }; 
     } else {
       final decodedData = utf8.decode(response.bodyBytes);

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+
 import '../custom_widgets/custom_textfield.dart';
 import '../custom_widgets/password_textfield.dart';
 import '../custom_widgets/custom_button.dart';
 import '../custom_widgets/wrapped_image.dart';
 import '../custom_widgets/relative_sizedbox.dart';
-import 'signin.dart';
 import '../custom_widgets/messages_box.dart';
+
+import 'signin.dart';
 import 'recover_password.dart';
+
 import '../services/api_user_service.dart';
+import '../services/session_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,6 +23,8 @@ class LoginPageState extends State<LoginPage> {
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final SessionStorage sessionStorage = SessionStorage();
 
   Map<String, dynamic> response = {};
 
@@ -59,6 +65,10 @@ class LoginPageState extends State<LoginPage> {
       passwordController.text
     );
 
+    if (result["success"]){
+      await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+    }
+    
     // Update errorrs or success state
     setState(() {
         response = result;
