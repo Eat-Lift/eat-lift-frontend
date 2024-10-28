@@ -8,6 +8,7 @@ import '../custom_widgets/relative_sizedbox.dart';
 import '../custom_widgets/messages_box.dart';
 
 import 'signin.dart';
+import 'user.dart';
 import 'recover_password.dart';
 
 import '../services/api_user_service.dart';
@@ -67,6 +68,10 @@ class LoginPageState extends State<LoginPage> {
 
     if (result["success"]){
       await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const UserPage()),
+      );
     }
     
     // Update errorrs or success state

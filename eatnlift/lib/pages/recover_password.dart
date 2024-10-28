@@ -32,7 +32,7 @@ class RecoverPasswordPage extends StatelessWidget {
               SizedBox(
                 width: 330, // Set the desired width
                 child: Text(
-                  "Si has perdut la teva contrasenya, pots recuperar-la introduint el correu eletrònic associat al teu compte. S'enviarà un amb un codi i instruccions per poder reestablir-la",
+                  "Introdueix el correu electrònic associat al teu compte",
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontSize: 15,

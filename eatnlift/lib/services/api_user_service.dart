@@ -62,4 +62,29 @@ class ApiUserService{
       };
     }
   }
+
+  Future<Map<String, dynamic>?> getUser(String userId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/$userId'),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "user": responseData["user"],
+      }; 
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
 }
