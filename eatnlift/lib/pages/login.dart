@@ -169,7 +169,7 @@ class LoginPageState extends State<LoginPage> {
                 const RelativeSizedBox(height: 3),
               ]
               else ...[
-                const RelativeSizedBox(height: 3),
+                const RelativeSizedBox(height: 5),
               ],
               
               Row(
@@ -187,7 +187,6 @@ class LoginPageState extends State<LoginPage> {
 
               response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 5),
               
-
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -195,7 +194,7 @@ class LoginPageState extends State<LoginPage> {
                 ]
               ),
 
-              response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 3),
+              response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 5),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
