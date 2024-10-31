@@ -9,7 +9,7 @@ import '../custom_widgets/messages_box.dart';
 import '../services/api_user_service.dart';
 import '../services/session_storage.dart';
 
-import 'edit_user.dart';
+import 'personal_info.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -31,7 +31,7 @@ class SigninPageState extends State<SigninPage> {
  void signin(BuildContext context) async {
     Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const EditUserPage()),
+        MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
     );
     // bool emptyField = false;
     // bool wrongField = false;

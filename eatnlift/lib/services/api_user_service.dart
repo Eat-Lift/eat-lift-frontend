@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'session_storage.dart';
 
 class ApiUserService{
   final String baseUrl = 'http://10.0.2.2:8000/users';
@@ -84,6 +85,27 @@ class ApiUserService{
       return {
         "success": false,
         "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>?> updatePersonalInformation(Map<String, dynamic> personalInformation) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/$userId/edit'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode(personalInformation),
+    );
+
+    if(response.statusCode == 200){
+      return {
+        "success": true,
       };
     }
   }

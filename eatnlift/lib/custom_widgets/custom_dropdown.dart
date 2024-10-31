@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CustomDropdown<T> extends StatelessWidget {
+class CustomDropdown<T> extends StatefulWidget {
   final String title;
   final List<T> items;
   final T? selectedItem;
   final Function(T) onItemSelected;
   final String Function(T) itemLabel;
-  final double initialOffset;
+  final double width;
+  final double height;
 
   const CustomDropdown({
     super.key,
@@ -15,8 +16,16 @@ class CustomDropdown<T> extends StatelessWidget {
     required this.selectedItem,
     required this.onItemSelected,
     required this.itemLabel,
-    this.initialOffset = 0.0,
+    this.width = 200.0,
+    this.height = 300.0,
   });
+
+  @override
+  CustomDropdownState<T> createState() => CustomDropdownState<T>();
+}
+
+class CustomDropdownState<T> extends State<CustomDropdown<T>> {
+  bool isSelected = false;
 
   void _showPickerDialog(BuildContext context) {
     showDialog(
@@ -25,10 +34,11 @@ class CustomDropdown<T> extends StatelessWidget {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
-            side: BorderSide(color: Colors.grey.shade400, width: 3),
+            side: BorderSide(color: Colors.grey, width: 3),
           ),
           child: Container(
-            width: 200,
+            width: widget.width,
+            height: widget.height,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
@@ -40,25 +50,25 @@ class CustomDropdown<T> extends StatelessWidget {
                 Flexible(
                   child: ListView.separated(
                     shrinkWrap: true,
-                    controller: ScrollController(
-                      initialScrollOffset: initialOffset,
-                    ),
-                    itemCount: items.length,
+                    itemCount: widget.items.length,
                     itemBuilder: (context, index) {
-                      final item = items[index];
+                      final item = widget.items[index];
                       return ListTile(
                         title: Text(
-                          itemLabel(item),
+                          widget.itemLabel(item),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         onTap: () {
-                          onItemSelected(item);
-                          Navigator.pop(context); // Close dialog after selection
+                          setState(() {
+                            isSelected = true;
+                          });
+                          widget.onItemSelected(item);
+                          Navigator.pop(context);
                         },
                       );
                     },
-                    separatorBuilder: (context, index) => Divider(thickness: 2),
+                    separatorBuilder: (context, index) => Divider(thickness: 1, color: Colors.grey),
                   ),
                 ),
               ],
@@ -77,17 +87,20 @@ class CustomDropdown<T> extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
-          border: Border.all(color: Colors.white, width: 3),
+          border: Border.all(
+            color: Colors.white,
+            width: 3,
+          ),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              selectedItem != null ? itemLabel(selectedItem!) : title,
+              widget.selectedItem != null ? widget.itemLabel(widget.selectedItem!) : widget.title,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[500],
+                color: isSelected ? Colors.black : Colors.grey[500],
                 fontWeight: FontWeight.bold,
               ),
             ),

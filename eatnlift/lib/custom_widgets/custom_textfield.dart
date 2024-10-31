@@ -19,6 +19,7 @@ class CustomTextfield extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: TextField(
+        style: TextStyle(fontWeight: FontWeight.bold),
         controller: controller,
         maxLines: maxLines,
         obscureText: obscureText,
@@ -31,7 +32,7 @@ class CustomTextfield extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade400,
+              color: Colors.white,
               width: 3,
             ),
           ),
