@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_user_service.dart';
-import '../services/session_storage.dart';
+import '../../services/api_user_service.dart';
+import '../../services/session_storage.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});

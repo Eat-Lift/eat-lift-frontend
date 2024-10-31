@@ -1,4 +1,4 @@
-import 'package:eatnlift/pages/home.dart';
+import 'package:eatnlift/pages/user/home.dart';
 import 'package:flutter/material.dart';
 
 void main() {

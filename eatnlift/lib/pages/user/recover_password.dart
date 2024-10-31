@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../custom_widgets/custom_textfield.dart';
-import '../custom_widgets/custom_button.dart';
-import '../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/custom_textfield.dart';
+import '../../custom_widgets/custom_button.dart';
+import '../../custom_widgets/relative_sizedbox.dart';
 import 'reset_password.dart';
 
 class RecoverPasswordPage extends StatelessWidget {

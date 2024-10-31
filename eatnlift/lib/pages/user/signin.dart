@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../custom_widgets/custom_textfield.dart';
-import '../custom_widgets/password_textfield.dart';
-import '../custom_widgets/custom_button.dart';
-import '../custom_widgets/relative_sizedbox.dart';
-import '../custom_widgets/messages_box.dart';
+import '../../custom_widgets/custom_textfield.dart';
+import '../../custom_widgets/password_textfield.dart';
+import '../../custom_widgets/custom_button.dart';
+import '../../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/messages_box.dart';
 
-import '../services/api_user_service.dart';
-import '../services/session_storage.dart';
+import '../../services/api_user_service.dart';
+import '../../services/session_storage.dart';
 
 import 'personal_info.dart';
 

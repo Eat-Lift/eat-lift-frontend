@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../custom_widgets/relative_sizedbox.dart';
-import '../custom_widgets/custom_button.dart';
-import '../custom_widgets/messages_box.dart';
-import '../custom_widgets/custom_number_picker.dart';
+import '../../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/custom_button.dart';
+import '../../custom_widgets/messages_box.dart';
+import '../../custom_widgets/custom_number_picker.dart';
 
-import '../services/api_user_service.dart';
+import '../../services/api_user_service.dart';
 
-import '../pages/user.dart';
+import 'user.dart';
 
 class NutritionalRequirementsPage extends StatefulWidget {
   final Map<String, dynamic> personalInfo;
@@ -171,23 +171,27 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Expanded(
-                  child: CustomNumberPicker(
-                    key: caloriesPickerKey,
-                    icon: Icons.local_fire_department,
-                    minValue: 0,
-                    maxValue: 6000,
-                    step: 50,
-                    unit: 'kcal',
-                    title: "$calories kcal",
-                    defaultValue: calories,
-                    onItemSelected: (value) {
-                      setState(() {
-                        calories = value;
-                        _calculateMacronutrients();
-                      });
-                    },
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomNumberPicker(
+                        key: caloriesPickerKey,
+                        icon: Icons.local_fire_department,
+                        minValue: 1500,
+                        maxValue: 6000,
+                        step: 50,
+                        unit: 'kcal',
+                        title: "$calories kcal",
+                        defaultValue: calories,
+                        onItemSelected: (value) {
+                          setState(() {
+                            calories = value;
+                            _calculateMacronutrients();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -242,8 +246,8 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
                       child: CustomNumberPicker(
                         key: carbohydratesPickerKey,
                         icon: FontAwesomeIcons.wheatAwn,
-                        minValue: carbohydrates - 200,
-                        maxValue: carbohydrates + 200,
+                        minValue: 0,
+                        maxValue: 1000,
                         defaultValue: carbohydrates,
                         unit: 'g',
                         title: "$carbohydrates g",

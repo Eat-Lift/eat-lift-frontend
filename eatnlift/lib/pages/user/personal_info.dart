@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../custom_widgets/custom_button.dart';
-import '../custom_widgets/relative_sizedbox.dart';
-import '../custom_widgets/messages_box.dart';
-import '../custom_widgets/custom_dropdown.dart';
-import '../custom_widgets/custom_number_picker.dart';
+import '../../custom_widgets/custom_button.dart';
+import '../../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/messages_box.dart';
+import '../../custom_widgets/custom_dropdown.dart';
+import '../../custom_widgets/custom_number_picker.dart';
 
-import '../pages/nutritional_requirements.dart';
+import 'nutritional_requirements.dart';
 
 class PersonalInfoPage extends StatefulWidget {
   const PersonalInfoPage({super.key});
@@ -235,36 +235,35 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Expanded(
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    controller: birthDateController,
-                    decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.calendar_today),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 3,
-                        ),
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  controller: birthDateController,
+                  decoration: InputDecoration(
+                    suffixIcon: Icon(Icons.calendar_today),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.white,
+                        width: 3,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                          width: 3,
-                        ),
-                      ),
-                      fillColor: Colors.grey.shade200,
-                      filled: true,
-                      hintText: "Data de naixement",
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 45),
                     ),
-                    readOnly: true,
-                    onTap: () => pickDate(context),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.white,
+                        width: 3,
+                      ),
+                    ),
+                    fillColor: Colors.grey.shade200,
+                    filled: true,
+                    hintText: "Data de naixement",
+                    hintStyle: TextStyle(color: Colors.grey[500]),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
                   ),
+                  readOnly: true,
+                  onTap: () => pickDate(context),
                 ),
               ),
+              
 
               RelativeSizedBox(height: 0.5),
 

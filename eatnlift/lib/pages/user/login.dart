@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../custom_widgets/custom_textfield.dart';
-import '../custom_widgets/password_textfield.dart';
-import '../custom_widgets/custom_button.dart';
-import '../custom_widgets/wrapped_image.dart';
-import '../custom_widgets/relative_sizedbox.dart';
-import '../custom_widgets/messages_box.dart';
+import '../../custom_widgets/custom_textfield.dart';
+import '../../custom_widgets/password_textfield.dart';
+import '../../custom_widgets/custom_button.dart';
+import '../../custom_widgets/wrapped_image.dart';
+import '../../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/messages_box.dart';
 
 import 'signin.dart';
 import 'user.dart';
 import 'recover_password.dart';
 
-import '../services/api_user_service.dart';
-import '../services/session_storage.dart';
+import '../../services/api_user_service.dart';
+import '../../services/session_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
