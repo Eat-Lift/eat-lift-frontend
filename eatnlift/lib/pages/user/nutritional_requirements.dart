@@ -133,12 +133,14 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
     final result = await apiService.updatePersonalInformation(widget.personalInfo);
 
     if (result?["success"]){
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UserPage(),
-        ),
-      );
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserPage(),
+          ),
+        );
+      }
     }
   }
 

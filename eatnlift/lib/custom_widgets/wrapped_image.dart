@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class WrappedImage extends StatelessWidget {
   final String imageUrl;
+  final int size;
 
   const WrappedImage({
     super.key,
     required this.imageUrl,
+    this.size = 60,
   });
 
   @override
@@ -20,8 +22,8 @@ class WrappedImage extends StatelessWidget {
         padding: const EdgeInsets.all(15),
         child: Image.asset(
           imageUrl,
-          height: 60,
-          width: 60,
+          height: size.toDouble(),
+          width: size.toDouble(),
         ),
       ),
     );

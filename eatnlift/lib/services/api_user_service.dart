@@ -108,5 +108,10 @@ class ApiUserService{
         "success": true,
       };
     }
+    else {
+      return {
+        "success": false,
+      };
+    }
   }
 }

@@ -105,7 +105,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
       }
       emptyField = true;
     }
-    if (selectedDate == null) {
+    if (selectedActivity == null) {
       response["success"] = false;
       if (response.containsKey('errors')) {
         response['errors'].add("Selecciona la teva activitat");
@@ -114,7 +114,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
       }
       emptyField = true;
     }
-    if (selectedDate == null) {
+    if (selectedGoal == null) {
       response["success"] = false;
       if (response.containsKey('errors')) {
         response['errors'].add("Selecciona la el teu objectiu");

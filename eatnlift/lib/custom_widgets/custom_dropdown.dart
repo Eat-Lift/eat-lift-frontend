@@ -97,7 +97,7 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              widget.selectedItem != null ? widget.itemLabel(widget.selectedItem!) : widget.title,
+              widget.selectedItem != null ? widget.itemLabel(widget.selectedItem as T) : widget.title,
               style: TextStyle(
                 fontSize: 16,
                 color: isSelected ? Colors.black : Colors.grey[500],

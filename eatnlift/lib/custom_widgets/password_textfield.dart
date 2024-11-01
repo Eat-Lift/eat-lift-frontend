@@ -27,39 +27,36 @@ class PasswordTextfieldState extends State<PasswordTextfield> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: TextField(
-        controller: widget.controller,
-        obscureText: _isObscure,
-        decoration: InputDecoration(
-          suffixIcon: IconButton(
-          icon: Icon(
-            _isObscure ? Icons.visibility : Icons.visibility_off,
-          ),
-          onPressed: () {
-            setState(() {
-              _isObscure = !_isObscure;
-            });
-          },
+    return TextField(
+      controller: widget.controller,
+      obscureText: _isObscure,
+      decoration: InputDecoration(
+        suffixIcon: IconButton(
+        icon: Icon(
+          _isObscure ? Icons.visibility : Icons.visibility_off,
         ),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.white,
-              width: 3,
-            ),
+        onPressed: () {
+          setState(() {
+            _isObscure = !_isObscure;
+          });
+        },
+      ),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 3,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.grey.shade400,
-              width: 3,
-            ),
-          ),
-          fillColor: Colors.grey.shade200,
-          filled: true,
-          hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.grey[500])
         ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.grey.shade400,
+            width: 3,
+          ),
+        ),
+        fillColor: Colors.grey.shade200,
+        filled: true,
+        hintText: widget.hintText,
+        hintStyle: TextStyle(color: Colors.grey[500])
       ),
     );
   }

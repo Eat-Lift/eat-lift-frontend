@@ -68,17 +68,18 @@ class LoginPageState extends State<LoginPage> {
 
     if (result["success"]){
       await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const UserPage()),
-      );
+      if (context.mounted){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const UserPage()),
+        );
+      }
     }
     
     // Update errorrs or success state
     setState(() {
         response = result;
     });
-
   }
 
   @override
@@ -86,7 +87,8 @@ class LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

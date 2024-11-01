@@ -29,105 +29,103 @@ class SigninPageState extends State<SigninPage> {
   Map<String, dynamic> response = {};
 
  void signin(BuildContext context) async {
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
+    bool emptyField = false;
+    bool wrongField = false;
+
+    response = {};
+
+    // Check if any fields are empty
+    if (usernameController.text.isEmpty) {
+      response["success"] = false;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Es requereix el nom d'usuari");
+      } else {
+        response['errors'] = ["Es requereix el nom d'usuari"];
+      }
+      emptyField = true;
+    } 
+    if (emailController.text.isEmpty) {
+      response["success"] = false;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Es requereix el correu electrònic");
+      } else {
+        response['errors'] = ["Es requereix el correu electrònic"];
+      }
+      emptyField = true;
+    }
+    if (passwordController.text.isEmpty) {
+      response["success"] = false;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Es requereix la contrasenya");
+      } else {
+        response['errors'] = ["Es requereix la contrasenya"];
+      }
+      emptyField = true;
+    }
+    if (repeatPasswordController.text.isEmpty) {
+      response["success"] = false;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Es requereix la confirmació de la contrasenya");
+      } else {
+        response['errors'] = ["Es requereix la confirmació de la contrasenya"];
+      }
+    emptyField = true;
+    }
+
+    if (emptyField) {
+      setState(() {});
+      return;
+    }
+
+    // Check if the email format is valid
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
+      response["success"] = false;
+      wrongField = true;
+      if (response.containsKey('errors')) {
+        response['errors'].add("El correu electrònic no és vàlid");
+      } else {
+        response['errors'] = ["El correu electrònic no és vàlid"];
+      }
+    }
+
+    // Check if passwords match
+    if (passwordController.text != repeatPasswordController.text) {
+      response["success"] = false;
+      wrongField = true;
+      if (response.containsKey('errors')) {
+        response['errors'].add("Les contrasenyes no coincideixen");
+      } else {
+        response['errors'] = ["Les contrasenyes no coincideixen"];
+      }
+    }
+
+    if (wrongField) {
+      setState(() {});
+      return;
+    }
+
+    // Perform the registration API call
+    final apiService = ApiUserService();
+    final result = await apiService.signin(
+      usernameController.text,
+      emailController.text,
+      passwordController.text,
     );
-    // bool emptyField = false;
-    // bool wrongField = false;
 
-    // response = {};
+    if (result["success"]){
+      await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+      if (context.mounted){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
+        );
+      }
+    }
 
-    // // Check if any fields are empty
-    // if (usernameController.text.isEmpty) {
-    //   response["success"] = false;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("Es requereix el nom d'usuari");
-    //   } else {
-    //     response['errors'] = ["Es requereix el nom d'usuari"];
-    //   }
-    //   emptyField = true;
-    // } 
-    // if (emailController.text.isEmpty) {
-    //   response["success"] = false;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("Es requereix el correu electrònic");
-    //   } else {
-    //     response['errors'] = ["Es requereix el correu electrònic"];
-    //   }
-    //   emptyField = true;
-    // }
-    // if (passwordController.text.isEmpty) {
-    //   response["success"] = false;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("Es requereix la contrasenya");
-    //   } else {
-    //     response['errors'] = ["Es requereix la contrasenya"];
-    //   }
-    //   emptyField = true;
-    // }
-    // if (repeatPasswordController.text.isEmpty) {
-    //   response["success"] = false;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("Es requereix la confirmació de la contrasenya");
-    //   } else {
-    //     response['errors'] = ["Es requereix la confirmació de la contrasenya"];
-    //   }
-    // emptyField = true;
-    // }
-
-    // if (emptyField) {
-    //   setState(() {});
-    //   return;
-    // }
-
-    // // Check if the email format is valid
-    // if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
-    //   response["success"] = false;
-    //   wrongField = true;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("El correu electrònic no és vàlid");
-    //   } else {
-    //     response['errors'] = ["El correu electrònic no és vàlid"];
-    //   }
-    // }
-
-    // // Check if passwords match
-    // if (passwordController.text != repeatPasswordController.text) {
-    //   response["success"] = false;
-    //   wrongField = true;
-    //   if (response.containsKey('errors')) {
-    //     response['errors'].add("Les contrasenyes no coincideixen");
-    //   } else {
-    //     response['errors'] = ["Les contrasenyes no coincideixen"];
-    //   }
-    // }
-
-    // if (wrongField) {
-    //   setState(() {});
-    //   return;
-    // }
-
-    // // Perform the registration API call
-    // final apiService = ApiUserService();
-    // final result = await apiService.signin(
-    //   usernameController.text,
-    //   emailController.text,
-    //   passwordController.text,
-    // );
-
-    // if (result["success"]){
-    //   await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => const EditUserPage()),
-    //   );
-    // }
-
-    // // Update errors or success state
-    // setState(() {
-    //     response = result;
-    // });
+    // Update errors or success state
+    setState(() {
+        response = result;
+    });
   }
 
   @override
@@ -135,7 +133,8 @@ class SigninPageState extends State<SigninPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
