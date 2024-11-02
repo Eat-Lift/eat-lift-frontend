@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../custom_widgets/relative_sizedbox.dart';
 import '../../custom_widgets/expandable_text.dart';
@@ -7,6 +8,8 @@ import '../../custom_widgets/custom_button.dart';
 
 import '../../services/api_user_service.dart';
 import '../../services/session_storage.dart';
+
+import '../../pages/user/edit_user.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -101,16 +104,46 @@ class _UserPageState extends State<UserPage> {
                             ),
                           ],
                         ),
-                        
 
                         RelativeSizedBox(height: 2),
 
+                        Row(
+                          children: [
+                            Expanded(
+                              child:CustomButton(
+                                text: "Requeriments",
+                                onTap: () {},
+                                icon: Icons.local_fire_department,
+                                height: 40,
+                              ),
+                            ),
 
+                            RelativeSizedBox(width: 0.5),
+
+                            Expanded(
+                              child:CustomButton(
+                                text: "Revisió",
+                                onTap: () {},
+                                icon: FontAwesomeIcons.chartLine,
+                                height: 40,
+                              ),
+                            ),
+                          ],
+                        ),
+                            
+                        RelativeSizedBox(height: 0.5),
+                        
                         CustomButton(
-                          text: "Editar",
-                          onTap: () {},
+                          text: "Editar perfil",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditUserPage(userData: userData),
+                              ),
+                            );
+                          },
                           icon: Icons.edit,
-                          width: 1000,
                           height: 40,
                         ),
 
@@ -126,7 +159,7 @@ class _UserPageState extends State<UserPage> {
               else ...[
                 Text(
                   "loading...",
-                )
+                ),
               ]
             ],
           ),

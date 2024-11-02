@@ -89,13 +89,13 @@ class ApiUserService{
     }
   }
 
-  Future<Map<String, dynamic>?> updatePersonalInformation(Map<String, dynamic> personalInformation) async {
+  Future<Map<String, dynamic>> updatePersonalInformation(Map<String, dynamic> personalInformation) async {
     final SessionStorage sessionStorage = SessionStorage();
     final userId = await sessionStorage.getUserId();
     final token = await sessionStorage.getAccessToken();
 
     final response = await http.put(
-      Uri.parse('$baseUrl/$userId/edit'),
+      Uri.parse('$baseUrl/$userId/editPersonalInformation'),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Token $token",
@@ -109,8 +109,42 @@ class ApiUserService{
       };
     }
     else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
       return {
         "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> updateProfile(Map<String,dynamic> profileInfo) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/$userId/editProfile'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode(profileInfo),
+    );
+
+    if(response.statusCode == 200){
+      return {
+        "success": true,
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
       };
     }
   }

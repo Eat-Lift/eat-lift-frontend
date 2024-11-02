@@ -76,7 +76,6 @@ class LoginPageState extends State<LoginPage> {
       }
     }
     
-    // Update errorrs or success state
     setState(() {
         response = result;
     });
