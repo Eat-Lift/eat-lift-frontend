@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "73227425624",
+    "project_id": "eatnlift-d2f8e",
+    "storage_bucket": "eatnlift-d2f8e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73227425624:android:4a073ac3b7350424ff772d",
+        "android_client_info": {
+          "package_name": "com.eatnlift.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtNg9P1_vi0ZfolHXJaJgpFzVVvojN_Ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73227425624:android:0616f0e0709d54faff772d",
+        "android_client_info": {
+          "package_name": "com.example.eatnlift"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtNg9P1_vi0ZfolHXJaJgpFzVVvojN_Ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
