@@ -19,7 +19,6 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-
   final SessionStorage sessionStorage = SessionStorage();
   Map<String, dynamic>? userData;
   bool isLoading = true;
@@ -35,7 +34,6 @@ class _UserPageState extends State<UserPage> {
       isLoading = true;
     });
 
-    // Retrieve the user ID from secure storage
     final userId = await sessionStorage.getUserId();
     if (userId == null) {
       setState(() {
@@ -44,7 +42,6 @@ class _UserPageState extends State<UserPage> {
       return;
     }
 
-    // Fetch user data from the API using userId
     final apiService = ApiUserService();
     final result = await apiService.getUser(userId);
     setState(() {
@@ -52,7 +49,6 @@ class _UserPageState extends State<UserPage> {
       isLoading = false;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,99 +63,99 @@ class _UserPageState extends State<UserPage> {
               if (!isLoading && userData != null) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: 
-                    Column(
-                      children: [
-                        RelativeSizedBox(height: 5),
-
-                        Row(
-                          children: [
-
-                            ExpandableImage(
-                              initialImagePath: null,
-                              width: 70,
-                              height: 70,
-                            ),
-
-                            RelativeSizedBox(width: 3),
-
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  userData?["username"],
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontSize: 27,
-                                  ),
+                  child: Column(
+                    children: [
+                      RelativeSizedBox(height: 5),
+                      Row(
+                        children: [
+                          ExpandableImage(
+                            initialImageUrl: userData?["picture"],
+                            width: 70,
+                            height: 70,
+                          ),
+                          RelativeSizedBox(width: 3),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userData?["username"],
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 27,
                                 ),
-                                Text(
-                                  userData?["email"],
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontSize: 16,
-                                  ),
+                              ),
+                              Text(
+                                userData?["email"],
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 16,
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        RelativeSizedBox(height: 2),
-
-                        Row(
-                          children: [
-                            Expanded(
-                              child:CustomButton(
-                                text: "Requeriments",
-                                onTap: () {},
-                                icon: Icons.local_fire_department,
-                                height: 40,
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      RelativeSizedBox(height: 2),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              text: "Requeriments",
+                              onTap: () {},
+                              icon: Icons.local_fire_department,
+                              height: 40,
                             ),
-
-                            RelativeSizedBox(width: 0.5),
-
-                            Expanded(
-                              child:CustomButton(
-                                text: "Revisió",
-                                onTap: () {},
-                                icon: FontAwesomeIcons.chartLine,
-                                height: 40,
-                              ),
+                          ),
+                          RelativeSizedBox(width: 0.5),
+                          Expanded(
+                            child: CustomButton(
+                              text: "Revisió",
+                              onTap: () {},
+                              icon: FontAwesomeIcons.chartLine,
+                              height: 40,
                             ),
-                          ],
-                        ),
-                            
-                        RelativeSizedBox(height: 0.5),
-                        
-                        CustomButton(
-                          text: "Editar perfil",
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditUserPage(userData: userData),
-                              ),
-                            );
-                          },
-                          icon: Icons.edit,
-                          height: 40,
-                        ),
+                          ),
+                        ],
+                      ),
+                      RelativeSizedBox(height: 0.5),
+                      CustomButton(
+                        text: "Editar perfil",
+                        onTap: () async {
+                          final isUpdated = await Navigator.push<bool>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditUserPage(userData: userData),
+                            ),
+                          );
 
-                        RelativeSizedBox(height: 2),
-
-                        ExpandableText(
-                          text: userData?["description"] ?? "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas ",
+                          if (isUpdated == true) {
+                            _loadUserData();
+                          }
+                        },
+                        icon: Icons.edit,
+                        height: 40,
+                      ),
+                      RelativeSizedBox(height: 2),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ExpandableText(
+                          text: userData?["description"]?.isEmpty ?? true
+                              ? "Això està una mica buit"
+                              : userData?["description"],
                         ),
-                      ]
+                      ),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(color: Colors.grey),
                     ),
-                ),
-              ]
-              else ...[
-                Text(
-                  "loading...",
-                ),
+                  ],
+                )     
               ]
             ],
           ),

@@ -5,17 +5,15 @@ import 'dart:io';
 import './custom_button.dart';
 
 class ExpandableImage extends StatefulWidget {
-  final String? initialImagePath;
-  final bool isNetwork;
-  final Function(File? imageFile)? onImageSelected;
+  final String? initialImageUrl;
+  final Function(File imageFile)? onImageSelected;
   final bool editable;
-  final int width;
-  final int height;
+  final double width;
+  final double height;
 
   const ExpandableImage({
     super.key,
-    required this.initialImagePath,
-    this.isNetwork = false,
+    required this.initialImageUrl,
     this.onImageSelected,
     this.width = 100,
     this.height = 100,
@@ -27,33 +25,23 @@ class ExpandableImage extends StatefulWidget {
 }
 
 class ExpandableImageState extends State<ExpandableImage> {
-  File? imageFile;
-  bool hasError = false;
+  File? selectedImageFile;
 
   @override
   void initState() {
     super.initState();
-    if (!widget.isNetwork && widget.initialImagePath != null) {
-      try {
-        imageFile = File(widget.initialImagePath!);
-        if (!imageFile!.existsSync()) {
-          throw Exception("File does not exist");
-        }
-      } catch (e) {
-        hasError = true;
-      }
-    }
+    // initial image will display via URL if provided
   }
 
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      final imageFile = File(pickedFile.path);
       setState(() {
-        imageFile = File(pickedFile.path);
-        hasError = false;
+        selectedImageFile = imageFile;
       });
       if (widget.onImageSelected != null) {
-        widget.onImageSelected!(imageFile);
+        widget.onImageSelected!(imageFile);  // Return the File to the parent widget
       }
     }
   }
@@ -80,35 +68,31 @@ class ExpandableImageState extends State<ExpandableImage> {
               ),
               child: Stack(
                 children: [
-                  Column(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: InteractiveViewer(
-                            child: hasError || imageFile == null
-                                ? Icon(Icons.broken_image, size: 50, color: Colors.grey)
-                                : (widget.isNetwork
-                                    ? Image.network(widget.initialImagePath!, fit: BoxFit.contain)
-                                    : Image.file(imageFile!, fit: BoxFit.contain)),
-                          ),
-                        ),
-                      ),
-                      if (widget.editable)
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CustomButton(
-                            text: "Edit Image",
-                            width: 130,
-                            height: 40,
-                            onTap: () async {
-                              await _pickImage();
-                              if (context.mounted) Navigator.of(context).pop();
-                            },
-                            icon: Icons.edit,
-                          ),
-                        ),
-                    ],
+                  Center(
+                    child: InteractiveViewer(
+                      child: selectedImageFile != null
+                          ? Image.file(selectedImageFile!, fit: BoxFit.contain)
+                          : (widget.initialImageUrl != null
+                              ? Image.network(widget.initialImageUrl!, fit: BoxFit.contain)
+                              : Icon(Icons.add_a_photo, size: 50, color: Colors.grey)),
+                    ),
                   ),
+                  if (widget.editable)
+                    Positioned(
+                      bottom: 10,
+                      left: 0,
+                      right: 0,
+                      child: CustomButton(
+                        text: "Edita la image",
+                        width: 50,
+                        height: 40,
+                        onTap: () async {
+                          await _pickImage();
+                          if (context.mounted) Navigator.of(context).pop();
+                        },
+                        icon: Icons.edit,
+                      ),
+                    ),
                   Positioned(
                     top: -15,
                     right: -15,
@@ -133,24 +117,24 @@ class ExpandableImageState extends State<ExpandableImage> {
     return GestureDetector(
       onTap: () => _showExpandedImage(context),
       child: Container(
-        height: widget.height.toDouble(),
-        width: widget.width.toDouble(),
+        height: widget.height,
+        width: widget.width,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white, width: 3),
           borderRadius: BorderRadius.circular(10),
-          image: hasError || imageFile == null
-              ? null
-              : widget.isNetwork
+          image: selectedImageFile != null
+              ? DecorationImage(
+                  image: FileImage(selectedImageFile!),
+                  fit: BoxFit.cover,
+                )
+              : (widget.initialImageUrl != null
                   ? DecorationImage(
-                      image: NetworkImage(widget.initialImagePath!),
+                      image: NetworkImage(widget.initialImageUrl!),
                       fit: BoxFit.cover,
                     )
-                  : DecorationImage(
-                      image: FileImage(imageFile!),
-                      fit: BoxFit.cover,
-                    ),
+                  : null),
         ),
-        child: hasError || (imageFile == null && !widget.isNetwork)
+        child: (selectedImageFile == null && widget.initialImageUrl == null)
             ? Center(child: Icon(Icons.add_a_photo, color: Colors.grey))
             : null,
       ),
