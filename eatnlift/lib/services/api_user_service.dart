@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'session_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiUserService{
   final String baseUrl = 'http://10.0.2.2:8000/users';
@@ -54,6 +55,42 @@ class ApiUserService{
         "user": responseData["user"],
       }; 
     } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> googleLogin() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+    final String? token;
+
+    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+    token = googleAuth.idToken;
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/login/google'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'google_token': token,
+      }),
+    );
+
+    if (response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "token": responseData["token"],
+        "user": responseData["user"],
+      }; 
+    } 
+    else {
       final decodedData = utf8.decode(response.bodyBytes);
       final responseData = jsonDecode(decodedData);
       List<String> errors = List<String>.from(responseData["errors"]);

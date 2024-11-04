@@ -81,6 +81,23 @@ class LoginPageState extends State<LoginPage> {
     });
   }
 
+  void googleLogin() async {
+    final apiService = ApiUserService();
+    final result = await apiService.googleLogin();
+    if (result["success"]){
+      await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+      if (mounted){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const UserPage()),
+        );
+      }
+    }
+    setState(() {
+        response = result;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,10 +205,13 @@ class LoginPageState extends State<LoginPage> {
 
               response.isNotEmpty ? const RelativeSizedBox(height: 3) : const RelativeSizedBox(height: 5),
               
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  WrappedImage(imageUrl: 'lib/assets/images/google_logo.png'),
+                  GestureDetector(
+                    onTap: googleLogin,
+                    child: WrappedImage(imageUrl: 'lib/assets/images/google_logo.png'),
+                  ),
                 ]
               ),
 
