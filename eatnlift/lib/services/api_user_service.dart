@@ -88,6 +88,17 @@ class ApiUserService{
         "success": true,
         "token": responseData["token"],
         "user": responseData["user"],
+        "signin": false,
+      }; 
+    }
+    else if (response.statusCode == 201){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "token": responseData["token"],
+        "user": responseData["user"],
+        "signin": true,
       }; 
     } 
     else {
@@ -185,4 +196,58 @@ class ApiUserService{
       };
     }
   }
+
+  Future<Map<String, dynamic>> resetPassword(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/reset_password'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'email': email,
+      }),
+    );
+
+    if(response.statusCode == 200){
+      return {
+        "success": true,
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> newPassword(String code, String password, String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/new_password'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        'email': email,
+        'reset_code': code,
+        'new_password': password,
+      }),
+    );
+
+    if(response.statusCode == 200){
+      return {
+        "success": true,
+        "messages": ["Contrasenya canviada amb èxit"]
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
 }

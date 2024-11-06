@@ -9,7 +9,8 @@ import '../../custom_widgets/messages_box.dart';
 
 import 'signin.dart';
 import 'user.dart';
-import 'recover_password.dart';
+import 'reset_password.dart';
+import 'personal_info.dart';
 
 import '../../services/api_user_service.dart';
 import '../../services/session_storage.dart';
@@ -38,18 +39,18 @@ class LoginPageState extends State<LoginPage> {
     if (usernameController.text.isEmpty) {
       response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Username field must be filled");
+        response['errors'].add("Es requereix el nom d'usuari");
       } else {
-        response['errors'] = ["Username field must be filled"];
+        response['errors'] = ["Es requereix el nom d'usuari"];
       }
       emptyField = true;
     } 
     if (passwordController.text.isEmpty) {
       response["success"] = false;
       if (response.containsKey('errors')) {
-        response['errors'].add("Password field must be filled");
+        response['errors'].add("Es requereix la contrasenya");
       } else {
-        response['errors'] = ["Password field must be filled"];
+        response['errors'] = ["Es requereix la contrasenya"];
       }
       emptyField = true;
     }
@@ -59,7 +60,6 @@ class LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Perform the registration API call
     final apiService = ApiUserService();
     final result = await apiService.login(
       usernameController.text,
@@ -86,11 +86,21 @@ class LoginPageState extends State<LoginPage> {
     final result = await apiService.googleLogin();
     if (result["success"]){
       await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
-      if (mounted){
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const UserPage()),
-        );
+      if (result["signin"]){
+        if (mounted){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
+          );
+        }
+      }
+      else {
+        if (mounted){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const UserPage()),
+          );
+        }
       }
     }
     setState(() {
@@ -142,7 +152,7 @@ class LoginPageState extends State<LoginPage> {
               const RelativeSizedBox(height: 1),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 35),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -162,7 +172,7 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RecoverPasswordPage()),
+                          MaterialPageRoute(builder: (context) => ResetPasswordPage()),
                         );
                       }, 
                     ),                  

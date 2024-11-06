@@ -10,6 +10,8 @@ import '../../services/api_user_service.dart';
 import '../../services/session_storage.dart';
 
 import '../../pages/user/edit_user.dart';
+import '../../pages/user/login.dart';
+import '../../pages/user/personal_info.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -50,6 +52,16 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void logOut(BuildContext context) async {
+    await sessionStorage.clearSession();
+    if (context.mounted){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,11 +73,23 @@ class _UserPageState extends State<UserPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isLoading && userData != null) ...[
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Transform.translate(
+                    offset: Offset(-10, 10),
+                    child: CustomButton(
+                      text: "",
+                      onTap: () => logOut(context),
+                      icon: Icons.logout,
+                      height: 40,
+                      width: 40,
+                    ),
+                  ),
+                ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 5),
                       Row(
                         children: [
                           ExpandableImage(
@@ -101,7 +125,12 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             child: CustomButton(
                               text: "Requeriments",
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
+                                );
+                              },
                               icon: Icons.local_fire_department,
                               height: 40,
                             ),

@@ -28,11 +28,11 @@ class _EditUserPageState extends State<EditUserPage> {
   final _descriptionController = TextEditingController();
   File? _selectedImage;
   final SessionStorage sessionStorage = SessionStorage();
-  
+
   String? initialDescription;
   String? initialImagePath;
   Map<String, dynamic> response = {};
-  
+
   bool isUploadingImage = false;
 
   @override
@@ -46,7 +46,7 @@ class _EditUserPageState extends State<EditUserPage> {
   Future<void> _saveChanges() async {
     final updatedDescription = _descriptionController.text;
     String? updatedImageURL;
-    
+
     final Map<String, dynamic> data = {};
 
     if (updatedDescription != initialDescription) {
@@ -60,8 +60,8 @@ class _EditUserPageState extends State<EditUserPage> {
 
       final storageService = StorageService();
       updatedImageURL = await storageService.uploadImage(
-        _selectedImage!, 
-        'user_profile/${_selectedImage!.path.split('/').last}'
+        _selectedImage!,
+        'user_profile/${_selectedImage!.path.split('/').last}',
       );
 
       setState(() {
@@ -76,7 +76,7 @@ class _EditUserPageState extends State<EditUserPage> {
       final result = await apiService.updateProfile(data);
 
       if (result["success"]) {
-        if (context.mounted) {
+        if (mounted) {
           Navigator.pop(context, true);
         }
       } else {
@@ -85,7 +85,7 @@ class _EditUserPageState extends State<EditUserPage> {
         });
       }
     } else {
-      if (context.mounted) {
+      if (mounted) {
         Navigator.pop(context, false);
       }
     }
@@ -108,9 +108,7 @@ class _EditUserPageState extends State<EditUserPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomHeader(title: "Editar perfil"),
-
                   RelativeSizedBox(height: 2),
-
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
@@ -152,25 +150,20 @@ class _EditUserPageState extends State<EditUserPage> {
                               ),
                             ],
                           ),
-
                           RelativeSizedBox(height: 2),
-
                           CustomTextfield(
                             controller: _descriptionController,
                             hintText: "Afegeix una descripció",
                             obscureText: false,
                             maxLines: 5,
                           ),
-
                           RelativeSizedBox(height: 2),
-
                           CustomButton(
                             text: "Desar els canvis",
                             icon: Icons.save,
                             onTap: _saveChanges,
                             height: 50,
                           ),
-
                           if (response.isNotEmpty && !response["success"]) ...[
                             const RelativeSizedBox(height: 3),
                             MessagesBox(
@@ -189,9 +182,8 @@ class _EditUserPageState extends State<EditUserPage> {
                 ],
               ),
               if (isUploadingImage)
-                const RelativeSizedBox(height: 5),
                 Center(
-                    child: CircularProgressIndicator(color: Colors.grey),
+                  child: CircularProgressIndicator(color: Colors.grey),
                 ),
             ],
           ),

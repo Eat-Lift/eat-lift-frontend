@@ -134,7 +134,7 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
 
     if (result["success"]){
       if (context.mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => UserPage(),

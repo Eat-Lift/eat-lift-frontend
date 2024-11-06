@@ -1,8 +1,11 @@
-import 'package:eatnlift/pages/user/home.dart';
+import 'package:eatnlift/pages/user/login.dart';
+import 'package:eatnlift/pages/user/user.dart'; 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+
+import 'services/session_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,12 +19,39 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage()
+      home: const SessionCheckWrapper(),
+    );
+  }
+}
+
+class SessionCheckWrapper extends StatelessWidget {
+  const SessionCheckWrapper({super.key});
+
+  Future<bool> _isUserLoggedIn() async {
+    final sessionStorage = SessionStorage();
+    final accessToken = await sessionStorage.getAccessToken();
+    return accessToken != null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _isUserLoggedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData && snapshot.data == true) {
+          return const UserPage();
+        } else {
+          return const LoginPage();
+        }
+      },
     );
   }
 }

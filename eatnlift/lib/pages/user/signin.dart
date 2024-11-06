@@ -34,7 +34,6 @@ class SigninPageState extends State<SigninPage> {
 
     response = {};
 
-    // Check if any fields are empty
     if (usernameController.text.isEmpty) {
       response["success"] = false;
       if (response.containsKey('errors')) {
@@ -77,7 +76,6 @@ class SigninPageState extends State<SigninPage> {
       return;
     }
 
-    // Check if the email format is valid
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text)) {
       response["success"] = false;
       wrongField = true;
@@ -88,7 +86,6 @@ class SigninPageState extends State<SigninPage> {
       }
     }
 
-    // Check if passwords match
     if (passwordController.text != repeatPasswordController.text) {
       response["success"] = false;
       wrongField = true;
@@ -104,7 +101,6 @@ class SigninPageState extends State<SigninPage> {
       return;
     }
 
-    // Perform the registration API call
     final apiService = ApiUserService();
     final result = await apiService.signin(
       usernameController.text,
@@ -122,7 +118,6 @@ class SigninPageState extends State<SigninPage> {
       }
     }
 
-    // Update errors or success state
     setState(() {
         response = result;
     });

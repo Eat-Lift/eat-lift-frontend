@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextfield extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
   final int maxLines;
+  final bool isNumeric;
+  final int maxLength;
 
-  const CustomTextfield(
-    {super.key,
+  const CustomTextfield({
+    super.key,
     required this.controller,
     required this.hintText,
-    required this.obscureText,
+    this.obscureText = false,
     this.maxLines = 1,
+    this.isNumeric = false,
+    this.maxLength = 0,
   });
 
   @override
@@ -21,6 +26,11 @@ class CustomTextfield extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       obscureText: obscureText,
+      keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+      inputFormatters: [
+        if (isNumeric) FilteringTextInputFormatter.digitsOnly,
+        if (maxLength > 0) LengthLimitingTextInputFormatter(maxLength),
+      ],
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
@@ -37,7 +47,7 @@ class CustomTextfield extends StatelessWidget {
         fillColor: Colors.grey.shade200,
         filled: true,
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey[500])
+        hintStyle: TextStyle(color: Colors.grey[500]),
       ),
     );
   }
