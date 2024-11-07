@@ -151,7 +151,8 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -173,133 +174,122 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
 
               const RelativeSizedBox(height: 5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                     Expanded(
-                      child: CustomDropdown(
-                        title: "Gènere",
-                        items: genres,
-                        height: 160,
-                        selectedItem: selectedGenre,
-                        onItemSelected: (value) {
-                          setState(() {
-                            selectedGenre = value;
-                          });
-                        },
-                        itemLabel: (genre) => genre,
-                      ),
-                    ),
-
-                    RelativeSizedBox(width: 1),
-                    
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                     Expanded(
-                      child: CustomNumberPicker(
-                        minValue: 120,
-                        maxValue: 220,
-                        defaultValue: 176,
-                        unit: "cm",
-                        title: "Alçada",
-                        onItemSelected: (value) {
-                          setState(() {
-                            selectedHeight = value as int?;
-                          });
-                        },
-                      ),
+                    child: CustomDropdown(
+                      title: "Gènere",
+                      items: genres,
+                      height: 160,
+                      selectedItem: selectedGenre,
+                      onItemSelected: (value) {
+                        setState(() {
+                          selectedGenre = value;
+                        });
+                      },
+                      itemLabel: (genre) => genre,
                     ),
+                  ),
 
-                    RelativeSizedBox(width: 1),
-
-                    Expanded(
-                      child: CustomNumberPicker(
-                        minValue: 40,
-                        maxValue: 160,
-                        defaultValue: 76,
-                        unit: "kg",
-                        step: 0.1,
-                        title: "Pes",
-                        onItemSelected: (value) {
-                          setState(() {
-                            selectedWeight = value as double?;
-                          });
-                        },
-                      ),
+                  RelativeSizedBox(width: 1),
+                  
+                  Expanded(
+                    child: CustomNumberPicker(
+                      minValue: 120,
+                      maxValue: 220,
+                      defaultValue: 176,
+                      unit: "cm",
+                      title: "Alçada",
+                      onItemSelected: (value) {
+                        setState(() {
+                          selectedHeight = value as int?;
+                        });
+                      },
                     ),
-                  ]
-                ),
+                  ),
+
+                  RelativeSizedBox(width: 1),
+
+                  Expanded(
+                    child: CustomNumberPicker(
+                      minValue: 40,
+                      maxValue: 160,
+                      defaultValue: 76,
+                      unit: "kg",
+                      step: 0.1,
+                      title: "Pes",
+                      onItemSelected: (value) {
+                        setState(() {
+                          selectedWeight = value as double?;
+                        });
+                      },
+                    ),
+                  ),
+                ]
               ),
+
 
               const RelativeSizedBox(height: 0.5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  controller: birthDateController,
-                  decoration: InputDecoration(
-                    suffixIcon: Icon(Icons.calendar_today),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 3,
-                      ),
+              TextField(
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                controller: birthDateController,
+                decoration: InputDecoration(
+                  suffixIcon: Icon(Icons.calendar_today),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 3,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 3,
-                      ),
-                    ),
-                    fillColor: Colors.grey.shade200,
-                    filled: true,
-                    hintText: "Data de naixement",
-                    hintStyle: TextStyle(color: Colors.grey[500]),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
                   ),
-                  readOnly: true,
-                  onTap: () => pickDate(context),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white,
+                      width: 3,
+                    ),
+                  ),
+                  fillColor: Colors.grey.shade200,
+                  filled: true,
+                  hintText: "Data de naixement",
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
                 ),
+                readOnly: true,
+                onTap: () => pickDate(context),
               ),
               
 
               RelativeSizedBox(height: 0.5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child:  CustomDropdown(
-                  title: "Activitat",
-                  height: 375,
-                  items: activity,  
-                  selectedItem: selectedActivity,
-                  onItemSelected: (value) {
-                    setState(() {
-                      selectedActivity = value;
-                    });
-                  },
-                  itemLabel: (activity) => activity,
-                ),
+              CustomDropdown(
+                title: "Activitat",
+                height: 375,
+                items: activity,  
+                selectedItem: selectedActivity,
+                onItemSelected: (value) {
+                  setState(() {
+                    selectedActivity = value;
+                  });
+                },
+                itemLabel: (activity) => activity,
               ),
               
 
               const RelativeSizedBox(height:0.5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child:  CustomDropdown(
-                  title: "Objectiu",
-                  items: goal,
-                  height: 230,  
-                  selectedItem: selectedGoal,
-                  onItemSelected: (value) {
-                    setState(() {
-                      selectedGoal = value;
-                    });
-                  },
-                  itemLabel: (goal) => goal,
-                ),
+              CustomDropdown(
+                title: "Objectiu",
+                items: goal,
+                height: 230,  
+                selectedItem: selectedGoal,
+                onItemSelected: (value) {
+                  setState(() {
+                    selectedGoal = value;
+                  });
+                },
+                itemLabel: (goal) => goal,
               ),
 
               const RelativeSizedBox(height:2),

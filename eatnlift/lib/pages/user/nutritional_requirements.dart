@@ -149,7 +149,8 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -171,98 +172,92 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
 
               const RelativeSizedBox(height: 5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomNumberPicker(
-                        key: caloriesPickerKey,
-                        icon: Icons.local_fire_department,
-                        minValue: 1500,
-                        maxValue: 6000,
-                        step: 50,
-                        unit: 'kcal',
-                        title: "$calories kcal",
-                        defaultValue: calories,
-                        onItemSelected: (value) {
-                          setState(() {
-                            calories = value;
-                            _calculateMacronutrients();
-                          });
-                        },
-                      ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomNumberPicker(
+                      key: caloriesPickerKey,
+                      icon: Icons.local_fire_department,
+                      minValue: 1500,
+                      maxValue: 6000,
+                      step: 50,
+                      unit: 'kcal',
+                      title: "$calories kcal",
+                      defaultValue: calories,
+                      onItemSelected: (value) {
+                        setState(() {
+                          calories = value;
+                          _calculateMacronutrients();
+                        });
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               const RelativeSizedBox(height: 0.5),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: CustomNumberPicker(
-                        key: protiensPickerKey,
-                        icon: FontAwesomeIcons.drumstickBite,
-                        minValue: 0,
-                        maxValue: 300,
-                        defaultValue: proteins,
-                        unit: 'g',
-                        title: "$proteins g",
-                        onItemSelected: (value) {
-                          setState(() {
-                            proteins = value;
-                            _recalculateCalories();
-                          });
-                        },
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: CustomNumberPicker(
+                      key: protiensPickerKey,
+                      icon: FontAwesomeIcons.drumstickBite,
+                      minValue: 0,
+                      maxValue: 300,
+                      defaultValue: proteins,
+                      unit: 'g',
+                      title: "$proteins g",
+                      onItemSelected: (value) {
+                        setState(() {
+                          proteins = value;
+                          _recalculateCalories();
+                        });
+                      },
                     ),
+                  ),
 
-                    RelativeSizedBox(width: 1),
-                    
-                    Expanded(
-                      child: CustomNumberPicker(
-                        key: fatsPickerKey,
-                        icon: Icons.water_drop,
-                        minValue: 0,
-                        maxValue: 150,
-                        defaultValue: fats,
-                        unit: 'g',
-                        title: "$fats g",
-                        onItemSelected: (value) {
-                          setState(() {
-                            fats = value;
-                            _recalculateCalories();
-                          });
-                        },
-                      ),
+                  RelativeSizedBox(width: 1),
+                  
+                  Expanded(
+                    child: CustomNumberPicker(
+                      key: fatsPickerKey,
+                      icon: Icons.water_drop,
+                      minValue: 0,
+                      maxValue: 150,
+                      defaultValue: fats,
+                      unit: 'g',
+                      title: "$fats g",
+                      onItemSelected: (value) {
+                        setState(() {
+                          fats = value;
+                          _recalculateCalories();
+                        });
+                      },
                     ),
+                  ),
 
-                    RelativeSizedBox(width: 1),
+                  RelativeSizedBox(width: 1),
 
-                    Expanded(
-                      child: CustomNumberPicker(
-                        key: carbohydratesPickerKey,
-                        icon: FontAwesomeIcons.wheatAwn,
-                        minValue: 0,
-                        maxValue: 1000,
-                        defaultValue: carbohydrates,
-                        unit: 'g',
-                        title: "$carbohydrates g",
-                        onItemSelected: (value) {
-                          setState(() {
-                            carbohydrates = value;
-                            _recalculateCalories();
-                          });
-                        },
-                      ),
+                  Expanded(
+                    child: CustomNumberPicker(
+                      key: carbohydratesPickerKey,
+                      icon: FontAwesomeIcons.wheatAwn,
+                      minValue: 0,
+                      maxValue: 1000,
+                      defaultValue: carbohydrates,
+                      unit: 'g',
+                      title: "$carbohydrates g",
+                      onItemSelected: (value) {
+                        setState(() {
+                          carbohydrates = value;
+                          _recalculateCalories();
+                        });
+                      },
                     ),
-                  ]
-                ),
+                  ),
+                ]
               ),
               
               const RelativeSizedBox(height: 2),
