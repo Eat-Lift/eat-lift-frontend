@@ -4,7 +4,8 @@ import 'session_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiUserService{
-  final String baseUrl = 'http://10.0.2.2:8000/users';
+  //final String baseUrl = "https://eat-lift-backend.onrender.com/users";
+  final String baseUrl = "http://10.0.2.2:8000/users";
 
   Future<Map<String, dynamic>> signin(String username, String email, String password) async {
     final response = await http.post(
