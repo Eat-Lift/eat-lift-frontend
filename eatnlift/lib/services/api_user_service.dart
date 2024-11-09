@@ -168,6 +168,38 @@ class ApiUserService{
     }
   }
 
+  Future<Map<String, dynamic>?> getPersonalInformation(String userId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/$userId/getPersonalInformation'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "user": responseData["user"],
+      }; 
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> updateProfile(Map<String,dynamic> profileInfo) async {
     final SessionStorage sessionStorage = SessionStorage();
     final userId = await sessionStorage.getUserId();

@@ -182,6 +182,7 @@ class _EditUserPageState extends State<EditUserPage> {
                 ],
               ),
               if (isUploadingImage)
+                RelativeSizedBox(height: 20),
                 Center(
                   child: CircularProgressIndicator(color: Colors.grey),
                 ),

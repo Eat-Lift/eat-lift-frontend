@@ -25,8 +25,6 @@ class CustomDropdown<T> extends StatefulWidget {
 }
 
 class CustomDropdownState<T> extends State<CustomDropdown<T>> {
-  bool isSelected = false;
-
   void _showPickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -61,9 +59,8 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
                         ),
                         onTap: () {
                           setState(() {
-                            isSelected = true;
+                            widget.onItemSelected(item);
                           });
-                          widget.onItemSelected(item);
                           Navigator.pop(context);
                         },
                       );
@@ -97,10 +94,12 @@ class CustomDropdownState<T> extends State<CustomDropdown<T>> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              widget.selectedItem != null ? widget.itemLabel(widget.selectedItem as T) : widget.title,
+              widget.selectedItem != null
+                  ? widget.itemLabel(widget.selectedItem as T)
+                  : widget.title,
               style: TextStyle(
                 fontSize: 16,
-                color: isSelected ? Colors.black : Colors.grey[500],
+                color: widget.selectedItem != null ? Colors.black : Colors.grey[500],
                 fontWeight: FontWeight.bold,
               ),
             ),

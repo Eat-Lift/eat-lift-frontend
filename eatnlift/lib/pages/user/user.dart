@@ -90,6 +90,7 @@ class _UserPageState extends State<UserPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     children: [
+                      RelativeSizedBox(height: 3),
                       Row(
                         children: [
                           ExpandableImage(
@@ -177,14 +178,8 @@ class _UserPageState extends State<UserPage> {
                   ),
                 ),
               ] else ...[
-                Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(color: Colors.grey),
-                    ),
-                  ],
-                )     
+                RelativeSizedBox(height: 45),
+                CircularProgressIndicator(color: Colors.grey),    
               ]
             ],
           ),
