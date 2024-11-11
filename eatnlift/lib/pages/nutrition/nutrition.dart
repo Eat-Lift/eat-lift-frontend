@@ -1,17 +1,12 @@
+import 'package:eatnlift/pages/nutrition/nutrition_create.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../custom_widgets/round_button.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
-import '../../custom_widgets/expandable_text.dart';
-import '../../custom_widgets/expandable_image.dart';
-import '../../custom_widgets/custom_button.dart';
 
-import '../../services/api_user_service.dart';
+import '../../services/api_nutrition_service.dart';
 import '../../services/session_storage.dart';
-
-import '../../pages/user/edit_user.dart';
-import '../../pages/user/login.dart';
-import '../../pages/user/personal_info.dart';
 
 class NutritionPage extends StatefulWidget {
   const NutritionPage({super.key});
@@ -33,34 +28,12 @@ class _NutritionPageState extends State<NutritionPage> {
 
   Future<void> _loadUserData() async {
     setState(() {
-      isLoading = true;
-    });
-
-    final userId = await sessionStorage.getUserId();
-    if (userId == null) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    final apiService = ApiUserService();
-    final result = await apiService.getUser(userId);
-    setState(() {
-      userData = result?["user"];
+      userData = {"name": "hola"};
       isLoading = false;
     });
   }
 
-  void logOut(BuildContext context) async {
-    await sessionStorage.clearSession();
-    if (context.mounted){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,109 +46,32 @@ class _NutritionPageState extends State<NutritionPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isLoading && userData != null) ...[
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Transform.translate(
-                    offset: Offset(-10, 10),
-                    child: CustomButton(
-                      text: "",
-                      onTap: () => logOut(context),
-                      icon: Icons.logout,
-                      height: 40,
-                      width: 40,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    children: [
-                      RelativeSizedBox(height: 3),
-                      Row(
-                        children: [
-                          ExpandableImage(
-                            initialImageUrl: userData?["picture"],
-                            width: 70,
-                            height: 70,
-                          ),
-                          RelativeSizedBox(width: 3),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                userData?["username"],
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 27,
-                                ),
-                              ),
-                              Text(
-                                userData?["email"],
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      RelativeSizedBox(height: 2),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomButton(
-                              text: "Requeriments",
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const PersonalInfoPage()),
-                                );
-                              },
-                              icon: Icons.local_fire_department,
-                              height: 40,
-                            ),
-                          ),
-                          RelativeSizedBox(width: 0.5),
-                          Expanded(
-                            child: CustomButton(
-                              text: "Revisió",
-                              onTap: () {},
-                              icon: FontAwesomeIcons.chartLine,
-                              height: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                      RelativeSizedBox(height: 0.5),
-                      CustomButton(
-                        text: "Editar perfil",
-                        onTap: () async {
-                          final isUpdated = await Navigator.push<bool>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditUserPage(userData: userData),
-                            ),
-                          );
+                RelativeSizedBox(height: 5),
 
-                          if (isUpdated == true) {
-                            _loadUserData();
-                          }
-                        },
-                        icon: Icons.edit,
-                        height: 40,
-                      ),
-                      RelativeSizedBox(height: 2),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: ExpandableText(
-                          text: userData?["description"]?.isEmpty ?? true
-                              ? "Això està una mica buit"
-                              : userData?["description"],
-                        ),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.lock,
+                      size: 70,
+                    ),
+                    RelativeSizedBox(width: 5),
+                    RoundButton(
+                      icon: FontAwesomeIcons.plus,
+                      onPressed:() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NutritionCreatePage()),
+                        );
+                      },
+                      size: 70
+                    ),
+                    RelativeSizedBox(width: 5),
+                    RoundButton(icon: FontAwesomeIcons.calendar, onPressed: () => {},size: 70),
+                    RelativeSizedBox(width: 5),
+                    RoundButton(icon: FontAwesomeIcons.book, onPressed: () => {}, size: 70),
+                  ]
+                  
                 ),
               ] else ...[
                 Align(

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class CustomTextfield extends StatefulWidget {
   final TextEditingController controller;
-  final String hintText;
+  final String? hintText;
   final bool obscureText;
   final int maxLines;
   final bool isNumeric;
@@ -11,11 +11,12 @@ class CustomTextfield extends StatefulWidget {
   final bool centerText;
   final int maxLength;
   final String? unit;
+  final IconData? icon;
 
   const CustomTextfield({
     super.key,
     required this.controller,
-    required this.hintText,
+    this.hintText,
     this.obscureText = false,
     this.maxLines = 1,
     this.isNumeric = false,
@@ -23,6 +24,7 @@ class CustomTextfield extends StatefulWidget {
     this.centerText = false,
     this.maxLength = 0,
     this.unit,
+    this.icon,
   });
 
   @override
@@ -71,6 +73,9 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         hintStyle: TextStyle(color: Colors.grey[500]),
         suffixText: widget.controller.text.isNotEmpty ? widget.unit : '',
         suffixStyle: const TextStyle(fontWeight: FontWeight.bold),
+        suffixIcon: widget.icon != null && (widget.hintText == null || widget.hintText!.isEmpty)
+            ? Icon(widget.icon, color: Colors.grey[500], size: 20)
+            : null,
       ),
       onChanged: (value) {
         setState(() {});

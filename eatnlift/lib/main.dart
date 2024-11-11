@@ -47,7 +47,7 @@ class SessionCheckWrapper extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasData && snapshot.data == true) {
-          return const HomePage(initialIndex: 1);
+          return const HomePage(initialIndex: 0);
         } else {
           return const LoginPage();
         }

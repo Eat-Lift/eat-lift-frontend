@@ -9,7 +9,6 @@ import '../../custom_widgets/custom_number_picker.dart';
 
 import '../../services/api_user_service.dart';
 
-import 'user.dart';
 
 class NutritionalRequirementsPage extends StatefulWidget {
   final Map<String, dynamic> personalInfo;
