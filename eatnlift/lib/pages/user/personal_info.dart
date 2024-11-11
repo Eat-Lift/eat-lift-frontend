@@ -76,10 +76,11 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
         }
         selectedGenre = result?["user"]["genre"];
         selectedGoal = result?["user"]["goal"];
+        isLoading = false;
       });
-      isLoading = false;
     }
     else {
+      setState(() {isLoading = false;});
       return;
     }
   }
@@ -360,8 +361,15 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
                   RelativeSizedBox(height: 15)
                 ]
               ] else ...[
-                RelativeSizedBox(height: 45),
-                CircularProgressIndicator(color: Colors.grey),    
+                Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      RelativeSizedBox(height: 10),
+                      CircularProgressIndicator(color: Colors.grey),   
+                    ],
+                  ),
+                ),
               ]
             ],
           ),

@@ -107,6 +107,7 @@ class _EditUserPageState extends State<EditUserPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  RelativeSizedBox(height: 2),
                   CustomHeader(title: "Editar perfil"),
                   RelativeSizedBox(height: 2),
                   Expanded(
@@ -181,11 +182,17 @@ class _EditUserPageState extends State<EditUserPage> {
                   ),
                 ],
               ),
-              if (isUploadingImage)
-                RelativeSizedBox(height: 20),
-                Center(
-                  child: CircularProgressIndicator(color: Colors.grey),
+              if (isUploadingImage) ...[
+                Column(
+                  children: [
+                    RelativeSizedBox(height: 60),
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(color: Colors.grey),
+                    ),
+                  ]
                 ),
+              ]
             ],
           ),
         ),

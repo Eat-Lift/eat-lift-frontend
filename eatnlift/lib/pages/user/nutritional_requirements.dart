@@ -1,3 +1,4 @@
+import 'package:eatnlift/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -137,7 +138,7 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => UserPage(),
+            builder: (context) => HomePage(initialIndex: 1),
           ),
         );
       }

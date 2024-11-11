@@ -1,3 +1,4 @@
+import 'package:eatnlift/pages/home.dart';
 import 'package:flutter/material.dart';
 
 import '../../custom_widgets/custom_textfield.dart';
@@ -35,7 +36,6 @@ class LoginPageState extends State<LoginPage> {
 
     response = {};
 
-    // Check if any fields are empty
     if (usernameController.text.isEmpty) {
       response["success"] = false;
       if (response.containsKey('errors')) {
@@ -98,7 +98,7 @@ class LoginPageState extends State<LoginPage> {
         if (mounted){
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const UserPage()),
+            MaterialPageRoute(builder: (context) => const HomePage(initialIndex: 1)),
           );
         }
       }

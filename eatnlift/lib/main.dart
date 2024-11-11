@@ -1,5 +1,5 @@
 import 'package:eatnlift/pages/user/login.dart';
-import 'package:eatnlift/pages/user/user.dart'; 
+import 'package:eatnlift/pages/home.dart'; 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -47,7 +47,7 @@ class SessionCheckWrapper extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasData && snapshot.data == true) {
-          return const UserPage();
+          return const HomePage(initialIndex: 1);
         } else {
           return const LoginPage();
         }

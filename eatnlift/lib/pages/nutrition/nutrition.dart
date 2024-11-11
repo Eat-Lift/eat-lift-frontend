@@ -13,14 +13,14 @@ import '../../pages/user/edit_user.dart';
 import '../../pages/user/login.dart';
 import '../../pages/user/personal_info.dart';
 
-class UserPage extends StatefulWidget {
-  const UserPage({super.key});
+class NutritionPage extends StatefulWidget {
+  const NutritionPage({super.key});
 
   @override
-  State<UserPage> createState() => _UserPageState();
+  State<NutritionPage> createState() => _NutritionPageState();
 }
 
-class _UserPageState extends State<UserPage> {
+class _NutritionPageState extends State<NutritionPage> {
   final SessionStorage sessionStorage = SessionStorage();
   Map<String, dynamic>? userData;
   bool isLoading = true;
