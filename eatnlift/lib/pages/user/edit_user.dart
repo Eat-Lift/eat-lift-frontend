@@ -98,6 +98,10 @@ class _EditUserPageState extends State<EditUserPage> {
     final String email = widget.userData?['email'] ?? '';
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: const Text("Editar perfil"),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
@@ -107,9 +111,7 @@ class _EditUserPageState extends State<EditUserPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RelativeSizedBox(height: 2),
-                  CustomHeader(title: "Editar perfil"),
-                  RelativeSizedBox(height: 2),
+                  RelativeSizedBox(height: 1),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(

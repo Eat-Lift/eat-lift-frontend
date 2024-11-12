@@ -1,4 +1,3 @@
-import 'package:eatnlift/pages/nutrition/nutrition_create.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,6 +6,9 @@ import '../../custom_widgets/relative_sizedbox.dart';
 
 import '../../services/api_nutrition_service.dart';
 import '../../services/session_storage.dart';
+
+import 'package:eatnlift/pages/nutrition/nutrition_create.dart';
+import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
 
 class NutritionPage extends StatefulWidget {
   const NutritionPage({super.key});
@@ -67,7 +69,16 @@ class _NutritionPageState extends State<NutritionPage> {
                       size: 70
                     ),
                     RelativeSizedBox(width: 5),
-                    RoundButton(icon: FontAwesomeIcons.calendar, onPressed: () => {},size: 70),
+                    RoundButton(
+                      icon: FontAwesomeIcons.calendar,
+                      onPressed:() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NutritionSearchPage()),
+                        );
+                      },
+                      size: 70
+                    ),
                     RelativeSizedBox(width: 5),
                     RoundButton(icon: FontAwesomeIcons.book, onPressed: () => {}, size: 70),
                   ]

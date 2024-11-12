@@ -90,7 +90,7 @@ class _UserPageState extends State<UserPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 3),
+                      RelativeSizedBox(height: 1),
                       Row(
                         children: [
                           ExpandableImage(

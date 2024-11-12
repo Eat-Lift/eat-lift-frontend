@@ -43,4 +43,57 @@ class ApiNutritionService {
     }
   }
 
+  Future<Map<String, dynamic>> getSuggestions(String query, bool isFoodItem) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final endpoint = isFoodItem ? 'foodItems' : 'recipes';
+    final url = Uri.parse('$baseUrl/$endpoint/suggestions/?name=$query');
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "suggestions": List<String>.from(responseData["suggestions"]),
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getFoodItems(String query) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/foodItems/?name=$query"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> foodItemsJson = json.decode(response.body);
+      return {
+        "success": true,
+        "foodItems": foodItemsJson,
+      };
+    } else {
+      return {"success": false, "foodItems": []};
+    }
+  }
 }

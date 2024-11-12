@@ -132,6 +132,10 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: const Text("Crear"),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
@@ -139,7 +143,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const RelativeSizedBox(height: 1),
               const Icon(
                 Icons.fastfood,
                 size: 100,
