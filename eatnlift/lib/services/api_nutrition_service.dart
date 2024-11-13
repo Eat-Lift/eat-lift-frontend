@@ -30,7 +30,6 @@ class ApiNutritionService {
       return {
         "success": true,
         "token": responseData["token"],
-        "user": responseData["user"],
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -42,6 +41,43 @@ class ApiNutritionService {
       };
     }
   }
+
+    Future<Map<String, dynamic>> editFoodItem(Map<String, Object> foodItem, String foodItemId) async {
+      final SessionStorage sessionStorage = SessionStorage();
+      final token = await sessionStorage.getAccessToken();
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/foodItems/$foodItemId/edit'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Token $token",
+        },
+        body: jsonEncode({
+          'name': foodItem["name"],
+          'calories': foodItem["calories"],
+          'proteins': foodItem["proteins"],
+          'fats': foodItem["fats"],
+          'carbohydrates': foodItem["carbohydrates"],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final decodedData = utf8.decode(response.bodyBytes);
+        final responseData = jsonDecode(decodedData);
+        return {
+          "success": true,
+          "token": responseData["token"],
+        };
+      } else {
+        final decodedData = utf8.decode(response.bodyBytes);
+        final responseData = jsonDecode(decodedData);
+        List<String> errors = List<String>.from(responseData["errors"]);
+        return {
+          "success": false,
+          "errors": errors,
+        };
+      }
+    }
 
   Future<Map<String, dynamic>> getSuggestions(String query, bool isFoodItem) async {
     final SessionStorage sessionStorage = SessionStorage();

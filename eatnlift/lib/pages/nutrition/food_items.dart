@@ -32,6 +32,15 @@ class _FoodItemsPageState extends State<FoodItemsPage> {
     });
   }
 
+  void _updateFoodItem(Map<String, dynamic> updatedItem) {
+    setState(() {
+      final index = widget.foodItems.indexWhere((item) => item['id'] == updatedItem['id']);
+      if (index != -1) {
+        widget.foodItems[index] = updatedItem;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (currentUserId == null) {
@@ -65,6 +74,7 @@ class _FoodItemsPageState extends State<FoodItemsPage> {
                 hiddenItems.add(foodItem['id']);
               });
             },
+            onUpdate: _updateFoodItem, 
           );
         },
       ),

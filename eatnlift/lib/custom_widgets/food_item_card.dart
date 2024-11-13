@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
+import 'package:eatnlift/pages/nutrition/food_item_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,14 @@ class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
   final String currentUserId;
   final VoidCallback onDelete;
+  final void Function(Map<String, dynamic>) onUpdate;
 
   const FoodItemCard({
     super.key,
     required this.foodItem,
     required this.currentUserId,
     required this.onDelete,
+    required this.onUpdate,
   });
 
   @override
@@ -143,7 +146,19 @@ class _FoodItemCardState extends State<FoodItemCard> {
                   IconButton(
                     icon: const Icon(Icons.edit, color: Colors.black),
                     tooltip: 'Edit',
-                    onPressed: () {
+                    onPressed: () async {
+                      final updatedItem = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditFoodItemPage(
+                            foodItem: widget.foodItem,
+                          ),
+                        ),
+                      );
+
+                      if (updatedItem != null) {
+                        widget.onUpdate(updatedItem);
+                      }
                     },
                   ),
                   IconButton(
