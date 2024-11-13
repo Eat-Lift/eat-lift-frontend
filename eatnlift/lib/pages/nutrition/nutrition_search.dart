@@ -119,7 +119,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                       ),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: 250,
+                          maxHeight: 1000,
                         ),
                         child: Container(
                           decoration: BoxDecoration(

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:eatnlift/custom_widgets/ying_yang_toggle.dart';
 import 'package:flutter/material.dart';
 
@@ -122,11 +120,36 @@ class NutritionCreateState extends State<NutritionCreatePage> {
       setState(() {
         response = result;
       });
+
+      if (result["success"]){
+        _showSuccessDialog("L'aliment s'ha creat correctament");
+      }
     } else {
       final recipe = {
         "name": nameController.text.trim(),
       };
     }
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Aliment Creat"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text("Tanca"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

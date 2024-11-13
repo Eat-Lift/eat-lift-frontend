@@ -96,4 +96,111 @@ class ApiNutritionService {
       return {"success": false, "foodItems": []};
     }
   }
+
+  Future<Map<String, dynamic>> getFoodItemSaved(String foodItemId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/foodItems/$foodItemId/isSaved"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "is_saved": responseData["is_saved"],
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> saveFoodItem(String foodItemId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/foodItems/$foodItemId/save"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 201) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> unsaveFoodItem(String foodItemId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/foodItems/$foodItemId/unsave"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 204) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+  
+  Future<Map<String, dynamic>> deleteFoodItem(String foodItemId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.delete(
+      Uri.parse("$baseUrl/foodItems/$foodItemId/delete"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 204) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
 }
