@@ -5,7 +5,8 @@ import 'session_storage.dart';
 class ApiNutritionService {
    final String baseUrl = "http://10.0.2.2:8000/nutrition";
 
-   Future<Map<String, dynamic>> createFoodItem(Map<String, Object> foodItem) async {
+  //Food items
+  Future<Map<String, dynamic>> createFoodItem(Map<String, Object> foodItem) async {
     final SessionStorage sessionStorage = SessionStorage();
     final token = await sessionStorage.getAccessToken();
 
@@ -239,4 +240,7 @@ class ApiNutritionService {
       };
     }
   }
+
+  // Recipes
+  
 }

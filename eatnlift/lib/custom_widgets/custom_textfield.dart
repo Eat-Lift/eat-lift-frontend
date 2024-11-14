@@ -12,6 +12,7 @@ class CustomTextfield extends StatefulWidget {
   final int maxLength;
   final String? unit;
   final IconData? icon;
+  final void Function(String)? onChanged;
 
   const CustomTextfield({
     super.key,
@@ -25,6 +26,7 @@ class CustomTextfield extends StatefulWidget {
     this.maxLength = 0,
     this.unit,
     this.icon,
+    this.onChanged,
   });
 
   @override
@@ -67,18 +69,24 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         ),
         fillColor: Colors.grey.shade200,
         filled: true,
-        hintText: widget.controller.text.isEmpty && widget.unit != null
-            ? "${widget.hintText} (${widget.unit})"
-            : widget.hintText,
+        hintText: widget.hintText != null
+            ? (widget.controller.text.isEmpty && widget.unit != null
+                ? "${widget.hintText} (${widget.unit})"
+                : widget.hintText)
+            : null,
         hintStyle: TextStyle(color: Colors.grey[500]),
         suffixText: widget.controller.text.isNotEmpty ? widget.unit : '',
         suffixStyle: const TextStyle(fontWeight: FontWeight.bold),
-        suffixIcon: widget.icon != null && (widget.hintText == null || widget.hintText!.isEmpty)
+        suffixIcon: widget.icon != null
             ? Icon(widget.icon, color: Colors.grey[500], size: 20)
             : null,
+        contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       ),
       onChanged: (value) {
         setState(() {});
+        if (widget.onChanged != null) {
+          widget.onChanged!(value);
+        }
       },
     );
   }

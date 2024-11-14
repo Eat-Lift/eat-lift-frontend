@@ -1,10 +1,17 @@
-import 'package:eatnlift/custom_widgets/ying_yang_toggle.dart';
+import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/round_button.dart';
+import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
+import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:io';
 
 import '../../custom_widgets/relative_sizedbox.dart';
 import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/messages_box.dart';
 import '../../custom_widgets/custom_textfield.dart';
+import '../../custom_widgets/expandable_image.dart';
+import '../../custom_widgets/ying_yang_toggle.dart';
 
 import '../../services/api_nutrition_service.dart';
 
@@ -22,8 +29,34 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   final TextEditingController fatsController = TextEditingController();
   final TextEditingController carbohydratesController = TextEditingController();
 
+  List<Map<String, dynamic>> foodItems = [
+    {
+      "id": 1,
+      "name": "Chicken Breast",
+      "calories": 165,
+      "proteins": 31,
+      "fats": 3.6,
+      "carbohydrates": 0,
+      "quantity": 100
+    },
+    {
+      "id": 2,
+      "name": "Rice",
+      "calories": 130,
+      "proteins": 2.7,
+      "fats": 0.3,
+      "carbohydrates": 28,
+      "quantity": 200
+    }
+  ];
+  final TextEditingController recipeNameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  File? _selectedImage;
+  String? initialImagePath;
+
   bool isCreatingFoodItem = true;
   Map<String, dynamic> response = {};
+  List<Map<String, dynamic>> selectedFoodItems = [];
 
   void toggleCreateMode(bool isFoodItemSelected) {
     setState(() {
@@ -166,11 +199,25 @@ class NutritionCreateState extends State<NutritionCreatePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.fastfood,
-                size: 100,
-                color: Colors.black,
-              ),
+              if (isCreatingFoodItem) ...[
+                const Icon(
+                  Icons.fastfood,
+                  size: 100,
+                  color: Colors.black,
+                ),
+              ] else ...[
+                ExpandableImage(
+                  initialImageUrl: initialImagePath,
+                  onImageSelected: (imageFile) {
+                    setState(() {
+                      _selectedImage = _selectedImage;
+                    });
+                  },
+                  editable: true,
+                  width: 70,
+                  height: 70,
+                ),
+              ],
               const RelativeSizedBox(height: 0.5),
               Text(
                 isCreatingFoodItem ? "Crea un Aliment" : "Crea una Recepta",
@@ -191,7 +238,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               if (isCreatingFoodItem) ...[
                 _buildFoodItemForm(),
               ] else ...[
-                _buildRecipeFormPlaceholder(),
+                _buildRecipeForm(),
               ],
               const RelativeSizedBox(height: 2),
               CustomButton(
@@ -280,12 +327,87 @@ class NutritionCreateState extends State<NutritionCreatePage> {
     );
   }
 
-  Widget _buildRecipeFormPlaceholder() {
+  Widget _buildRecipeForm() {
     return Column(
-      children: const [
-        Text(
-          "Aquí anirà el formulari per crear una recepta.",
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextfield(
+          controller: recipeNameController,
+          hintText: "Nom",
+          maxLength: 50,
+        ),
+        const RelativeSizedBox(height: 0.5),
+        CustomTextfield(
+          controller: descriptionController,
+          hintText: "Descripció",
+          maxLength: 300,
+          maxLines: 3,
+        ),
+        const RelativeSizedBox(height: 1),
+        Container(
+          height: 200,
+          padding: const EdgeInsets.all(1.0),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.white, width: 3),
+          ),
+          child: Stack(
+            children: [
+              foodItems.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: foodItems.length,
+                      itemBuilder: (context, index) {
+                        final foodItem = foodItems[index];
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: FoodItemCard(
+                                foodItem: foodItem,
+                                onDelete: () {
+                                  setState(() {
+                                    foodItems.removeAt(index);
+                                  });
+                                },
+                                onUpdate: (updatedItem) {
+                                  setState(() {
+                                    foodItems[index] = updatedItem;
+                                  });
+                                },
+                                isSelectable: true,
+                                isEditable: false,
+                                isSaveable: false,
+                                isDeleteable: true,
+                                enableQuantitySelection: true,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text(
+                        "No hi ha ingredients afegits.",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: RoundButton(
+                  icon: FontAwesomeIcons.plus,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NutritionSearchPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -1,20 +1,31 @@
-import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
-import 'package:eatnlift/pages/nutrition/food_item_edit.dart';
-import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
+import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
+import 'package:eatnlift/custom_widgets/custom_textfield.dart';
 
 class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
   final String currentUserId;
   final VoidCallback onDelete;
   final void Function(Map<String, dynamic>) onUpdate;
+  final bool isSelectable;
+  final bool isEditable;
+  final bool isSaveable;
+  final bool isDeleteable;
+  final void Function(String)? onSelect;
+  final bool enableQuantitySelection;
 
   const FoodItemCard({
     super.key,
     required this.foodItem,
-    required this.currentUserId,
+    this.currentUserId = "-1",
     required this.onDelete,
     required this.onUpdate,
+    this.isSelectable = false,
+    this.isEditable = true,
+    this.isSaveable = true,
+    this.isDeleteable = true,
+    this.onSelect,
+    this.enableQuantitySelection = false,
   });
 
   @override
@@ -22,41 +33,34 @@ class FoodItemCard extends StatefulWidget {
 }
 
 class _FoodItemCardState extends State<FoodItemCard> {
-  final ApiNutritionService apiNutritionService = ApiNutritionService();
   late bool isCreator;
   bool isSaved = false;
   bool loading = true;
+  bool isSelected = false;
+  final TextEditingController quantityController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     isCreator = widget.foodItem['creator'].toString() == widget.currentUserId;
-    _fetchSavedState();
+    if (widget.isSaveable) {
+      _fetchSavedState();
+    }
   }
 
   Future<void> _fetchSavedState() async {
-    final response = await apiNutritionService.getFoodItemSaved(widget.foodItem["id"].toString());
-    final bool saved = response["is_saved"];
+    // Mock fetching save state logic; replace with real API call if necessary
+    await Future.delayed(const Duration(milliseconds: 200));
     setState(() {
-      isSaved = saved;
+      isSaved = false;
       loading = false;
     });
   }
 
   void _toggleSave() async {
-    final Map<String, dynamic> response;
-    if (isSaved) {
-      response = await apiNutritionService.unsaveFoodItem(widget.foodItem["id"].toString());
-    }
-    else {
-      response = await apiNutritionService.saveFoodItem(widget.foodItem["id"].toString());
-    }
-
-    if (response["success"]) {
-      setState(() {
-        isSaved = !isSaved;
-      });
-    }
+    setState(() {
+      isSaved = !isSaved;
+    });
   }
 
   void _deleteFoodItem() {
@@ -74,17 +78,9 @@ class _FoodItemCardState extends State<FoodItemCard> {
               child: const Text("Cancel·lar"),
             ),
             TextButton(
-                onPressed: () async {
+              onPressed: () {
                 Navigator.of(context).pop();
-                final response = await apiNutritionService.deleteFoodItem(widget.foodItem["id"].toString());
-
-                if (response["success"]){
-                  widget.onDelete();
-                  _showResultDialog("L'aliment s'ha eliminat correctament");
-                }
-                else {
-                  _showResultDialog("No s'ha pogut eliminar l'aliment. Torna-ho a intentar");
-                }  
+                widget.onDelete();
               },
               child: const Text("Eliminar"),
             ),
@@ -94,119 +90,113 @@ class _FoodItemCardState extends State<FoodItemCard> {
     );
   }
 
-  void _showResultDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Eliminar"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Tancar"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.white,
-          width: 3,
+    return GestureDetector(
+      onTap: widget.isSelectable
+          ? () {
+              if (widget.onSelect != null) {
+                widget.onSelect!(widget.foodItem["id"].toString());
+              }
+            }
+          : null,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Colors.white,
+            width: 3,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  widget.foodItem['name'] ?? 'Desconegut',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    widget.foodItem['name'] ?? 'Desconegut',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
                   ),
-                ),
-                const Spacer(),
-                if (isCreator) ...[
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.black),
-                    tooltip: 'Edit',
-                    onPressed: () async {
-                      final updatedItem = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditFoodItemPage(
-                            foodItem: widget.foodItem,
-                          ),
-                        ),
-                      );
-
-                      if (updatedItem != null) {
-                        widget.onUpdate(updatedItem);
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.black),
-                    tooltip: 'Delete',
-                    onPressed: _deleteFoodItem,
-                  ),
+                  Spacer(),
+                  if (widget.enableQuantitySelection) ...[
+                    SizedBox(
+                      width: 80,
+                      height: 40,
+                      child: CustomTextfield(
+                        controller: quantityController,
+                        hintText: "100",
+                        isNumeric: true,
+                        maxLength: 6,
+                        allowDecimal: true,
+                        unit: "g",
+                        centerText: true,
+                      ),
+                    ),
+                  ],
+                  if (widget.isSelectable)
+                    Checkbox(
+                      value: isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          isSelected = value ?? false;
+                        });
+                      },
+                    ),
+                  if (widget.isEditable && isCreator)
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.black),
+                      tooltip: 'Edit',
+                      onPressed: () {
+                        widget.onUpdate(widget.foodItem);
+                      },
+                    ),
+                  if (widget.isDeleteable && isCreator)
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.black),
+                      tooltip: 'Delete',
+                      onPressed: _deleteFoodItem,
+                    ),
+                  if (widget.isSaveable && !loading)
+                    IconButton(
+                      icon: Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: Colors.black,
+                      ),
+                      tooltip: isSaved ? 'Unsave' : 'Save',
+                      onPressed: _toggleSave,
+                    ),
+                  if (loading && widget.isSaveable)
+                    const CircularProgressIndicator(),
                 ],
-                if (!loading) ...[
-                  IconButton(
-                    icon: Icon(
-                      isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      color: Colors.black,
-                    ),
-                    tooltip: isSaved ? 'Unsave' : 'Save',
-                    onPressed: _toggleSave,
-                  ),
-                ]
-                else ...[
-                  IconButton(
-                    icon: Icon(
-                      Icons.bookmark ,
-                      color: Colors.grey.shade200,
-                    ),
-                    onPressed: (){},
-                  ),
-                ]
-              ],
-            ),
-            const RelativeSizedBox(height: 0.1),
-            Text(
-              'Caloríes: ${widget.foodItem['calories'] ?? 'N/A'} kcal',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            Text(
-              'Proteïnes: ${widget.foodItem['proteins'] ?? 'N/A'} g',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            Text(
-              'Greixos: ${widget.foodItem['fats'] ?? 'N/A'} g',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            Text(
-              'Carbohidrats: ${widget.foodItem['carbohydrates'] ?? 'N/A'} g',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            const RelativeSizedBox(height: 2),
-          ],
+              ),
+              const RelativeSizedBox(height: 0.1),
+              Text(
+                'Caloríes: ${widget.foodItem['calories'] ?? 'N/A'} kcal',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              Text(
+                'Proteïnes: ${widget.foodItem['proteins'] ?? 'N/A'} g',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              Text(
+                'Greixos: ${widget.foodItem['fats'] ?? 'N/A'} g',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              Text(
+                'Carbohidrats: ${widget.foodItem['carbohydrates'] ?? 'N/A'} g',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              RelativeSizedBox(height: 1),
+            ],
+          ),
         ),
       ),
     );
