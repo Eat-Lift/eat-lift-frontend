@@ -29,26 +29,8 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   final TextEditingController fatsController = TextEditingController();
   final TextEditingController carbohydratesController = TextEditingController();
 
-  List<Map<String, dynamic>> foodItems = [
-    {
-      "id": 1,
-      "name": "Chicken Breast",
-      "calories": 165,
-      "proteins": 31,
-      "fats": 3.6,
-      "carbohydrates": 0,
-      "quantity": 100
-    },
-    {
-      "id": 2,
-      "name": "Rice",
-      "calories": 130,
-      "proteins": 2.7,
-      "fats": 0.3,
-      "carbohydrates": 28,
-      "quantity": 200
-    }
-  ];
+  List<Map<String, dynamic>> selectedFoodItems = [];
+  
   final TextEditingController recipeNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   File? _selectedImage;
@@ -56,7 +38,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
 
   bool isCreatingFoodItem = true;
   Map<String, dynamic> response = {};
-  List<Map<String, dynamic>> selectedFoodItems = [];
 
   void toggleCreateMode(bool isFoodItemSelected) {
     setState(() {
@@ -183,6 +164,13 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         );
       },
     );
+  }
+
+  void onCheck(List<Map<String, dynamic>>? fromSearchFoodItems) {
+    setState(() {
+      selectedFoodItems = fromSearchFoodItems!;
+    });
+    Navigator.pop(context);
   }
 
   @override
@@ -346,7 +334,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         const RelativeSizedBox(height: 1),
         Container(
           height: 200,
-          padding: const EdgeInsets.all(1.0),
+          padding: const EdgeInsets.all(7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(8),
@@ -354,11 +342,11 @@ class NutritionCreateState extends State<NutritionCreatePage> {
           ),
           child: Stack(
             children: [
-              foodItems.isNotEmpty
+              selectedFoodItems.isNotEmpty
                   ? ListView.builder(
-                      itemCount: foodItems.length,
+                      itemCount: selectedFoodItems.length,
                       itemBuilder: (context, index) {
-                        final foodItem = foodItems[index];
+                        final foodItem = selectedFoodItems[index];
                         return Row(
                           children: [
                             Expanded(
@@ -366,14 +354,21 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                                 foodItem: foodItem,
                                 onDelete: () {
                                   setState(() {
-                                    foodItems.removeAt(index);
+                                    selectedFoodItems.removeAt(index);
                                   });
                                 },
                                 onUpdate: (updatedItem) {
                                   setState(() {
-                                    foodItems[index] = updatedItem;
+                                    selectedFoodItems[index] = updatedItem;
                                   });
                                 },
+                                onSelect: (value) {
+                                  setState(() {
+                                    selectedFoodItems.removeAt(index);
+                                  });
+                                },
+                                quantity: foodItem["quantity"],
+                                initiallySelected: true,
                                 isSelectable: true,
                                 isEditable: false,
                                 isSaveable: false,
@@ -400,7 +395,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NutritionSearchPage(),
+                        builder: (context) => NutritionSearchPage(isSelectable: true, isSaveable: false, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
                       ),
                     );
                   },

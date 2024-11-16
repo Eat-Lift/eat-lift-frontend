@@ -1,4 +1,6 @@
 import 'package:eatnlift/custom_widgets/custom_button.dart';
+import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/food_items.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +11,18 @@ import '../../services/api_nutrition_service.dart';
 import 'dart:async';
 
 class NutritionSearchPage extends StatefulWidget {
-  const NutritionSearchPage({super.key});
+  final bool isSelectable;
+  final bool isSaveable;
+  final List<Map<String,dynamic>>? selectedFoodItems;
+  final Function(List<Map<String,dynamic>>?)? onCheck;
+
+  const NutritionSearchPage({
+    super.key,
+    this.isSelectable = false,
+    this.selectedFoodItems,
+    this.isSaveable = true,
+    this.onCheck,
+  });
 
   @override
   NutritionSearchPageState createState() => NutritionSearchPageState();
@@ -19,9 +32,11 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   final TextEditingController searchController = TextEditingController();
   final ApiNutritionService apiNutritionService = ApiNutritionService();
   bool isSearchingFoodItem = true;
+  List<Map<String, dynamic>>? foodItems;
   
   List<String> suggestions = [];
   Timer? debounce;
+
 
   @override
   void initState() {
@@ -40,45 +55,74 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   void _onSearchChanged() {
     if (debounce?.isActive ?? false) debounce?.cancel();
     debounce = Timer(const Duration(milliseconds: 300), () {
-      _updateSuggestions();
+      _searchFoodItems();
     });
   }
 
-  Future<void> _updateSuggestions() async {
+
+  Future<void> _searchFoodItems() async {
     final query = searchController.text;
     if (query.isEmpty) {
-      setState(() => suggestions.clear());
+      if (mounted) setState(() => foodItems?.clear());
       return;
     }
 
-    final response = await apiNutritionService.getSuggestions(query, isSearchingFoodItem);
-    if (response["success"]) {
-      setState(() {
-        suggestions = response["suggestions"] ?? [];
-      });
-    }
-  }
-
-  void _searchFoodItems() async {
-    final query = searchController.text;
-
     final response = await apiNutritionService.getFoodItems(query);
-
     if (response["success"]) {
-      List<Map<String, dynamic>> foodItems = (response["foodItems"] as List)
-        .map((item) => item as Map<String, dynamic>)
-        .toList();
-
       if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FoodItemsPage(foodItems: foodItems),
-          ),
-        );
+        setState(() {
+          foodItems = (response["foodItems"] as List)
+              .map((item) => item as Map<String, dynamic>)
+              .toList();
+        });
       }
     }
   }
+
+  void _onSelectItem(Map<String, dynamic>? selectedFoodItem) {
+    if (selectedFoodItem != null) {
+      // Check the "selected" property in the selected food item
+      if (selectedFoodItem["selected"] == true) {
+        // If selected, add or update the item in the selectedFoodItems list
+        final existingIndex = widget.selectedFoodItems?.indexWhere(
+          (item) => item["id"] == selectedFoodItem["id"],
+        );
+        if (existingIndex == null || existingIndex == -1) {
+          widget.selectedFoodItems?.add(selectedFoodItem);
+        } else  {
+          widget.selectedFoodItems?[existingIndex] = selectedFoodItem;
+        }
+      } else {
+        // If not selected, remove the item from the selectedFoodItems list
+        widget.selectedFoodItems?.removeWhere(
+          (item) => item["id"] == selectedFoodItem["id"],
+        );
+      }
+
+      // Optionally, update the UI if necessary
+      setState(() {});
+    }
+  }
+
+  double _getQuantity(Map<String, dynamic> foodItem) {
+    final selectedItem = widget.selectedFoodItems?.firstWhere(
+      (selectedItem) => selectedItem['id'] == foodItem['id'],
+      orElse: () => foodItem,
+    );
+
+    final quantity = selectedItem?['quantity'];
+    if (quantity is int) {
+      return quantity.toDouble();
+    } 
+    else if (quantity is String) {
+      return double.tryParse(quantity) ?? 100.0;
+    }
+    else if (quantity is double) {
+      return quantity;
+    } 
+    return 100.0;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +130,20 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
         title: const Text("Cercar"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: RoundButton(
+              icon: Icons.check,
+              onPressed: () {
+                if (widget.onCheck != null){
+                  widget.onCheck!(widget.selectedFoodItems);
+                }
+              },
+              size: 35,
+            ),
+          ),
+        ]
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -107,72 +165,37 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                 centerText: false,
                 icon: FontAwesomeIcons.magnifyingGlass,
               ),
-
-              const RelativeSizedBox(height: 2),
-              if(suggestions.isNotEmpty) ...[
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: 1000,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 3,
-                            ),
-                          ),
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            itemCount: suggestions.length,
-                            separatorBuilder: (context, index) => Divider(
-                              color: Colors.grey.shade300,
-                              thickness: 1,
-                            ),
-                            itemBuilder: (context, index) {
-                              final suggestion = suggestions[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    searchController.text = suggestion;
-                                    setState(() {
-                                      suggestions.clear();
-                                    });
-                                  },
-                                  child: Text(
-                                    suggestion,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey[500],
-                                      fontSize: 14
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+              RelativeSizedBox(height: 1),
+              Expanded(
+                child: foodItems != null && foodItems!.isNotEmpty ?
+                        ListView.builder(
+                          itemCount: foodItems!.length,
+                          itemBuilder: (context, index) {
+                            final foodItem = foodItems![index];
+                            return FoodItemCard(
+                              foodItem: foodItem,
+                              isSaveable: widget.isSaveable,
+                              onDelete: () {},
+                              onUpdate: (updatedItem) {},
+                              isSelectable: widget.isSelectable,
+                              enableQuantitySelection: widget.isSelectable,
+                              onSelect: _onSelectItem,
+                              quantity: _getQuantity(foodItem),
+                              initiallySelected: widget.selectedFoodItems?.firstWhere(
+                                (selectedItem) => selectedItem['id'] == foodItem['id'],
+                                orElse: () => {'selected': false},
+                              )['selected'] ?? false,
+                            );
+                          },
+                        )
+                        : const Center(
+                          child: Text(
+                            "No hi ha resultats. Prova amb una altra cerca.",
+                            style: TextStyle(color: Colors.grey),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              Spacer(),
-              CustomButton(
-                text: "Enviar",
-                onTap: _searchFoodItems,
+                      
               ),
-              RelativeSizedBox(height: 5),
             ],
           ),
         ),

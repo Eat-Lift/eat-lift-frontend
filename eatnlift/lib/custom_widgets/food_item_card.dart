@@ -5,27 +5,35 @@ import 'package:eatnlift/custom_widgets/custom_textfield.dart';
 class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
   final String currentUserId;
-  final VoidCallback onDelete;
-  final void Function(Map<String, dynamic>) onUpdate;
-  final bool isSelectable;
-  final bool isEditable;
-  final bool isSaveable;
+
+  final VoidCallback? onDelete;
   final bool isDeleteable;
-  final void Function(String)? onSelect;
+
+  final void Function(Map<String, dynamic>)? onUpdate;
+  final bool isEditable;
+  
+  final bool isSaveable;
+
+  final bool isSelectable;
+  final bool initiallySelected;
   final bool enableQuantitySelection;
+  final double quantity;
+  final void Function(Map<String, dynamic>)? onSelect;
 
   const FoodItemCard({
     super.key,
     required this.foodItem,
     this.currentUserId = "-1",
-    required this.onDelete,
-    required this.onUpdate,
+    this.onDelete,
+    this.onUpdate,
     this.isSelectable = false,
     this.isEditable = true,
     this.isSaveable = true,
     this.isDeleteable = true,
     this.onSelect,
     this.enableQuantitySelection = false,
+    this.quantity = 100,
+    this.initiallySelected = false,
   });
 
   @override
@@ -46,15 +54,25 @@ class _FoodItemCardState extends State<FoodItemCard> {
     if (widget.isSaveable) {
       _fetchSavedState();
     }
+    if (widget.enableQuantitySelection) {
+      quantityController.text = widget.quantity.toString();
+    }
+    else {
+      quantityController.text = "100";
+    }
+    if (widget.isSelectable){
+      isSelected = widget.initiallySelected;
+    }
   }
 
   Future<void> _fetchSavedState() async {
-    // Mock fetching save state logic; replace with real API call if necessary
     await Future.delayed(const Duration(milliseconds: 200));
-    setState(() {
-      isSaved = false;
-      loading = false;
-    });
+    if (context.mounted){
+      setState(() {
+        isSaved = false;
+        loading = false;
+      });
+    }
   }
 
   void _toggleSave() async {
@@ -80,7 +98,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                widget.onDelete();
+                widget.onDelete!();
               },
               child: const Text("Eliminar"),
             ),
@@ -90,21 +108,23 @@ class _FoodItemCardState extends State<FoodItemCard> {
     );
   }
 
+  Map<String, dynamic> _getSelectedFoodItem() {
+    final selectedQuantity = double.tryParse(quantityController.text) ?? 100.0;
+    return {
+      ...widget.foodItem,
+      "quantity": selectedQuantity,
+      "selected": isSelected,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.isSelectable
-          ? () {
-              if (widget.onSelect != null) {
-                widget.onSelect!(widget.foodItem["id"].toString());
-              }
-            }
-          : null,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: Colors.white,
             width: 3,
@@ -138,6 +158,9 @@ class _FoodItemCardState extends State<FoodItemCard> {
                         allowDecimal: true,
                         unit: "g",
                         centerText: true,
+                        onChanged: (value) {
+                          setState((){});
+                        }
                       ),
                     ),
                   ],
@@ -147,7 +170,11 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       onChanged: (value) {
                         setState(() {
                           isSelected = value ?? false;
+                          
                         });
+                        if (widget.onSelect != null) {
+                          widget.onSelect!(_getSelectedFoodItem());
+                        }
                       },
                     ),
                   if (widget.isEditable && isCreator)
@@ -155,7 +182,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       icon: const Icon(Icons.edit, color: Colors.black),
                       tooltip: 'Edit',
                       onPressed: () {
-                        widget.onUpdate(widget.foodItem);
+                        widget.onUpdate!(widget.foodItem);
                       },
                     ),
                   if (widget.isDeleteable && isCreator)
@@ -164,34 +191,41 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       tooltip: 'Delete',
                       onPressed: _deleteFoodItem,
                     ),
-                  if (widget.isSaveable && !loading)
-                    IconButton(
-                      icon: Icon(
-                        isSaved ? Icons.bookmark : Icons.bookmark_border,
-                        color: Colors.black,
+                  if (widget.isSaveable)
+                    if (!loading)
+                      IconButton(
+                        icon: Icon(
+                          isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          color: Colors.black,
+                        ),
+                        tooltip: isSaved ? 'Unsave' : 'Save',
+                        onPressed: _toggleSave,
                       ),
-                      tooltip: isSaved ? 'Unsave' : 'Save',
-                      onPressed: _toggleSave,
-                    ),
-                  if (loading && widget.isSaveable)
-                    const CircularProgressIndicator(),
+                    if (loading)
+                      IconButton(
+                        icon: Icon(
+                          isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          color: Colors.grey.shade200,
+                        ),
+                        onPressed: () {},
+                      ),
                 ],
               ),
               const RelativeSizedBox(height: 0.1),
               Text(
-                'Caloríes: ${widget.foodItem['calories'] ?? 'N/A'} kcal',
+                'Caloríes: ${(double.parse(quantityController.text)/100) * widget.foodItem['calories']} kcal',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Proteïnes: ${widget.foodItem['proteins'] ?? 'N/A'} g',
+                'Proteïnes: ${double.parse(quantityController.text)/100 *widget.foodItem['proteins']} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Greixos: ${widget.foodItem['fats'] ?? 'N/A'} g',
+                'Greixos: ${double.parse(quantityController.text)/100 *widget.foodItem['fats']} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Carbohidrats: ${widget.foodItem['carbohydrates'] ?? 'N/A'} g',
+                'Carbohidrats: ${double.parse(quantityController.text)/100 *widget.foodItem['carbohydrates']} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               RelativeSizedBox(height: 1),
