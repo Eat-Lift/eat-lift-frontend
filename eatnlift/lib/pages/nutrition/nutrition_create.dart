@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
+import 'package:eatnlift/pages/nutrition/recipe_page.dart';
 import 'package:eatnlift/services/session_storage.dart';
+import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:io';
@@ -35,11 +37,14 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   
   final TextEditingController recipeNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
   File? _selectedImage;
   String? initialImagePath;
 
   bool isCreatingFoodItem = true;
   Map<String, dynamic> response = {};
+
+  bool isCreating = false;
 
   void toggleCreateMode(bool isFoodItemSelected) {
     setState(() {
@@ -48,6 +53,12 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   }
 
   void _submitData() async {
+    Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecipePage(recipeId: 1),
+            )
+    );
     if (isCreatingFoodItem) {
       bool emptyField = false;
       response = {};
@@ -141,9 +152,72 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         _showSuccessDialog("L'aliment s'ha creat correctament");
       }
     } else {
+      bool emptyField = false;
+      response = {};
+
+
+      if (recipeNameController.text.trim().isEmpty) {
+        response["success"] = false;
+        if (response.containsKey('errors')) {
+          response['errors'].add("Es requereix el nom de la recepta");
+        } else {
+          response['errors'] = ["Es requereix el nom de la recepta"];
+        }
+        emptyField = true;
+      }
+
+      if (emptyField) {
+        setState(() {});
+        return;
+      }
+
       final recipe = {
-        "name": nameController.text.trim(),
+        "name": recipeNameController.text.trim(),
+        "description": descriptionController.text,
+        "food_items": selectedFoodItems.map((item) {
+          return {
+            "food_item": item["id"],
+            "grams": item["quantity"]
+          };
+        }).toList()
       };
+
+      String? updatedImageURL;
+      if (_selectedImage != null) {
+        setState(() {
+          isCreating = true;
+        });
+
+        final storageService = StorageService();
+        updatedImageURL = await storageService.uploadImage(
+          _selectedImage!,
+          'recipes/${_selectedImage!.path.split('/').last}',
+        );
+
+        setState(() {
+          isCreating = false;
+        });
+
+        recipe['picture'] = updatedImageURL!;
+      }
+
+      final apiService = ApiNutritionService();
+      final result = await apiService.createRecipe(recipe);
+      if (result["success"]) {
+        if (mounted){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecipePage(recipeId: result["recipeId"]),
+            ),
+          );
+        }
+      }
+      else {
+        setState(() {
+          response = result;
+        });
+      }
     }
   }
 
@@ -200,7 +274,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                   initialImageUrl: initialImagePath,
                   onImageSelected: (imageFile) {
                     setState(() {
-                      _selectedImage = _selectedImage;
+                      _selectedImage = imageFile;
                     });
                   },
                   editable: true,
@@ -232,20 +306,26 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               ],
               const RelativeSizedBox(height: 2),
               CustomButton(
-                text: "Enviar",
+                text: isCreatingFoodItem? "Crear aliments" : "Crear recepta",
                 onTap: _submitData,
               ),
               const RelativeSizedBox(height: 2),
-              if (response.isNotEmpty && !response["success"]) ...[
-                MessagesBox(
-                  messages: response["errors"],
-                  height: 12,
-                  color: Colors.red,
-                ),
-                const RelativeSizedBox(height: 4)
-              ] else ...[
-                const RelativeSizedBox(height: 15)
+              if (isCreating) ...[
+                CircularProgressIndicator(),
+                const RelativeSizedBox(height: 2),
               ]
+              else ...[
+                if (response.isNotEmpty && !response["success"]) ...[
+                  MessagesBox(
+                    messages: response["errors"],
+                    height: 6,
+                    color: Colors.red,
+                  ),
+                  const RelativeSizedBox(height: 4)
+                ] else ...[
+                  const RelativeSizedBox(height: 10)
+                ]
+              ],
             ],
           ),
         ),
@@ -393,7 +473,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                     )
                   : const Center(
                       child: Text(
-                        "No hi ha ingredients afegits.",
+                        "No hi ha ingredients afegits",
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),

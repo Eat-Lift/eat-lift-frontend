@@ -199,7 +199,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                         )
                         : const Center(
                           child: Text(
-                            "No hi ha resultats. Prova amb una altra cerca.",
+                            "No hi ha resultats. Prova amb una altra cerca",
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),

@@ -242,5 +242,62 @@ class ApiNutritionService {
   }
 
   // Recipes
+   Future<Map<String, dynamic>> createRecipe(Map<String, Object> recipe) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/recipes/create'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode({
+        'name': recipe["name"],
+        "description": recipe["description"],
+        "photo": recipe["photo"],
+        "food_items": recipe["food_items"],
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "recipeId": responseData["id"]
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getRecipe(int recipeId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/recipes/$recipeId'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+    );
+
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    return {
+        "success": response.statusCode == 200,
+        "recipe": responseData
+    };
+
+  }
+
   
 }
