@@ -19,6 +19,7 @@ class FoodItemCard extends StatefulWidget {
   final bool enableQuantitySelection;
   final double quantity;
   final void Function(Map<String, dynamic>)? onSelect;
+  final void Function(String)? onChangeQuantity;
 
   const FoodItemCard({
     super.key,
@@ -34,6 +35,7 @@ class FoodItemCard extends StatefulWidget {
     this.enableQuantitySelection = false,
     this.quantity = 100,
     this.initiallySelected = false,
+    this.onChangeQuantity,
   });
 
   @override
@@ -55,7 +57,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
       _fetchSavedState();
     }
     if (widget.enableQuantitySelection) {
-      quantityController.text = widget.quantity.toString();
+      quantityController.text = formatNumber(widget.quantity);
     }
     else {
       quantityController.text = "100";
@@ -63,6 +65,13 @@ class _FoodItemCardState extends State<FoodItemCard> {
     if (widget.isSelectable){
       isSelected = widget.initiallySelected;
     }
+  }
+
+  double safeParseDouble(String? value, [double defaultValue = 100.0]) {
+    if (value == null || value.isEmpty) {
+      return defaultValue;
+    }
+    return double.tryParse(value) ?? defaultValue;
   }
 
   Future<void> _fetchSavedState() async {
@@ -106,6 +115,15 @@ class _FoodItemCardState extends State<FoodItemCard> {
         );
       },
     );
+  }
+
+  String formatNumber(double value) {
+    if (value == value.toInt()) {
+      // If the number has no decimals, return it as an integer string
+      return value.toInt().toString();
+    }
+    // Otherwise, format it with 2 decimal places
+    return value.toStringAsFixed(2);
   }
 
   Map<String, dynamic> _getSelectedFoodItem() {
@@ -159,7 +177,10 @@ class _FoodItemCardState extends State<FoodItemCard> {
                         unit: "g",
                         centerText: true,
                         onChanged: (value) {
-                          setState((){});
+                          setState(() {});
+                          if (widget.onChangeQuantity != null) {
+                            widget.onChangeQuantity!(value);
+                          }
                         }
                       ),
                     ),
@@ -213,19 +234,19 @@ class _FoodItemCardState extends State<FoodItemCard> {
               ),
               const RelativeSizedBox(height: 0.1),
               Text(
-                'Caloríes: ${(double.parse(quantityController.text)/100) * widget.foodItem['calories']} kcal',
+                'Caloríes: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['calories'])} kcal',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Proteïnes: ${double.parse(quantityController.text)/100 *widget.foodItem['proteins']} g',
+                'Proteïnes: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['proteins'])} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Greixos: ${double.parse(quantityController.text)/100 *widget.foodItem['fats']} g',
+                'Greixos: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'])} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                'Carbohidrats: ${double.parse(quantityController.text)/100 *widget.foodItem['carbohydrates']} g',
+                'Carbohidrats: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'])} g',
                 style: TextStyle(color: Colors.grey[600]),
               ),
               RelativeSizedBox(height: 1),

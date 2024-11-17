@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
@@ -351,6 +353,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                           children: [
                             Expanded(
                               child: FoodItemCard(
+                                key: ValueKey(Random().nextInt(1000000)),
                                 foodItem: foodItem,
                                 onDelete: () {
                                   setState(() {
@@ -374,6 +377,14 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                                 isSaveable: false,
                                 isDeleteable: true,
                                 enableQuantitySelection: true,
+                                onChangeQuantity: (updatedQuantity) {
+                                  if (updatedQuantity.isEmpty) {
+                                    foodItem["quantity"] = 100;
+                                  }
+                                  else {
+                                    foodItem["quantity"] = double.parse(updatedQuantity);
+                                  }
+                                },
                               ),
                             ),
                           ],

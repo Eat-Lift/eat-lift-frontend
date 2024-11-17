@@ -185,6 +185,15 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                                 (selectedItem) => selectedItem['id'] == foodItem['id'],
                                 orElse: () => {'selected': false},
                               )['selected'] ?? false,
+                              onChangeQuantity: (updatedQuantity) {
+                                final selectedItem = widget.selectedFoodItems?.firstWhere(
+                                  (selectedItem) => selectedItem['id'] == foodItem['id'],
+                                  orElse: () => {},
+                                );
+                                if (selectedItem!.isNotEmpty) {
+                                  selectedItem["quantity"] = double.parse(updatedQuantity);
+                                }
+                              },
                             );
                           },
                         )
