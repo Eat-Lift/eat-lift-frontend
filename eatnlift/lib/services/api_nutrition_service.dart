@@ -26,11 +26,8 @@ class ApiNutritionService {
     );
 
     if (response.statusCode == 201) {
-      final decodedData = utf8.decode(response.bodyBytes);
-      final responseData = jsonDecode(decodedData);
       return {
         "success": true,
-        "token": responseData["token"],
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -63,11 +60,8 @@ class ApiNutritionService {
       );
 
       if (response.statusCode == 200) {
-        final decodedData = utf8.decode(response.bodyBytes);
-        final responseData = jsonDecode(decodedData);
         return {
           "success": true,
-          "token": responseData["token"],
         };
       } else {
         final decodedData = utf8.decode(response.bodyBytes);
@@ -255,7 +249,7 @@ class ApiNutritionService {
       body: jsonEncode({
         'name': recipe["name"],
         "description": recipe["description"],
-        "photo": recipe["photo"],
+        "picture": recipe["picture"],
         "food_items": recipe["food_items"],
       }),
     );
@@ -266,6 +260,39 @@ class ApiNutritionService {
       return {
         "success": true,
         "recipeId": responseData["id"]
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> editRecipe(Map<String, dynamic> recipe, String recipeId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/recipes/$recipeId/edit'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode({
+        'name': recipe["name"],
+        "description": recipe["description"],
+        "picture": recipe["picture"],
+        "food_items": recipe["food_items"],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return {
+        "success": true,
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -299,5 +326,84 @@ class ApiNutritionService {
 
   }
 
-  
+  Future<Map<String, dynamic>> getRecipeSaved(String recipeId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/recipes/$recipeId/isSaved"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "is_saved": responseData["is_saved"],
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> saveRecipe(String recipeId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/recipes/$recipeId/save"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 201) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> unsaveRecipe(String recipeId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/recipes/$recipeId/unsave"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 204) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
 }

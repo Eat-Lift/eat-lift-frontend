@@ -56,7 +56,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
     Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => RecipePage(recipeId: 1),
+              builder: (context) => RecipePage(recipeId: 12),
             )
     );
     if (isCreatingFoodItem) {
@@ -166,6 +166,16 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         emptyField = true;
       }
 
+      if (selectedFoodItems.length < 2){
+        response["success"] = false;
+        if (response.containsKey('errors')) {
+          response['errors'].add("Es requereixen al menys 2 aliments");
+        } else {
+          response['errors'] = ["Es requereixen al menys 2 aliments"];
+        }
+        emptyField = true;
+      }
+
       if (emptyField) {
         setState(() {});
         return;
@@ -177,7 +187,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         "food_items": selectedFoodItems.map((item) {
           return {
             "food_item": item["id"],
-            "grams": item["quantity"]
+            "quantity": item["quantity"]
           };
         }).toList()
       };

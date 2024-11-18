@@ -1,9 +1,12 @@
 import 'dart:math';
 
+import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/custom_widgets/expandable_text.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/pages/nutrition/recipe_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:io';
 
 import '../../custom_widgets/custom_button.dart';
@@ -29,13 +32,31 @@ class RecipePage extends StatefulWidget {
 }
 
 class _RecipePageState extends State<RecipePage> {
-  late Map<String, dynamic>? recipeData = null;
+  final SessionStorage sessionStorage = SessionStorage();
+  String? currentUserId;
+  
+  late Map<String, dynamic>? recipeData;
   bool isLoading = true;
+  bool isSaved = false;
+
+  double calories = 0;
+  double proteins = 0;
+  double fats = 0;
+  double carbohydrates = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchRecipeData();
+    _fetchCurrentUserId();
+    _fetchSaved();
+  }
+
+  Future<void> _fetchCurrentUserId() async {
+    final userId = await sessionStorage.getUserId();
+    setState(() {
+      currentUserId = userId;
+    });
   }
 
   void _fetchRecipeData() async {
@@ -43,10 +64,55 @@ class _RecipePageState extends State<RecipePage> {
     final recipe = await apiService.getRecipe(widget.recipeId);
     setState((){
       recipeData = recipe["recipe"];
+    });
+    _calculateNutritionalInfo();
+  }
+
+  void _fetchSaved() async {
+    final apiService = ApiNutritionService();
+    final response = await apiService.getRecipeSaved(widget.recipeId.toString());
+    setState((){
+      isSaved = response["is_saved"];
       isLoading = false;
     });
   }
 
+  void _toggleSaved() async {
+    final apiService = ApiNutritionService();
+    if (isSaved){
+      final response = await apiService.unsaveRecipe(widget.recipeId.toString());
+      if (response["success"]) {
+        setState(() {
+          isSaved = false;
+        });
+      }
+    }
+    else {
+      final response = await apiService.saveRecipe(widget.recipeId.toString());
+      if (response["success"]) {
+        setState(() {
+          isSaved = true;
+        });
+      }
+    }
+  }
+
+  void _calculateNutritionalInfo() {
+    calories = 0;
+    proteins = 0;
+    fats = 0;
+    carbohydrates = 0;
+
+    if (recipeData?["recipe_food_items"] is List) {
+      for (Map<String, dynamic> foodItem in recipeData?["recipe_food_items"] ?? []) {
+        calories += (foodItem["quantity"] * foodItem["calories"]) / 100;
+        proteins += (foodItem["quantity"] * foodItem["proteins"]) / 100;
+        fats += (foodItem["quantity"] * foodItem["fats"]) / 100;
+        carbohydrates += (foodItem["quantity"] * foodItem["carbohydrates"]) / 100;
+      }
+    }
+    setState(() {});
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -74,21 +140,58 @@ class _RecipePageState extends State<RecipePage> {
                     Row(
                       children: [
                         ExpandableImage(
-                          initialImageUrl: recipeData?["photo"],
+                          initialImageUrl: recipeData?["picture"],
                           width: 70,
                           height: 70,
                         ),
                         RelativeSizedBox(width: 5),
-                        Text(
-                          recipeData?["name"],
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 27,
+                        Flexible(
+                          child: Text(
+                            recipeData?["name"] ?? '', // Default to empty string if null
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 22,
+                            ),
+                            overflow: TextOverflow.ellipsis, // Show "..." if the text overflows
+                            maxLines: 2, // Limit to one line
                           ),
                         ),
                       ],
                     ),
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                          IconButton(
+                            icon: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border,
+                              color: Colors.black,
+                            ),
+                            tooltip: isSaved ? 'Unsave' : 'Save',
+                            onPressed: _toggleSaved,
+                          ),
+                          if (currentUserId == recipeData?["creator"].toString())
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.black),
+                              tooltip: 'Edit',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditRecipePage(recipeData: recipeData),
+                                  )
+                                );
+                              },
+                            ),
+                          if (currentUserId == recipeData?["creator"].toString())
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.black),
+                              tooltip: 'Delete',
+                              onPressed: () {},
+                            ),
+                      ],
+                    ),
+                    RelativeSizedBox(height: 1),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: ExpandableText(
@@ -98,8 +201,26 @@ class _RecipePageState extends State<RecipePage> {
                       ),
                     ),
                     RelativeSizedBox(height: 2),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CustomNumber(number: calories, width: 330, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
+                        RelativeSizedBox(height: 0.5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomNumber(number: proteins, width: 107, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                            RelativeSizedBox(width: 1),
+                            CustomNumber(number: carbohydrates, width: 107, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+                            RelativeSizedBox(width: 1),
+                            CustomNumber(number: fats, width: 107, icon: Icons.water_drop, unit: "g", size: 13),
+                          ],
+                        ),
+                      ],
+                    ),
+                    RelativeSizedBox(height: 2),
                     Container(
-                      height: 600,
+                      height: 340,
                       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -117,20 +238,21 @@ class _RecipePageState extends State<RecipePage> {
                                       children: [
                                         Expanded(
                                           child: FoodItemCard(
-                                            key: ValueKey(Random().nextInt(1000000)),
+                                            key: ValueKey(foodItem["id"]),
                                             foodItem: foodItem,
-                                            quantity: foodItem["grams"],
+                                            quantity: foodItem["quantity"],
                                             isEditable: false,
                                             isSaveable: false,
                                             isDeleteable: false,
                                             enableQuantitySelection: true,
                                             onChangeQuantity: (updatedQuantity) {
                                               if (updatedQuantity.isEmpty) {
-                                                foodItem["quantity"] = 100;
+                                                foodItem["quantity"] = 100.0;
                                               }
                                               else {
                                                 foodItem["quantity"] = double.parse(updatedQuantity);
                                               }
+                                              _calculateNutritionalInfo();
                                             },
                                           ),
                                         ),

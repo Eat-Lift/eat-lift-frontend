@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ExpandableText extends StatefulWidget {
   final String text;
   final TextAlign textAlign;
+  final double size;
 
   const ExpandableText({
     super.key,
     required this.text,
     this.textAlign = TextAlign.justify,
+    this.size = 14,
   });
 
   @override
@@ -41,12 +43,12 @@ class ExpandableTextState extends State<ExpandableText> {
           children: [
             Text(
               widget.text,
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: widget.size),
               maxLines: isExpanded ? null : 5,
               overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
               textAlign: widget.textAlign,
             ),
-            if (isOverflowing)
+            if (isOverflowing) ...[
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -54,10 +56,11 @@ class ExpandableTextState extends State<ExpandableText> {
                   });
                 },
                 child: Text(
-                  isExpanded ? "Show Less" : "Show More",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  isExpanded ? "Mostrar menys" : "Mostrar més",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
+            ]  
           ],
         );
       },

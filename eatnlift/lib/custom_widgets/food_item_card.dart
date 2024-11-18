@@ -1,6 +1,8 @@
+import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:flutter/material.dart';
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/custom_textfield.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
@@ -198,21 +200,31 @@ class _FoodItemCardState extends State<FoodItemCard> {
                         }
                       },
                     ),
-                  if (widget.isEditable && isCreator)
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.black),
-                      tooltip: 'Edit',
-                      onPressed: () {
-                        widget.onUpdate!(widget.foodItem);
-                      },
-                    ),
-                  if (widget.isDeleteable && isCreator)
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.black),
-                      tooltip: 'Delete',
-                      onPressed: _deleteFoodItem,
-                    ),
-                  if (widget.isSaveable)
+                ],
+              ),
+              const RelativeSizedBox(height: 1),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['calories'], width: 283, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
+                  RelativeSizedBox(height: 0.5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['proteins'], width: 92, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                      RelativeSizedBox(width: 1),
+                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'], width: 92, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+                      RelativeSizedBox(width: 1),
+                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'], width: 92, icon: Icons.water_drop, unit: "g", size: 13),
+                    ],
+                  ),
+                ],
+              ),
+              RelativeSizedBox(height: 1),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (widget.isSaveable) ...[
                     if (!loading)
                       IconButton(
                         icon: Icon(
@@ -226,30 +238,28 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       IconButton(
                         icon: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_border,
-                          color: Colors.grey.shade200,
+                          //color: Colors.grey.shade200,
+                          color: Colors.black,
                         ),
                         onPressed: () {},
                       ),
+                    ],
+                    if (widget.isEditable && isCreator)
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.black),
+                        tooltip: 'Edit',
+                        onPressed: () {
+                          widget.onUpdate!(widget.foodItem);
+                        },
+                      ),
+                    if (widget.isEditable && isCreator)
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.black),
+                        tooltip: 'Delete',
+                        onPressed: _deleteFoodItem,
+                      ),
                 ],
               ),
-              const RelativeSizedBox(height: 0.1),
-              Text(
-                'Caloríes: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['calories'])} kcal',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              Text(
-                'Proteïnes: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['proteins'])} g',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              Text(
-                'Greixos: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'])} g',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              Text(
-                'Carbohidrats: ${formatNumber((safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'])} g',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              RelativeSizedBox(height: 1),
             ],
           ),
         ),
