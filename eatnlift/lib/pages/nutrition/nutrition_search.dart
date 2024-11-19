@@ -137,6 +137,31 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
     }
   }
 
+  void _onSelectRecipe(List<Map<String, dynamic>>? selectedFoodItems) {
+    if (selectedFoodItems != null) {
+      for (Map<String, dynamic> selectedFoodItem in selectedFoodItems) {
+        if (selectedFoodItem["selected"] == true) {
+          // If selected, add or update the item in the selectedFoodItems list
+          final existingIndex = widget.selectedFoodItems?.indexWhere(
+            (item) => item["id"] == selectedFoodItem["id"],
+          );
+          if (existingIndex == null || existingIndex == -1) {
+            widget.selectedFoodItems?.add(selectedFoodItem);
+          } else  {
+            widget.selectedFoodItems?[existingIndex] = selectedFoodItem;
+          }
+        } else {
+          // If not selected, remove the item from the selectedFoodItems list
+          widget.selectedFoodItems?.removeWhere(
+            (item) => item["id"] == selectedFoodItem["id"],
+          );
+        }
+      }
+      // Optionally, update the UI if necessary
+      setState(() {});
+    }
+  }
+
   void _onDeleteFoodItem(int id) {
     setState(() {
       foodItems?.removeWhere((item) => item["id"] == id);
@@ -204,6 +229,8 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
         final recipe = recipes[index];
         return RecipeCard(
           recipe: recipe,
+          isSelectable: widget.isCreating,
+          onSelect: _onSelectRecipe,
         );
       },
     );
