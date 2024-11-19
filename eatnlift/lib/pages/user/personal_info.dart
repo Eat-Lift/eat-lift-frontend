@@ -257,6 +257,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
                         isNumeric: true,
                         unit: 'cm',
                         centerText: true,
+                        height: 16,
                       ),
                     ),
 
@@ -272,6 +273,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
                         unit: 'kg',
                         centerText: true,
                         allowDecimal: true,
+                        height: 16,
                       ),
                     ),
                   ]

@@ -13,6 +13,7 @@ class CustomTextfield extends StatefulWidget {
   final String? unit;
   final IconData? icon;
   final void Function(String)? onChanged;
+  final double height;
 
   const CustomTextfield({
     super.key,
@@ -27,6 +28,7 @@ class CustomTextfield extends StatefulWidget {
     this.unit,
     this.icon,
     this.onChanged,
+    this.height = 10,
   });
 
   @override
@@ -80,7 +82,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         suffixIcon: widget.icon != null
             ? Icon(widget.icon, color: Colors.grey[500], size: 20)
             : null,
-        contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        contentPadding: EdgeInsets.symmetric(vertical: widget.height, horizontal: 10),
       ),
       onChanged: (value) {
         setState(() {});
