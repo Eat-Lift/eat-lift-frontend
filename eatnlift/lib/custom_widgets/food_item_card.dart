@@ -1,4 +1,6 @@
 import 'package:eatnlift/custom_widgets/custom_number.dart';
+import 'package:eatnlift/pages/nutrition/food_item_edit.dart';
+import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/custom_textfield.dart';
@@ -8,10 +10,9 @@ class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
   final String currentUserId;
 
-  final VoidCallback? onDelete;
   final bool isDeleteable;
+  final Function(int id)? onDelete;
 
-  final void Function(Map<String, dynamic>)? onUpdate;
   final bool isEditable;
   
   final bool isSaveable;
@@ -26,18 +27,17 @@ class FoodItemCard extends StatefulWidget {
   const FoodItemCard({
     super.key,
     required this.foodItem,
-    this.currentUserId = "-1",
-    this.onDelete,
-    this.onUpdate,
     this.isSelectable = false,
-    this.isEditable = true,
-    this.isSaveable = true,
+    this.isEditable = false,
+    this.isSaveable = false,
     this.isDeleteable = true,
-    this.onSelect,
     this.enableQuantitySelection = false,
+    this.onSelect,
     this.quantity = 100,
     this.initiallySelected = false,
     this.onChangeQuantity,
+    this.currentUserId = "0",
+    this.onDelete,
   });
 
   @override
@@ -77,22 +77,38 @@ class _FoodItemCardState extends State<FoodItemCard> {
   }
 
   Future<void> _fetchSavedState() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (context.mounted){
+    final apiService = ApiNutritionService();
+    final result = await apiService.getFoodItemSaved(widget.foodItem["id"].toString());
+    if(result["success"]) {
       setState(() {
-        isSaved = false;
+        isSaved = result["is_saved"];
         loading = false;
       });
     }
   }
 
   void _toggleSave() async {
-    setState(() {
-      isSaved = !isSaved;
-    });
+    if (isSaved) {
+      final apiService = ApiNutritionService();
+      final result = await apiService.unsaveFoodItem(widget.foodItem["id"].toString());
+      if (result["success"]) {
+        setState(() {
+          isSaved = false;
+        });
+      }
+    }
+    else {
+      final apiService = ApiNutritionService();
+      final result = await apiService.saveFoodItem(widget.foodItem["id"].toString());
+      if (result["success"]) {
+        setState(() {
+          isSaved = true;
+        });
+      }
+    }
   }
 
-  void _deleteFoodItem() {
+  void _deleteFoodItem() async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -107,9 +123,12 @@ class _FoodItemCardState extends State<FoodItemCard> {
               child: const Text("Cancel·lar"),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                widget.onDelete!();
+              onPressed: () async {
+                final apiService = ApiNutritionService();
+                await apiService.deleteFoodItem(widget.foodItem["id"].toString());
+                if (context.mounted){
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text("Eliminar"),
             ),
@@ -238,8 +257,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       IconButton(
                         icon: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_border,
-                          //color: Colors.grey.shade200,
-                          color: Colors.black,
+                          color: Colors.grey.shade200,
                         ),
                         onPressed: () {},
                       ),
@@ -248,8 +266,13 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.black),
                         tooltip: 'Edit',
-                        onPressed: () {
-                          widget.onUpdate!(widget.foodItem);
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditFoodItemPage(foodItem: widget.foodItem),
+                            )
+                          );
                         },
                       ),
                     if (widget.isEditable && isCreator)

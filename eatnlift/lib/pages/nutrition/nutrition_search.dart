@@ -1,7 +1,6 @@
-import 'package:eatnlift/custom_widgets/custom_button.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
-import 'package:eatnlift/pages/nutrition/food_items.dart';
+import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../custom_widgets/ying_yang_toggle.dart';
@@ -11,17 +10,15 @@ import '../../services/api_nutrition_service.dart';
 import 'dart:async';
 
 class NutritionSearchPage extends StatefulWidget {
-  final bool isSelectable;
-  final bool isSaveable;
   final List<Map<String,dynamic>>? selectedFoodItems;
   final Function(List<Map<String,dynamic>>?)? onCheck;
+  final bool isCreating;
 
   const NutritionSearchPage({
     super.key,
-    this.isSelectable = false,
     this.selectedFoodItems,
-    this.isSaveable = true,
     this.onCheck,
+    this.isCreating = false,
   });
 
   @override
@@ -29,6 +26,7 @@ class NutritionSearchPage extends StatefulWidget {
 }
 
 class NutritionSearchPageState extends State<NutritionSearchPage> {
+  final SessionStorage sessionStorage = SessionStorage();
   final TextEditingController searchController = TextEditingController();
   final ApiNutritionService apiNutritionService = ApiNutritionService();
   bool isSearchingFoodItem = true;
@@ -37,11 +35,21 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   List<String> suggestions = [];
   Timer? debounce;
 
+  String currentUserId = "0";
+  
 
   @override
   void initState() {
     super.initState();
+    _fetchCurrentUserId();
     searchController.addListener(_onSearchChanged);
+  }
+
+  Future<void> _fetchCurrentUserId() async {
+    final userId = await sessionStorage.getUserId();
+    setState(() {
+      currentUserId = userId!;
+    });
   }
 
   void toggleSearchMode(bool isFoodItemSelected) {
@@ -58,7 +66,6 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       _searchFoodItems();
     });
   }
-
 
   Future<void> _searchFoodItems() async {
     final query = searchController.text;
@@ -102,6 +109,12 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       // Optionally, update the UI if necessary
       setState(() {});
     }
+  }
+
+  void _onDeleteFoodItem(int id) {
+    setState(() {
+      foodItems?.removeWhere((item) => item["id"] == id);
+    });
   }
 
   double _getQuantity(Map<String, dynamic> foodItem) {
@@ -174,11 +187,13 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                             final foodItem = foodItems![index];
                             return FoodItemCard(
                               foodItem: foodItem,
-                              isSaveable: widget.isSaveable,
-                              onDelete: () {},
-                              onUpdate: (updatedItem) {},
-                              isSelectable: widget.isSelectable,
-                              enableQuantitySelection: widget.isSelectable,
+                              onDelete: _onDeleteFoodItem,
+                              isDeleteable: !widget.isCreating,
+                              isEditable: !widget.isCreating,
+                              isSaveable: !widget.isCreating,
+                              isSelectable: widget.isCreating,
+                              currentUserId: currentUserId,
+                              enableQuantitySelection: widget.isCreating,
                               onSelect: _onSelectItem,
                               quantity: _getQuantity(foodItem),
                               initiallySelected: widget.selectedFoodItems?.firstWhere(

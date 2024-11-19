@@ -4,7 +4,6 @@ import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
 import 'package:eatnlift/pages/nutrition/recipe_page.dart';
-import 'package:eatnlift/services/session_storage.dart';
 import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -144,14 +143,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
 
       if (result["success"]){
         _showSuccessDialog("L'aliment s'ha creat correctament");
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipePage(recipeId: result["recipeId"]),
-            ),
-          );
-        }
       }
     } else {
       bool emptyField = false;
@@ -447,16 +438,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                               child: FoodItemCard(
                                 key: ValueKey(Random().nextInt(1000000)),
                                 foodItem: foodItem,
-                                onDelete: () {
-                                  setState(() {
-                                    selectedFoodItems.removeAt(index);
-                                  });
-                                },
-                                onUpdate: (updatedItem) {
-                                  setState(() {
-                                    selectedFoodItems[index] = updatedItem;
-                                  });
-                                },
                                 onSelect: (value) {
                                   setState(() {
                                     selectedFoodItems.removeAt(index);
@@ -465,9 +446,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                                 quantity: foodItem["quantity"],
                                 initiallySelected: true,
                                 isSelectable: true,
-                                isEditable: false,
-                                isSaveable: false,
-                                isDeleteable: true,
                                 enableQuantitySelection: true,
                                 onChangeQuantity: (updatedQuantity) {
                                   if (updatedQuantity.isEmpty) {
@@ -498,7 +476,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NutritionSearchPage(isSelectable: true, isSaveable: false, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
+                        builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
                       ),
                     );
                   },

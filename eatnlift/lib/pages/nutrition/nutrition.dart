@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../custom_widgets/round_button.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
 
-import '../../services/api_nutrition_service.dart';
 import '../../services/session_storage.dart';
 
 import 'package:eatnlift/pages/nutrition/nutrition_create.dart';

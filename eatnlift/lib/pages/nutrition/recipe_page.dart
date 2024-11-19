@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/custom_widgets/expandable_text.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
@@ -7,17 +5,11 @@ import 'package:eatnlift/pages/nutrition/recipe_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:io';
 
-import '../../custom_widgets/custom_button.dart';
 import '../../custom_widgets/expandable_image.dart';
-import '../../custom_widgets/custom_textfield.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
-import '../../custom_widgets/messages_box.dart';
 
-import '../../services/api_user_service.dart';
 import '../../services/session_storage.dart';
-import '../../services/storage_service.dart';
 
 class RecipePage extends StatefulWidget {
   final int recipeId;
@@ -131,8 +123,11 @@ class _RecipePageState extends State<RecipePage> {
             TextButton(
               onPressed: () async {
                 final apiService = ApiNutritionService();
-                final response = await apiService.deleteRecipe(widget.recipeId.toString());
-                Navigator.of(context).pop();
+                await apiService.deleteRecipe(widget.recipeId.toString());
+                if (context.mounted){
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text("Eliminar"),
             ),

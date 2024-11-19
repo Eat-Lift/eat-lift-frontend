@@ -5,7 +5,6 @@ import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/messages_box.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
-import 'package:eatnlift/pages/nutrition/recipe_page.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -218,16 +217,6 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                         child: FoodItemCard(
                                           key: ValueKey(Random().nextInt(1000000)),
                                           foodItem: foodItem,
-                                          onDelete: () {
-                                            setState(() {
-                                              selectedFoodItems.removeAt(index);
-                                            });
-                                          },
-                                          onUpdate: (updatedItem) {
-                                            setState(() {
-                                              selectedFoodItems[index] = updatedItem;
-                                            });
-                                          },
                                           onSelect: (value) {
                                             setState(() {
                                               selectedFoodItems.removeAt(index);
@@ -269,7 +258,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NutritionSearchPage(isSelectable: true, isSaveable: false, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
+                                  builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
                                 ),
                               );
                             },
