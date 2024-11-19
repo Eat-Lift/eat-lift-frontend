@@ -40,60 +40,28 @@ class ApiNutritionService {
     }
   }
 
-    Future<Map<String, dynamic>> editFoodItem(Map<String, Object> foodItem, String foodItemId) async {
-      final SessionStorage sessionStorage = SessionStorage();
-      final token = await sessionStorage.getAccessToken();
-
-      final response = await http.put(
-        Uri.parse('$baseUrl/foodItems/$foodItemId/edit'),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Token $token",
-        },
-        body: jsonEncode({
-          'name': foodItem["name"],
-          'calories': foodItem["calories"],
-          'proteins': foodItem["proteins"],
-          'fats': foodItem["fats"],
-          'carbohydrates': foodItem["carbohydrates"],
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        return {
-          "success": true,
-        };
-      } else {
-        final decodedData = utf8.decode(response.bodyBytes);
-        final responseData = jsonDecode(decodedData);
-        List<String> errors = List<String>.from(responseData["errors"]);
-        return {
-          "success": false,
-          "errors": errors,
-        };
-      }
-    }
-
-  Future<Map<String, dynamic>> getSuggestions(String query, bool isFoodItem) async {
+  Future<Map<String, dynamic>> editFoodItem(Map<String, Object> foodItem, String foodItemId) async {
     final SessionStorage sessionStorage = SessionStorage();
     final token = await sessionStorage.getAccessToken();
 
-    final endpoint = isFoodItem ? 'foodItems' : 'recipes';
-    final url = Uri.parse('$baseUrl/$endpoint/suggestions/?name=$query');
-
-    final response = await http.get(
-      url,
+    final response = await http.put(
+      Uri.parse('$baseUrl/foodItems/$foodItemId/edit'),
       headers: {
+        "Content-Type": "application/json",
         "Authorization": "Token $token",
       },
+      body: jsonEncode({
+        'name': foodItem["name"],
+        'calories': foodItem["calories"],
+        'proteins': foodItem["proteins"],
+        'fats': foodItem["fats"],
+        'carbohydrates': foodItem["carbohydrates"],
+      }),
     );
 
     if (response.statusCode == 200) {
-      final decodedData = utf8.decode(response.bodyBytes);
-      final responseData = jsonDecode(decodedData);
       return {
         "success": true,
-        "suggestions": List<String>.from(responseData["suggestions"]),
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -328,6 +296,28 @@ class ApiNutritionService {
         "success": false,
         "errors": errors,
       };
+    }
+  }
+
+  Future<Map<String, dynamic>> getRecipes(String query) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/recipes/?name=$query"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> recipesJson = json.decode(response.body);
+      return {
+        "success": true,
+        "recipes": recipesJson,
+      };
+    } else {
+      return {"success": false, "recipes": []};
     }
   }
 

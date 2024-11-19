@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/recipe_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   final ApiNutritionService apiNutritionService = ApiNutritionService();
   bool isSearchingFoodItem = true;
   List<Map<String, dynamic>>? foodItems;
+  List<Map<String, dynamic>>? recipes;
   
   List<String> suggestions = [];
   Timer? debounce;
@@ -63,7 +65,12 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   void _onSearchChanged() {
     if (debounce?.isActive ?? false) debounce?.cancel();
     debounce = Timer(const Duration(milliseconds: 300), () {
-      _searchFoodItems();
+      if (isSearchingFoodItem) {
+        _searchFoodItems();
+      }
+      else {
+        _searchRecipes();
+      }
     });
   }
 
@@ -79,6 +86,25 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       if (mounted) {
         setState(() {
           foodItems = (response["foodItems"] as List)
+              .map((item) => item as Map<String, dynamic>)
+              .toList();
+        });
+      }
+    }
+  }
+
+  Future<void> _searchRecipes() async {
+    final query = searchController.text;
+    if (query.isEmpty) {
+      if (mounted) setState(() => foodItems?.clear());
+      return;
+    }
+
+    final response = await apiNutritionService.getRecipes(query);
+    if (response["success"]) {
+      if (mounted) {
+        setState(() {
+          foodItems = (response["recipes"] as List)
               .map((item) => item as Map<String, dynamic>)
               .toList();
         });
@@ -136,6 +162,52 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
     return 100.0;
   }
 
+  Widget _buildFoodItemList(List<Map<String, dynamic>> foodItems) {
+    return ListView.builder(
+      itemCount: foodItems.length,
+      itemBuilder: (context, index) {
+        final foodItem = foodItems[index];
+        return FoodItemCard(
+          foodItem: foodItem,
+          onDelete: _onDeleteFoodItem,
+          isDeleteable: !widget.isCreating,
+          isEditable: !widget.isCreating,
+          isSaveable: !widget.isCreating,
+          isSelectable: widget.isCreating,
+          currentUserId: currentUserId,
+          enableQuantitySelection: widget.isCreating,
+          onSelect: _onSelectItem,
+          quantity: _getQuantity(foodItem),
+          initiallySelected: widget.selectedFoodItems?.firstWhere(
+                (selectedItem) => selectedItem['id'] == foodItem['id'],
+                orElse: () => {'selected': false},
+              )['selected'] ??
+              false,
+          onChangeQuantity: (updatedQuantity) {
+            final selectedItem = widget.selectedFoodItems?.firstWhere(
+              (selectedItem) => selectedItem['id'] == foodItem['id'],
+              orElse: () => {},
+            );
+            if (selectedItem != null && selectedItem.isNotEmpty) {
+              selectedItem["quantity"] = double.parse(updatedQuantity);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildRecipeList(List<Map<String, dynamic>> recipes) {
+    return ListView.builder(
+      itemCount: recipes.length,
+      itemBuilder: (context, index) {
+        final recipe = recipes[index];
+        return RecipeCard(
+          recipe: recipe,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,20 +215,22 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
         title: const Text("Cercar"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: RoundButton(
-              icon: Icons.check,
-              onPressed: () {
-                if (widget.onCheck != null){
-                  widget.onCheck!(widget.selectedFoodItems);
-                }
-              },
-              size: 35,
-            ),
-          ),
-        ]
+        actions: widget.isCreating
+            ? [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: RoundButton(
+                    icon: Icons.check,
+                    onPressed: () {
+                      if (widget.onCheck != null) {
+                        widget.onCheck!(widget.selectedFoodItems);
+                      }
+                    },
+                    size: 35,
+                  ),
+                ),
+              ]
+            : null,
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -180,45 +254,33 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
               ),
               RelativeSizedBox(height: 1),
               Expanded(
-                child: foodItems != null && foodItems!.isNotEmpty ?
-                        ListView.builder(
-                          itemCount: foodItems!.length,
-                          itemBuilder: (context, index) {
-                            final foodItem = foodItems![index];
-                            return FoodItemCard(
-                              foodItem: foodItem,
-                              onDelete: _onDeleteFoodItem,
-                              isDeleteable: !widget.isCreating,
-                              isEditable: !widget.isCreating,
-                              isSaveable: !widget.isCreating,
-                              isSelectable: widget.isCreating,
-                              currentUserId: currentUserId,
-                              enableQuantitySelection: widget.isCreating,
-                              onSelect: _onSelectItem,
-                              quantity: _getQuantity(foodItem),
-                              initiallySelected: widget.selectedFoodItems?.firstWhere(
-                                (selectedItem) => selectedItem['id'] == foodItem['id'],
-                                orElse: () => {'selected': false},
-                              )['selected'] ?? false,
-                              onChangeQuantity: (updatedQuantity) {
-                                final selectedItem = widget.selectedFoodItems?.firstWhere(
-                                  (selectedItem) => selectedItem['id'] == foodItem['id'],
-                                  orElse: () => {},
-                                );
-                                if (selectedItem!.isNotEmpty) {
-                                  selectedItem["quantity"] = double.parse(updatedQuantity);
-                                }
-                              },
-                            );
-                          },
-                        )
-                        : const Center(
+                child: Builder(
+                  builder: (context) {
+                    if (isSearchingFoodItem) {
+                      if (foodItems != null && foodItems!.isNotEmpty) {
+                        return _buildFoodItemList(foodItems!);
+                      } else {
+                        return const Center(
                           child: Text(
                             "No hi ha resultats. Prova amb una altra cerca",
                             style: TextStyle(color: Colors.grey),
                           ),
-                        ),
-                      
+                        );
+                      }
+                    } else {
+                      if (foodItems != null && foodItems!.isNotEmpty) {
+                        return _buildRecipeList(foodItems!);
+                      } else {
+                        return const Center(
+                          child: Text(
+                            "No hi ha resultats. Prova amb una altra cerca",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
               ),
             ],
           ),
