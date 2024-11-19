@@ -136,7 +136,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
     final result = await apiService.editRecipe(recipe, recipeId);
     if (result["success"]) {
       if (mounted){
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     }
     else {

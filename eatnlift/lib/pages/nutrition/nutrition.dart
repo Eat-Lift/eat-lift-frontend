@@ -53,9 +53,15 @@ class _NutritionPageState extends State<NutritionPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.lock,
-                      size: 70,
+                    RoundButton(
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      onPressed:() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NutritionSearchPage()),
+                        );
+                      },
+                      size: 70
                     ),
                     RelativeSizedBox(width: 5),
                     RoundButton(
@@ -72,15 +78,15 @@ class _NutritionPageState extends State<NutritionPage> {
                     RoundButton(
                       icon: FontAwesomeIcons.calendar,
                       onPressed:() {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const NutritionSearchPage()),
-                        );
                       },
                       size: 70
                     ),
                     RelativeSizedBox(width: 5),
-                    RoundButton(icon: FontAwesomeIcons.book, onPressed: () => {}, size: 70),
+                    RoundButton(
+                      icon: FontAwesomeIcons.book,
+                      onPressed: () => {},
+                      size: 70
+                    ),
                   ]
                   
                 ),

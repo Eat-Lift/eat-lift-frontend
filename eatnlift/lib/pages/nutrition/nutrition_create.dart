@@ -53,12 +53,6 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   }
 
   void _submitData() async {
-    Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipePage(recipeId: 12),
-            )
-    );
     if (isCreatingFoodItem) {
       bool emptyField = false;
       response = {};
@@ -150,6 +144,14 @@ class NutritionCreateState extends State<NutritionCreatePage> {
 
       if (result["success"]){
         _showSuccessDialog("L'aliment s'ha creat correctament");
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecipePage(recipeId: result["recipeId"]),
+            ),
+          );
+        }
       }
     } else {
       bool emptyField = false;

@@ -113,6 +113,34 @@ class _RecipePageState extends State<RecipePage> {
     }
     setState(() {});
   }
+
+  void _deleteRecipe() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirmació"),
+          content: const Text("Estàs segur que vols eliminar aquesta recepta?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel·lar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final apiService = ApiNutritionService();
+                final response = await apiService.deleteRecipe(widget.recipeId.toString());
+                Navigator.of(context).pop();
+              },
+              child: const Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -174,20 +202,24 @@ class _RecipePageState extends State<RecipePage> {
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.black),
                               tooltip: 'Edit',
-                              onPressed: () {
-                                Navigator.push(
+                              onPressed: () async {
+                                final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EditRecipePage(recipeData: recipeData),
                                   )
                                 );
+
+                                if (result == true){
+                                  _fetchRecipeData();
+                                }
                               },
                             ),
                           if (currentUserId == recipeData?["creator"].toString())
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.black),
                               tooltip: 'Delete',
-                              onPressed: () {},
+                              onPressed: _deleteRecipe,
                             ),
                       ],
                     ),
