@@ -1,6 +1,5 @@
 import 'package:eatnlift/custom_widgets/recipes_container.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
-import 'package:eatnlift/pages/nutrition/nutritional_plan_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
 
@@ -8,16 +7,19 @@ import '../../custom_widgets/relative_sizedbox.dart';
 
 import '../../services/session_storage.dart';
 
-class NutritionalPlanPage extends StatefulWidget {
-  const NutritionalPlanPage({
+class EditNutritionalPlanPage extends StatefulWidget {
+  final List<Map<String, dynamic>> recipes;
+
+  const EditNutritionalPlanPage({
     super.key,
+    required this.recipes,
   });
 
   @override
-  State<NutritionalPlanPage> createState() => _NutritionalPlanPageState();
+  State<EditNutritionalPlanPage> createState() => _EditNutritionalPlanPageState();
 }
 
-class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
+class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
   bool isLoading = true;
@@ -29,10 +31,38 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
     _initializePage();
   }
 
+  void submitEdit() async {
+    // Change 'id' to 'recipe_id' in each recipe
+    final updatedRecipes = recipes.map((recipe) {
+      if (recipe.containsKey("id")) {
+        recipe["recipe_id"] = recipe["id"]; // Copy the value to 'recipe_id'
+        recipe.remove("id"); // Remove the old 'id' key
+        recipe["meal_type"] = recipe["meal_type"].toString().toUpperCase();
+      }
+      return recipe;
+    }).toList();
+
+    final apiService = ApiNutritionService();
+    await apiService.editNutritionalPlan(currentUserId!, updatedRecipes);
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
+  }
+
+  void onCheck(List<Map<String, dynamic>>? fromContainerRecipes, String meal_type) {
+    if (fromContainerRecipes != null) {
+      setState(() {        
+        recipes = recipes.where((recipe) => recipe["meal_type"] != meal_type).toList();
+
+        recipes.addAll(fromContainerRecipes);
+      });
+    }
+  }
+
   Future<void> _initializePage() async {
     await _fetchCurrentUserId(); 
-    await _fetchNutritionalPlan();
     setState(() {
+      recipes = widget.recipes;
       isLoading = false;
     });
   }
@@ -44,28 +74,6 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
     });
   }
 
-  Future<void> _fetchNutritionalPlan() async {
-    final apiService = ApiNutritionService();
-    final result = await apiService.getNutritionalPlan(currentUserId!);
-
-    if (result["success"]) {
-      setState(() {
-        recipes = (result["recipes"] as List)
-            .expand((item) => (item["recipes"] as List))
-            .map<Map<String, dynamic>>((recipe) {
-              final updatedRecipe = Map<String, dynamic>.from(recipe);
-              // Rename keys
-              updatedRecipe["name"] = updatedRecipe.remove("recipe_name");
-              updatedRecipe["id"] = updatedRecipe.remove("recipe_id");
-              updatedRecipe["selected"] = true;
-              return updatedRecipe;
-            })
-            .toList();
-      });
-    }
-  }
-
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,16 +85,8 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: RoundButton(
-                icon: Icons.edit,
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditNutritionalPlanPage(recipes: recipes)),
-                  );
-                  if (result == true){
-                    _fetchNutritionalPlan();
-                  }
-                },
+                icon: Icons.check,
+                onPressed: submitEdit,
                 size: 35,
               ),
             ),
@@ -110,21 +110,29 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
                       title: "Esmorzar",
+                      isUpdating: true,
+                      onCheck: onCheck,
                     ),
                     RelativeSizedBox(height: 2),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
                       title: "Dinar",
+                      isUpdating: true,
+                      onCheck: onCheck,
                     ),
                     RelativeSizedBox(height: 2),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
                       title: "Berenar",
+                      isUpdating: true,
+                      onCheck: onCheck,
                     ),
                     RelativeSizedBox(height: 2),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
                       title: "Sopar",
+                      isUpdating: true,
+                      onCheck: onCheck,
                     ),
                     RelativeSizedBox(height: 2),
                   ],

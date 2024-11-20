@@ -11,15 +11,21 @@ import '../../services/api_nutrition_service.dart';
 import 'dart:async';
 
 class NutritionSearchPage extends StatefulWidget {
-  final List<Map<String,dynamic>>? selectedFoodItems;
+  final List<Map<String, dynamic>>? selectedFoodItems;
+  final List<Map<String, dynamic>>? selectedRecipes;
   final Function(List<Map<String,dynamic>>?)? onCheck;
+  final bool searchFoodItems;
+  final bool searchRecipes;
   final bool isCreating;
 
   const NutritionSearchPage({
     super.key,
     this.selectedFoodItems,
+    this.selectedRecipes,
     this.onCheck,
     this.isCreating = false,
+    this.searchFoodItems = true,
+    this.searchRecipes = true,
   });
 
   @override
@@ -31,6 +37,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   final TextEditingController searchController = TextEditingController();
   final ApiNutritionService apiNutritionService = ApiNutritionService();
   bool isSearchingFoodItem = true;
+
   List<Map<String, dynamic>>? foodItems;
   List<Map<String, dynamic>>? recipes;
   
@@ -43,6 +50,9 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   @override
   void initState() {
     super.initState();
+    if (!widget.searchFoodItems && widget.searchRecipes) {
+      isSearchingFoodItem = false;
+    }
     _fetchCurrentUserId();
     searchController.addListener(_onSearchChanged);
   }
@@ -131,17 +141,15 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
           (item) => item["id"] == selectedFoodItem["id"],
         );
       }
-
       // Optionally, update the UI if necessary
       setState(() {});
     }
   }
 
-  void _onSelectRecipe(List<Map<String, dynamic>>? selectedFoodItems) {
+  void _onAddRecipe(List<Map<String, dynamic>>? selectedFoodItems) {
     if (selectedFoodItems != null) {
       for (Map<String, dynamic> selectedFoodItem in selectedFoodItems) {
         if (selectedFoodItem["selected"] == true) {
-          // If selected, add or update the item in the selectedFoodItems list
           final existingIndex = widget.selectedFoodItems?.indexWhere(
             (item) => item["id"] == selectedFoodItem["id"],
           );
@@ -151,13 +159,31 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
             widget.selectedFoodItems?[existingIndex] = selectedFoodItem;
           }
         } else {
-          // If not selected, remove the item from the selectedFoodItems list
           widget.selectedFoodItems?.removeWhere(
             (item) => item["id"] == selectedFoodItem["id"],
           );
         }
       }
-      // Optionally, update the UI if necessary
+      setState(() {});
+    }
+  }
+
+  void _onSelectRecipe(Map<String, dynamic>? selectedRecipe) {
+    if (selectedRecipe != null) {
+        if (selectedRecipe["selected"] == true) {
+          final existingIndex = widget.selectedRecipes?.indexWhere(
+            (item) => item["id"] == selectedRecipe["id"],
+          );
+          if (existingIndex == null || existingIndex == -1) {
+            widget.selectedRecipes?.add(selectedRecipe);
+          } else  {
+            widget.selectedRecipes?[existingIndex] = selectedRecipe;
+          }
+        } else {
+          widget.selectedRecipes?.removeWhere(
+            (item) => item["id"] == selectedRecipe["id"],
+          );
+      }
       setState(() {});
     }
   }
@@ -229,8 +255,15 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
         final recipe = recipes[index];
         return RecipeCard(
           recipe: recipe,
-          isSelectable: widget.isCreating,
+          isAddable: widget.searchFoodItems,
+          onAdd: _onAddRecipe,
+          isSelectable: !widget.searchFoodItems,
           onSelect: _onSelectRecipe,
+          initiallySelected: widget.selectedRecipes?.firstWhere(
+            (selectedItem) => selectedItem['id'] == recipe['id'],
+            orElse: () => {'selected': false},
+          )['selected'] ??
+          false,
         );
       },
     );
@@ -250,7 +283,12 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                     icon: Icons.check,
                     onPressed: () {
                       if (widget.onCheck != null) {
-                        widget.onCheck!(widget.selectedFoodItems);
+                        if (widget.searchFoodItems) {
+                          widget.onCheck!(widget.selectedFoodItems);
+                        }
+                        else {
+                          widget.onCheck!(widget.selectedRecipes);
+                        }
                       }
                     },
                     size: 35,
@@ -265,12 +303,15 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             children: [
-              YinYangToggle(
-                isLeftSelected: isSearchingFoodItem,
-                leftText: "Aliment",
-                rightText: "Recepta",
-                onToggle: toggleSearchMode,
-              ),
+              if (widget.searchFoodItems && widget.searchRecipes) ...[
+                YinYangToggle(
+                  isLeftSelected: isSearchingFoodItem,
+                  leftText: "Aliment",
+                  rightText: "Recepta",
+                  onToggle: toggleSearchMode,
+                ),
+              ],
+
               const RelativeSizedBox(height: 2),
 
               CustomTextfield(

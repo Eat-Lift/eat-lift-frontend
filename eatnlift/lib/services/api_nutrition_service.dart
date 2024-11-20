@@ -431,6 +431,7 @@ class ApiNutritionService {
       Uri.parse("$baseUrl/nutritionalPlans/$userId"),
       headers: {
         "Authorization": "Token $token",
+        "Content-Type": "application/json", 
       },
     );
 
@@ -439,7 +440,7 @@ class ApiNutritionService {
       final responseData = jsonDecode(decodedData);
       return {
         "success": true,
-        "recipes": responseData["recipes"],
+        "recipes": responseData,
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -460,6 +461,7 @@ class ApiNutritionService {
       Uri.parse("$baseUrl/nutritionalPlans/$userId/edit"),
       headers: {
         "Authorization": "Token $token",
+        "Content-Type": "application/json", 
       },
       body: jsonEncode({
         'recipes': recipes,

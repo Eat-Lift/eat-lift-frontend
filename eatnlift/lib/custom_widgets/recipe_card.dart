@@ -6,14 +6,20 @@ import 'package:flutter/material.dart';
 
 class RecipeCard extends StatefulWidget {
   final Map<String, dynamic> recipe;
+  final bool isAddable;
   final bool isSelectable;
-  final void Function(List<Map<String, dynamic>>)? onSelect;
+  final bool initiallySelected;
+  final void Function(Map<String, dynamic>)? onSelect;
+  final void Function(List<Map<String, dynamic>>)? onAdd;
 
   const RecipeCard({
     super.key,
     required this.recipe,
+    this.initiallySelected = false,
     this.isSelectable = false,
+    this.isAddable = false,
     this.onSelect,
+    this.onAdd,
   });
 
   @override
@@ -54,9 +60,19 @@ class _RecipeCardState extends State<RecipeCard> {
     }
   }
 
+  Map<String, dynamic> _getSelectedRecipe() {
+    return {
+      ...widget.recipe,
+      "selected": isSelected,
+    };
+  }
+
   @override
   void initState() {
     super.initState();
+    if (widget.isSelectable){
+      isSelected = widget.initiallySelected;
+    }
   }
 
   @override
@@ -96,19 +112,34 @@ class _RecipeCardState extends State<RecipeCard> {
                     ),
                   ),
                   Spacer(),
-                  if (widget.isSelectable)
+                  if (widget.isAddable) ...[
                     CustomButton(
                       text: "Afegeix",
                       width: 80,
                       height: 30,
                       onTap: () {
-                        if (widget.onSelect != null) {
+                        if (widget.onAdd != null) {
                           _getSelectedFoodItems().then((selectedFoodItems) {
-                            widget.onSelect!(selectedFoodItems);
+                            widget.onAdd!(selectedFoodItems);
                           });
                         }
                       },
                     ),
+                  ],
+                  if (widget.isSelectable) ...[
+                    Checkbox(
+                      value: isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          isSelected = value ?? false;
+                        });
+                        if (widget.onSelect != null) {
+                          widget.onSelect!(_getSelectedRecipe());
+                        }
+                      },
+                    ),
+                  ],
+
                 ],
               ),
             ],
