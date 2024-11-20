@@ -8,6 +8,7 @@ import '../../services/session_storage.dart';
 
 import 'package:eatnlift/pages/nutrition/nutrition_create.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
+import 'package:eatnlift/pages/nutrition/nutritional_plan.dart';
 
 class NutritionPage extends StatefulWidget {
   const NutritionPage({super.key});
@@ -83,7 +84,12 @@ class _NutritionPageState extends State<NutritionPage> {
                     RelativeSizedBox(width: 5),
                     RoundButton(
                       icon: FontAwesomeIcons.book,
-                      onPressed: () => {},
+                      onPressed:() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NutritionalPlanPage()),
+                        );
+                      },
                       size: 70
                     ),
                   ]
