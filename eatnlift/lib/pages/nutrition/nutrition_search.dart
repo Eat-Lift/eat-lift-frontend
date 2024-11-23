@@ -240,7 +240,12 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
               orElse: () => {},
             );
             if (selectedItem != null && selectedItem.isNotEmpty) {
-              selectedItem["quantity"] = double.parse(updatedQuantity);
+              if (updatedQuantity.isEmpty) {
+                selectedItem["quantity"] = 100.0;
+              }
+              else {
+                selectedItem["quantity"] = double.parse(updatedQuantity);
+              }
             }
           },
         );

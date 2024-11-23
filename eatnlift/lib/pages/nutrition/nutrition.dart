@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:eatnlift/custom_widgets/current_target_display.dart';
+import 'package:eatnlift/custom_widgets/food_items_container.dart';
 import 'package:eatnlift/custom_widgets/nutritient_circular_graph.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_user_service.dart';
@@ -27,8 +30,15 @@ class _NutritionPageState extends State<NutritionPage> {
   String? currentUserId;
   Map<String, dynamic>? userData;
   List<dynamic>? meals;
-  Map<String, Map<String, dynamic>>? nutritionalInfo;
+  Map<String, Map<String, dynamic>>? nutritionalInfo = {
+    "GENERAL": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
+    "BREAKFAST": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
+    "LUNCH": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
+    "SNACK": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
+    "DINNER": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
+  };
   bool isLoading = true;
+  int key = 0;
 
   @override
   void initState() {
@@ -74,44 +84,97 @@ class _NutritionPageState extends State<NutritionPage> {
   }
 
   Future<void> _calculateNutritionalInfo() async {
-    for (var meal in meals!) {
-      nutritionalInfo = {
-        "GENERAL": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
-        "BREAKFAST": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
-        "LUNCH": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
-        "SNACK": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
-        "DINNER": {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0},
-      };
+    if (meals != null) {
+      for (var meal in meals!) {
+        String mealType = meal["meal_type"];
+        double totalCalories = 0.0;
+        double totalProteins = 0.0;
+        double totalFats = 0.0;
+        double totalCarbohydrates = 0.0;
 
-      String mealType = meal["meal_type"];
-      double totalCalories = 0.0;
-      double totalProteins = 0.0;
-      double totalFats = 0.0;
-      double totalCarbohydrates = 0.0;
+        for (var item in meal["food_items"]) {
+          var food = item["food_item"];
+          var quantity = item["quantity"];
 
-      for (var item in meal["food_items"]) {
-        var food = item["food_item"];
-        var quantity = item["quantity"];
+          // Calculate totals for each nutrient
+          totalCalories += (food["calories"] * quantity) / 100;
+          totalProteins += (food["proteins"] * quantity) / 100;
+          totalFats += (food["fats"] * quantity) / 100;
+          totalCarbohydrates += (food["carbohydrates"] * quantity) / 100;
+        }
 
-        // Calculate totals for each nutrient
-        totalCalories += (food["calories"] * quantity) / 100;
-        totalProteins += (food["proteins"] * quantity) / 100;
-        totalFats += (food["fats"] * quantity) / 100;
-        totalCarbohydrates += (food["carbohydrates"] * quantity) / 100;
+        // Add to specific meal type
+        nutritionalInfo?[mealType]?["calories"] += totalCalories;
+        nutritionalInfo?[mealType]?["proteins"] += totalProteins;
+        nutritionalInfo?[mealType]?["fats"] += totalFats;
+        nutritionalInfo?[mealType]?["carbohydrates"] += totalCarbohydrates;
+
+        // Add to GENERAL
+        nutritionalInfo?["GENERAL"]?["calories"] += totalCalories;
+        nutritionalInfo?["GENERAL"]?["proteins"] += totalProteins;
+        nutritionalInfo?["GENERAL"]?["fats"] += totalFats;
+        nutritionalInfo?["GENERAL"]?["carbohydrates"] += totalCarbohydrates;
       }
-
-      // Add to specific meal type
-      nutritionalInfo?[mealType]?["calories"] += totalCalories;
-      nutritionalInfo?[mealType]?["proteins"] += totalProteins;
-      nutritionalInfo?[mealType]?["fats"] += totalFats;
-      nutritionalInfo?[mealType]?["carbohydrates"] += totalCarbohydrates;
-
-      // Add to GENERAL
-      nutritionalInfo?["GENERAL"]?["calories"] += totalCalories;
-      nutritionalInfo?["GENERAL"]?["proteins"] += totalProteins;
-      nutritionalInfo?["GENERAL"]?["fats"] += totalFats;
-      nutritionalInfo?["GENERAL"]?["carbohydrates"] += totalCarbohydrates;
     }
+  }
+
+  void _onChangeQuantity(String mealType, Map<String, dynamic> foodItem, double quantity) {
+    setState(() {
+      final meal = meals!.firstWhere((meal) => meal['meal_type'] == mealType, orElse: () => null);
+
+      if (meal != null) {
+        if (meal != null) {
+          final foodItems = (meal["food_items"] as List)
+              .map((item) => item as Map<String, dynamic>)
+              .toList();
+
+          for (var item in foodItems) {
+            if (item['id'] == foodItem['id']) {
+              item['quantity'] = quantity;
+            }
+          }
+        }
+      }
+      _calculateNutritionalInfo;
+    });
+  }
+
+  void _onCheck(String mealType, Map<String, dynamic> foodItem) {
+    setState(() {
+      final meal = meals!.firstWhere(
+        (meal) => meal['meal_type'] == mealType,
+      );
+
+      if (meal != null) {
+        Map<String, dynamic> itemToRemove = {};
+
+        for (var item in meal["food_items"]) {
+          if (item["food_item"]["id"] == foodItem["id"]){
+            itemToRemove = item;
+          }
+        }
+        meal["food_items"].remove(itemToRemove);
+      }
+    });
+  }
+
+  void _updateMeal(String mealType, List<Map<String, dynamic>> foodItems) {
+    setState(() {
+      final meal = meals!.firstWhere(
+        (meal) => meal['meal_type'] == mealType,
+      );
+
+      if (meal != null) {
+        meal["food_items"] = [];
+        for (var foodItem in foodItems) {
+          meal["food_items"].add({
+            "food_item": foodItem,
+            "quantity": foodItem["quantity"],
+          });
+        }
+      }
+      ++key;
+    });
   }
 
   @override
@@ -237,6 +300,53 @@ class _NutritionPageState extends State<NutritionPage> {
                         barThickness: 15,
                       ),
                     ],
+                  ),
+                  RelativeSizedBox(height: 2),
+                  FoodItemsContainer(
+                    key: ValueKey(key),
+                    title: "Esmorzar",
+                    foodItems: meals!
+                        .where((meal) => meal['meal_type'] == "ESMORZAR")
+                        .map((meal) => (meal["food_items"] as List<dynamic>)
+                            .cast<Map<String, dynamic>>())
+                        .expand((item) => item)
+                        .toList(),
+                    onChangeQuantity: _onChangeQuantity,
+                    onCheck: _onCheck,
+                    updateMeal: _updateMeal,
+                  ),
+                  RelativeSizedBox(height: 1),
+                  FoodItemsContainer(
+                    key: ValueKey(key+1),
+                    title: "Dinar",
+                    foodItems: meals!
+                        .where((meal) => meal['meal_type'] == "DINAR")
+                        .map((meal) => (meal["food_items"] as List<dynamic>)
+                            .cast<Map<String, dynamic>>())
+                        .expand((item) => item)
+                        .toList(),
+                  ),
+                  RelativeSizedBox(height: 1),
+                  FoodItemsContainer(
+                    key: ValueKey(key+2),
+                    title: "Berenar",
+                    foodItems: meals!
+                        .where((meal) => meal['meal_type'] == "BERENAR")
+                        .map((meal) => (meal["food_items"] as List<dynamic>)
+                            .cast<Map<String, dynamic>>())
+                        .expand((item) => item)
+                        .toList(),
+                  ),
+                  RelativeSizedBox(height: 1),
+                  FoodItemsContainer(
+                    key: ValueKey(key+3),
+                    title: "Sopar",
+                    foodItems: meals!
+                        .where((meal) => meal['meal_type'] == "SOPAR")
+                        .map((meal) => (meal["food_items"] as List<dynamic>)
+                            .cast<Map<String, dynamic>>())
+                        .expand((item) => item)
+                        .toList(),
                   ),
                 ] else ...[
                   Align(

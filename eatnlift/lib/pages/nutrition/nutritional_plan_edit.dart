@@ -49,10 +49,10 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
     }
   }
 
-  void onCheck(List<Map<String, dynamic>>? fromContainerRecipes, String meal_type) {
+  void onCheck(List<Map<String, dynamic>>? fromContainerRecipes, String mealType) {
     if (fromContainerRecipes != null) {
       setState(() {        
-        recipes = recipes.where((recipe) => recipe["meal_type"] != meal_type).toList();
+        recipes = recipes.where((recipe) => recipe["meal_type"] != mealType).toList();
 
         recipes.addAll(fromContainerRecipes);
       });
