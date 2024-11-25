@@ -1,31 +1,29 @@
 import 'package:eatnlift/custom_widgets/current_target_display.dart';
 import 'package:eatnlift/custom_widgets/food_items_container.dart';
 import 'package:eatnlift/custom_widgets/nutritient_circular_graph.dart';
-import 'package:eatnlift/pages/nutrition/historic_meal.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../custom_widgets/round_button.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
 
 import '../../services/session_storage.dart';
 
-import 'package:eatnlift/pages/nutrition/nutrition_create.dart';
-import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
-import 'package:eatnlift/pages/nutrition/nutritional_plan.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-class NutritionPage extends StatefulWidget {
-  const NutritionPage({super.key});
+class HistoricMealPage extends StatefulWidget {
+  final DateTime date;
+  const HistoricMealPage({
+    super.key,
+    required this.date,
+  });
 
   @override
-  State<NutritionPage> createState() => _NutritionPageState();
+  State<HistoricMealPage> createState() => _NutritionPageState();
 }
 
-class _NutritionPageState extends State<NutritionPage> {
+class _NutritionPageState extends State<HistoricMealPage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
   Map<String, dynamic>? userData;
@@ -74,8 +72,7 @@ class _NutritionPageState extends State<NutritionPage> {
   }
 
   Future<void> _fetchMeals() async {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(widget.date);
     final apiService = ApiNutritionService();
     final result = await apiService.getMeals(currentUserId!, formattedDate);
     if (result["success"]) {
@@ -118,193 +115,13 @@ class _NutritionPageState extends State<NutritionPage> {
     }
   }
 
-  void _onChangeQuantity(String mealType, Map<String, dynamic> foodItem, double quantity) {
-    setState(() {
-      final meal = meals!.firstWhere(
-        (meal) => meal['meal_type'] == mealType,
-        orElse: () => null
-      );
-
-      if (meal != null) {
-        if (meal != null) {
-          final foodItems = (meal["food_items"] as List)
-              .map((item) => item as Map<String, dynamic>)
-              .toList();
-
-          for (var item in foodItems) {
-            if (item['id'] == foodItem['id']) {
-              item['quantity'] = quantity;
-            }
-          }
-        }
-      }
-      _calculateNutritionalInfo();
-    });
-  }
-
-  void _onSubmittedQuantity(String mealType) {
-    _editMeals(mealType);
-  }
-
-  void _onCheck(String mealType, Map<String, dynamic> foodItem) {
-    setState(() {
-      final meal = meals!.firstWhere(
-        (meal) => meal['meal_type'] == mealType,
-        orElse: () => null,
-      );
-
-      if (meal != null) {
-        Map<String, dynamic> itemToRemove = {};
-
-        for (var item in meal["food_items"]) {
-          if (item["food_item"]["id"] == foodItem["id"]){
-            itemToRemove = item;
-          }
-        }
-        meal["food_items"].remove(itemToRemove);
-      }
-      _editMeals(mealType);
-    });
-  }
-
-  void _updateMeal(String mealType, List<Map<String, dynamic>> foodItems) {
-    setState(() {
-      final meal = meals!.firstWhere(
-        (meal) => meal['meal_type'] == mealType,
-        orElse: () => null,
-      );
-
-      if (meal != null) {
-        meal["food_items"] = [];
-        for (var foodItem in foodItems) {
-          meal["food_items"].add({
-            "food_item": foodItem,
-            "quantity": foodItem["quantity"],
-          });
-        }
-      }
-      ++key;
-      _editMeals(mealType);
-      _calculateNutritionalInfo();
-    });
-  }
-
-  void _editMeals(String mealType) async {
-    List<Map<String, dynamic>> foodItems = [];
-    var meal = meals!.firstWhere(
-      (meal) => meal['meal_type'] == mealType,
-      orElse: () => null,
-    );
-
-    if (meal != null) {
-      for (var foodItem in meal["food_items"]) {
-        foodItems.add({
-          "food_item_id": foodItem["food_item"]["id"],
-          "quantity": foodItem["quantity"],
-        });
-      }
-    }
-
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    final apiService = ApiNutritionService();
-    final result = await apiService.editMeal(currentUserId!, formattedDate, mealType, foodItems);
-    if (result["success"]){
-      setState(() {
-        meal = result[meal];
-        ++key;
-      });
-    }
-  }
-
-  Future<Widget> _buildCalendarDialog(BuildContext context) async {
-    final apiService = ApiNutritionService();
-    final result = await apiService.getMealDates(currentUserId!);
-
-    Set<DateTime> markedDates = {};
-
-    if (result["success"]) {
-      markedDates = (result["dates"] as List<dynamic>)
-          .map((date) {
-            DateTime parsedDate = DateTime.parse(date as String);
-            return DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-          })
-          .toSet();
-      DateTime today = DateTime.now();
-      today = DateTime(today.year, today.month, today.day);
-      markedDates.remove(today);
-    }
-
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Calendari",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            TableCalendar(
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              firstDay: DateTime.utc(2020, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              focusedDay: DateTime.now(),
-              eventLoader: (date) {
-                DateTime normalizedDate = DateTime(date.year, date.month, date.day);
-                return markedDates.contains(normalizedDate) ? ['Event'] : [];
-              },
-              calendarStyle: CalendarStyle(
-                markerDecoration: BoxDecoration(
-                  color: Colors.grey.shade600,
-                  shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  color: Colors.grey.shade600,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              onDaySelected: (selectedDay, focusedDay) {
-                DateTime today = DateTime.now();
-                DateTime normalizedToday = DateTime(today.year, today.month, today.day);
-                DateTime normalizedSelectedDay = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
-
-                if (normalizedSelectedDay == normalizedToday) {
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HistoricMealPage(date: selectedDay),
-                    ),
-                  );
-                }
-              },
-              headerStyle: HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextFormatter: (date, locale) => 
-                    DateFormat('MMMM yyyy').format(date),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: Text(DateFormat('dd-MM-yyyy').format(widget.date)),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: SingleChildScrollView(
@@ -316,59 +133,7 @@ class _NutritionPageState extends State<NutritionPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading && userData != null) ...[
-                    RelativeSizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RoundButton(
-                          icon: FontAwesomeIcons.magnifyingGlass,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const NutritionSearchPage()),
-                            );
-                          },
-                          size: 70
-                        ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.plus,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const NutritionCreatePage()),
-                            );
-                          },
-                          size: 70
-                        ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.calendar,
-                          onPressed:() async {
-                            final dialogWidget = await _buildCalendarDialog(context);
-                            if (context.mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => dialogWidget,
-                              );
-                            }
-                          },
-                          size: 70
-                        ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.book,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const NutritionalPlanPage()),
-                            );
-                          },
-                          size: 70
-                        ),
-                      ]
-                    ),
-                    RelativeSizedBox(height: 5),
+                    RelativeSizedBox(height: 2),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -444,10 +209,9 @@ class _NutritionPageState extends State<NutritionPage> {
                               .cast<Map<String, dynamic>>())
                           .expand((item) => item)
                           .toList(),
-                      onChangeQuantity: _onChangeQuantity,
-                      onSumbittedQuantity: _onSubmittedQuantity,
-                      onCheck: _onCheck,
-                      updateMeal: _updateMeal,
+                      editable: false,
+                      enableQuantityEdit: false,
+                      isSelectable: false,
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
@@ -459,10 +223,9 @@ class _NutritionPageState extends State<NutritionPage> {
                               .cast<Map<String, dynamic>>())
                           .expand((item) => item)
                           .toList(),
-                      onChangeQuantity: _onChangeQuantity,
-                      onSumbittedQuantity: _onSubmittedQuantity,
-                      onCheck: _onCheck,
-                      updateMeal: _updateMeal,
+                      editable: false,
+                      enableQuantityEdit: false,
+                      isSelectable: false,
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
@@ -474,10 +237,9 @@ class _NutritionPageState extends State<NutritionPage> {
                               .cast<Map<String, dynamic>>())
                           .expand((item) => item)
                           .toList(),
-                      onChangeQuantity: _onChangeQuantity,
-                      onSumbittedQuantity: _onSubmittedQuantity,
-                      onCheck: _onCheck,
-                      updateMeal: _updateMeal,
+                      editable: false,
+                      enableQuantityEdit: false,
+                      isSelectable: false,
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
@@ -489,10 +251,9 @@ class _NutritionPageState extends State<NutritionPage> {
                               .cast<Map<String, dynamic>>())
                           .expand((item) => item)
                           .toList(),
-                      onChangeQuantity: _onChangeQuantity,
-                      onSumbittedQuantity: _onSubmittedQuantity,
-                      onCheck: _onCheck,
-                      updateMeal: _updateMeal,
+                      editable: false,
+                      enableQuantityEdit: false,
+                      isSelectable: false,
                     ),
                     RelativeSizedBox(height: 5),
                   ] else ...[

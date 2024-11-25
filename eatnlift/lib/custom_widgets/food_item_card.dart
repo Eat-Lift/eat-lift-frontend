@@ -20,6 +20,7 @@ class FoodItemCard extends StatefulWidget {
   final bool isSelectable;
   final bool initiallySelected;
   final bool enableQuantitySelection;
+  final bool enableQuantityEdit;
   final double quantity;
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(String)? onChangeQuantity;
@@ -39,7 +40,8 @@ class FoodItemCard extends StatefulWidget {
     this.onChangeQuantity,
     this.currentUserId = "0",
     this.onDelete,
-    this.onSubmittedQuantity
+    this.onSubmittedQuantity,
+    this.enableQuantityEdit = true,
   });
 
   @override
@@ -142,10 +144,8 @@ class _FoodItemCardState extends State<FoodItemCard> {
 
   String formatNumber(double value) {
     if (value == value.toInt()) {
-      // If the number has no decimals, return it as an integer string
       return value.toInt().toString();
     }
-    // Otherwise, format it with 2 decimal places
     return value.toStringAsFixed(2);
   }
 
@@ -191,26 +191,37 @@ class _FoodItemCardState extends State<FoodItemCard> {
                     SizedBox(
                       width: 80,
                       height: 40,
-                      child: CustomTextfield(
-                        controller: quantityController,
-                        hintText: "100",
-                        isNumeric: true,
-                        maxLength: 6,
-                        allowDecimal: true,
-                        unit: "g",
-                        centerText: true,
-                        onChanged: (value) {
-                          setState(() {});
-                          if (widget.onChangeQuantity != null) {
-                            widget.onChangeQuantity!(value);
-                          }
-                        },
-                        onSubmitted: (value) {
-                          if (widget.onSubmittedQuantity != null){
-                            widget.onSubmittedQuantity!(value);
-                          }
-                        },
-                      ),
+                      child: widget.enableQuantityEdit
+                          ? CustomTextfield(
+                              controller: quantityController,
+                              hintText: "100",
+                              isNumeric: true,
+                              maxLength: 6,
+                              allowDecimal: true,
+                              unit: "g",
+                              centerText: true,
+                              onChanged: (value) {
+                                setState(() {});
+                                if (widget.onChangeQuantity != null) {
+                                  widget.onChangeQuantity!(value);
+                                }
+                              },
+                              onSubmitted: (value) {
+                                if (widget.onSubmittedQuantity != null) {
+                                  widget.onSubmittedQuantity!(value);
+                                }
+                              },
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 8.0), // Adjust vertical padding
+                              child: Text(
+                                '${quantityController.text} g',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                     ),
                   ],
                   if (widget.isSelectable)

@@ -11,6 +11,9 @@ class FoodItemsContainer extends StatefulWidget {
   final Function(String mealType)? onSumbittedQuantity;
   final Function(String mealType, Map<String, dynamic> foodItem)? onCheck;
   final Function(String mealType, List<Map<String, dynamic>> foodItems)? updateMeal;
+  final bool editable;
+  final bool enableQuantityEdit;
+  final bool isSelectable;
 
   const FoodItemsContainer({
     super.key,
@@ -20,6 +23,9 @@ class FoodItemsContainer extends StatefulWidget {
     this.onCheck,
     this.updateMeal,
     this.onSumbittedQuantity,
+    this.editable = true,
+    this.enableQuantityEdit = true,
+    this.isSelectable = true,
   });
 
   @override
@@ -47,7 +53,6 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
   @override
   void didUpdateWidget(FoodItemsContainer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If foodItems changes, resynchronize
     if (oldWidget.foodItems != widget.foodItems) {
       _setSelectedFoodItems();
     }
@@ -133,9 +138,10 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                                   });
                                   widget.onCheck!(widget.title!.toUpperCase(), foodItem["food_item"]);
                                 },
+                                enableQuantityEdit: widget.enableQuantityEdit,
                                 quantity: foodItem["quantity"],
                                 initiallySelected: true,
-                                isSelectable: true,
+                                isSelectable: widget.isSelectable,
                                 isEditable: false,
                                 isSaveable: false,
                                 isDeleteable: false,
@@ -148,7 +154,9 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                                     foodItem["quantity"] = double.parse(updatedQuantity);
                                   }
                                   _setSelectedFoodItems();
-                                  widget.onChangeQuantity!(widget.title!.toUpperCase(), foodItem["food_item"], foodItem["quantity"]);
+                                  if (widget.onChangeQuantity != null) {
+                                    widget.onChangeQuantity!(widget.title!.toUpperCase(), foodItem["food_item"], foodItem["quantity"]);
+                                  }
                                 },
                                 onSubmittedQuantity: (submittedQuantity) {
                                   if (widget.onSumbittedQuantity != null) {
@@ -168,21 +176,23 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: RoundButton(
-                  icon: FontAwesomeIcons.plus,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: transformFoodItems(), onCheck: onCheck),
-                      ),
-                    );
-                  },
+              if (widget.editable) ...[
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: RoundButton(
+                    icon: FontAwesomeIcons.plus,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: transformFoodItems(), onCheck: onCheck),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
