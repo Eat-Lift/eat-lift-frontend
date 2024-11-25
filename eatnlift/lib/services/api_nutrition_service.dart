@@ -508,7 +508,50 @@ class ApiNutritionService {
         "success": true,
         "meals": responseData,
       };
-    } else {
+    } 
+    else if (response.statusCode == 404){
+      return {
+        "success": true,
+        "meals": []
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> editMeal(String userId, String date, String mealType, List<Map<String, dynamic>> foodItems) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/meals/$userId/edit"),
+      headers: {
+        "Authorization": "Token $token",
+        "Content-Type": "application/json", 
+      },
+      body: jsonEncode({
+        'date': date,
+        'meal_type': mealType,
+        'food_items': foodItems
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "meal": responseData,
+      };
+    } 
+    else {
       final decodedData = utf8.decode(response.bodyBytes);
       final responseData = jsonDecode(decodedData);
       List<String> errors = List<String>.from(responseData["errors"]);

@@ -8,6 +8,7 @@ class FoodItemsContainer extends StatefulWidget {
   final List<Map<String, dynamic>> foodItems;
   final String? title;
   final Function(String mealType, Map<String, dynamic> foodItem, double quantity)? onChangeQuantity;
+  final Function(String mealType)? onSumbittedQuantity;
   final Function(String mealType, Map<String, dynamic> foodItem)? onCheck;
   final Function(String mealType, List<Map<String, dynamic>> foodItems)? updateMeal;
 
@@ -18,6 +19,7 @@ class FoodItemsContainer extends StatefulWidget {
     this.onChangeQuantity,
     this.onCheck,
     this.updateMeal,
+    this.onSumbittedQuantity,
   });
 
   @override
@@ -40,6 +42,15 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
 
   Future<void> _initState() async {
     await _setSelectedFoodItems();
+  }
+
+  @override
+  void didUpdateWidget(FoodItemsContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If foodItems changes, resynchronize
+    if (oldWidget.foodItems != widget.foodItems) {
+      _setSelectedFoodItems();
+    }
   }
 
   Future<void> _setSelectedFoodItems() async {
@@ -139,6 +150,12 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                                   _setSelectedFoodItems();
                                   widget.onChangeQuantity!(widget.title!.toUpperCase(), foodItem["food_item"], foodItem["quantity"]);
                                 },
+                                onSubmittedQuantity: (submittedQuantity) {
+                                  if (widget.onSumbittedQuantity != null) {
+                                    widget.onSumbittedQuantity!(widget.title!.toUpperCase());
+                                  }
+                                }
+
                               ),
                             ),
                           ],

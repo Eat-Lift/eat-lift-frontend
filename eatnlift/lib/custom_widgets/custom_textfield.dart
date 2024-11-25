@@ -13,6 +13,7 @@ class CustomTextfield extends StatefulWidget {
   final String? unit;
   final IconData? icon;
   final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
   final double height;
 
   const CustomTextfield({
@@ -29,6 +30,7 @@ class CustomTextfield extends StatefulWidget {
     this.icon,
     this.onChanged,
     this.height = 10,
+    this.onSubmitted,
   });
 
   @override
@@ -88,6 +90,11 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         setState(() {});
         if (widget.onChanged != null) {
           widget.onChanged!(value);
+        }
+      },
+      onSubmitted: (value) {
+        if (widget.onSubmitted != null){
+          widget.onSubmitted!(value);
         }
       },
     );

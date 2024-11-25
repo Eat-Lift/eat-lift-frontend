@@ -23,6 +23,7 @@ class FoodItemCard extends StatefulWidget {
   final double quantity;
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(String)? onChangeQuantity;
+  final void Function(String)? onSubmittedQuantity;
 
   const FoodItemCard({
     super.key,
@@ -38,6 +39,7 @@ class FoodItemCard extends StatefulWidget {
     this.onChangeQuantity,
     this.currentUserId = "0",
     this.onDelete,
+    this.onSubmittedQuantity
   });
 
   @override
@@ -202,7 +204,12 @@ class _FoodItemCardState extends State<FoodItemCard> {
                           if (widget.onChangeQuantity != null) {
                             widget.onChangeQuantity!(value);
                           }
-                        }
+                        },
+                        onSubmitted: (value) {
+                          if (widget.onSubmittedQuantity != null){
+                            widget.onSubmittedQuantity!(value);
+                          }
+                        },
                       ),
                     ),
                   ],
