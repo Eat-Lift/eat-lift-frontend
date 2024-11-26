@@ -1,3 +1,4 @@
+import 'package:eatnlift/pages/user/check.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -140,7 +141,12 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             child: CustomButton(
                               text: "Revisió",
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const CheckPage()),
+                                );
+                              },
                               icon: FontAwesomeIcons.chartLine,
                               height: 40,
                             ),

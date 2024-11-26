@@ -283,4 +283,36 @@ class ApiUserService{
     }
   }
 
+    Future<Map<String, dynamic>> submitCheck(Map<String, dynamic> check) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/checks/$userId/create'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode(check),
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "check": responseData,
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
 }
