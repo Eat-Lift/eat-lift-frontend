@@ -283,7 +283,7 @@ class ApiUserService{
     }
   }
 
-    Future<Map<String, dynamic>> submitCheck(Map<String, dynamic> check) async {
+  Future<Map<String, dynamic>> submitCheck(Map<String, dynamic> check) async {
     final SessionStorage sessionStorage = SessionStorage();
     final userId = await sessionStorage.getUserId();
     final token = await sessionStorage.getAccessToken();
@@ -303,6 +303,111 @@ class ApiUserService{
       return {
         "success": true,
         "check": responseData,
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getCheck(String date) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/checks/$userId'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode({
+        "date": date
+      }),
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "check": responseData,
+      };
+    }
+    else if (response.statusCode == 404) {
+      return {
+        "success": true,
+        "check": [],
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getCheckDates() async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/checks/$userId/dates'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "dates": responseData,
+      };
+    }
+    else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getChecksSummary() async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final userId = await sessionStorage.getUserId();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/checks/$userId/summary'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+    );
+
+    if(response.statusCode == 200){
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return {
+        "success": true,
+        "checks": responseData,
       };
     }
     else {

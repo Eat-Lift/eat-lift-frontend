@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/wrapped_image.dart';
+import 'package:eatnlift/pages/user/check_info.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -130,11 +131,13 @@ class CheckPageState extends State<CheckPage> {
     } else {
       return;
     }
-
-    setState(() {
-      selectedBodyfat = bodyFatPercentage;
-      selectedBodyfatController.text = bodyFatPercentage.toStringAsFixed(2);
-    });
+    
+    if (!bodyFatPercentage.isNaN) {
+      setState(() {
+        selectedBodyfat = bodyFatPercentage;
+        selectedBodyfatController.text = bodyFatPercentage.toStringAsFixed(2);
+      });
+    }
   }
 
   void submitCheck(BuildContext context) async {
@@ -163,34 +166,34 @@ class CheckPageState extends State<CheckPage> {
       "date": todayDate,
     };
 
-    if (selectedWeightController.text.isEmpty) {
+    if (selectedWeightController.text.isNotEmpty) {
       selectedData['weight'] = double.tryParse(selectedWeightController.text);
     }
-    if (selectedBodyfatController.text.isEmpty) {
+    if (selectedBodyfatController.text.isNotEmpty) {
       selectedData['bodyfat'] = double.tryParse(selectedBodyfatController.text);
     }
-    if (selectedNeckController.text.isEmpty) {
+    if (selectedNeckController.text.isNotEmpty) {
       selectedData['neck'] = double.tryParse(selectedNeckController.text);
     }
-    if (selectedShouldersController.text.isEmpty) {
+    if (selectedShouldersController.text.isNotEmpty) {
       selectedData['shoulders'] = double.tryParse(selectedShouldersController.text);
     }
-    if (selectedArmController.text.isEmpty) {
+    if (selectedArmController.text.isNotEmpty) {
       selectedData['arm'] = double.tryParse(selectedArmController.text);
     }
-    if (selectedChestController.text.isEmpty) {
+    if (selectedChestController.text.isNotEmpty) {
       selectedData['chest'] = double.tryParse(selectedChestController.text);
     }
-    if (selectedWaistController.text.isEmpty) {
+    if (selectedWaistController.text.isNotEmpty) {
       selectedData['waist'] = double.tryParse(selectedWaistController.text);
     }
-    if (selectedHipController.text.isEmpty) {
+    if (selectedHipController.text.isNotEmpty) {
       selectedData['hip'] = double.tryParse(selectedHipController.text);
     }
-    if (selectedThighController.text.isEmpty) {
+    if (selectedThighController.text.isNotEmpty) {
       selectedData['thigh'] = double.tryParse(selectedThighController.text);
     }
-    if (selectedCalfController.text.isEmpty) {
+    if (selectedCalfController.text.isNotEmpty) {
       selectedData['calf'] = double.tryParse(selectedCalfController.text);
     }
 
@@ -198,13 +201,14 @@ class CheckPageState extends State<CheckPage> {
     final result = await apiService.submitCheck(selectedData);
 
     if (result["success"] == true) {
-      // Navigate to another page if needed
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => NutritionalRequirementsPage(personalInfo: personalInformationMap),
-      //   ),
-      // );
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CheckInfoPage(date: todayDate),
+          ),
+        );
+      }
     } else {
       setState(() {
         response = {
