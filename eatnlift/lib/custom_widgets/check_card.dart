@@ -34,7 +34,7 @@ class CheckCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Colors.grey.shade300,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: Colors.white,

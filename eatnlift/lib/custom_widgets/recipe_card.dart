@@ -89,7 +89,7 @@ class _RecipeCardState extends State<RecipeCard> {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Colors.grey.shade300,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: Colors.white,

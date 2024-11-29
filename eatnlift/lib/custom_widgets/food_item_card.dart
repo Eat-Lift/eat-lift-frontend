@@ -164,7 +164,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Colors.grey.shade300,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: Colors.white,
@@ -213,7 +213,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                               },
                             )
                           : Padding(
-                              padding: const EdgeInsets.only(top: 8.0), // Adjust vertical padding
+                              padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 '${quantityController.text} g',
                                 style: const TextStyle(
