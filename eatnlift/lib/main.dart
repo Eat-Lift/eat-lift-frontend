@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/pages/user/login.dart';
 import 'package:eatnlift/pages/home.dart'; 
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class SessionCheckWrapper extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: RotatingImage(),
           );
         } else if (snapshot.hasData && snapshot.data == true) {
           return const HomePage(initialIndex: 0);

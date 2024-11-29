@@ -1,6 +1,7 @@
 import 'package:eatnlift/custom_widgets/current_target_display.dart';
 import 'package:eatnlift/custom_widgets/food_items_container.dart';
 import 'package:eatnlift/custom_widgets/nutritient_circular_graph.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_user_service.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,9 @@ class _NutritionPageState extends State<HistoricMealPage> {
   }
 
   Future<void> _initializePage() async {
+    setState(() {
+      isLoading = true;
+    });
     await _fetchCurrentUserId();
     await _loadUserData();
     await _fetchMeals();
@@ -56,18 +60,14 @@ class _NutritionPageState extends State<HistoricMealPage> {
 
   Future<void> _fetchCurrentUserId() async {
     final userId = await sessionStorage.getUserId();
-    setState(() {
-      currentUserId = userId;
-    });
+    currentUserId = userId;
   }
 
   Future<void> _loadUserData() async {
     final apiService = ApiUserService();
     final result = await apiService.getPersonalInformation(currentUserId!);
     if (result?["success"]){
-      setState(() {
         userData = result?["user"];
-      });
     }
   }
 
@@ -93,20 +93,18 @@ class _NutritionPageState extends State<HistoricMealPage> {
           var food = item["food_item"];
           var quantity = item["quantity"];
 
-          // Calculate totals for each nutrient
           totalCalories += (food["calories"] * quantity) / 100;
           totalProteins += (food["proteins"] * quantity) / 100;
           totalFats += (food["fats"] * quantity) / 100;
           totalCarbohydrates += (food["carbohydrates"] * quantity) / 100;
         }
 
-        // Add to specific meal type
         nutritionalInfo?[mealType]?["calories"] = totalCalories;
         nutritionalInfo?[mealType]?["proteins"] = totalProteins;
         nutritionalInfo?[mealType]?["fats"] = totalFats;
         nutritionalInfo?[mealType]?["carbohydrates"] = totalCarbohydrates;
 
-        // Add to GENERAL
+
         nutritionalInfo?["GENERAL"]?["calories"] = totalCalories;
         nutritionalInfo?["GENERAL"]?["proteins"] = totalProteins;
         nutritionalInfo?["GENERAL"]?["fats"] = totalFats;
@@ -257,12 +255,13 @@ class _NutritionPageState extends State<HistoricMealPage> {
                     ),
                     RelativeSizedBox(height: 5),
                   ] else ...[
+                    RelativeSizedBox(height: 25),
                     Align(
                       alignment: Alignment.center,
                       child: Column(
                         children: [
                           RelativeSizedBox(height: 10),
-                          CircularProgressIndicator(color: Colors.grey),   
+                          RotatingImage(),   
                         ],
                       ),
                     ),

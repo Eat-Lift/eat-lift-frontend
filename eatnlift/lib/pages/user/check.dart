@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/wrapped_image.dart';
 import 'package:eatnlift/pages/user/check_info.dart';
 import 'package:flutter/material.dart';
@@ -457,8 +458,7 @@ class CheckPageState extends State<CheckPage> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 10),
-                      CircularProgressIndicator(color: Colors.grey),   
+                      RotatingImage(),   
                     ],
                   ),
                 ),

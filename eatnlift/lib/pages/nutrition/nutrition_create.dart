@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
 import 'package:eatnlift/pages/nutrition/recipe_page.dart';
@@ -314,7 +315,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               ),
               const RelativeSizedBox(height: 2),
               if (isCreating) ...[
-                CircularProgressIndicator(),
+                RotatingImage(),
                 const RelativeSizedBox(height: 2),
               ]
               else ...[
@@ -418,11 +419,11 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         ),
         const RelativeSizedBox(height: 1),
         Container(
-          height: 200,
+          height: 180,
           padding: const EdgeInsets.all(7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
             border: Border.all(color: Colors.white, width: 3),
           ),
           child: Stack(

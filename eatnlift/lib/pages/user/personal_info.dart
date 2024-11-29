@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -202,6 +203,10 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: const Text("Informació personal"),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
@@ -210,9 +215,8 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (!isLoading) ...[
-                const RelativeSizedBox(height: 1),
                 const Icon(
-                  Icons.lock,
+                  Icons.supervised_user_circle_sharp,
                   size: 100,
                 ),
 
@@ -368,7 +372,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
                   child: Column(
                     children: [
                       RelativeSizedBox(height: 10),
-                      CircularProgressIndicator(color: Colors.grey),   
+                      RotatingImage(),   
                     ],
                   ),
                 ),

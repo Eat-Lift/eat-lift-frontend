@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/recipes_container.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutritional_plan_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
@@ -30,6 +31,9 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
   }
 
   Future<void> _initializePage() async {
+    setState(() {
+      isLoading = true;
+    });
     await _fetchCurrentUserId(); 
     await _fetchNutritionalPlan();
     setState(() {
@@ -54,7 +58,6 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
             .expand((item) => (item["recipes"] as List))
             .map<Map<String, dynamic>>((recipe) {
               final updatedRecipe = Map<String, dynamic>.from(recipe);
-              // Rename keys
               updatedRecipe["name"] = updatedRecipe.remove("recipe_name");
               updatedRecipe["id"] = updatedRecipe.remove("recipe_id");
               updatedRecipe["selected"] = true;
@@ -72,25 +75,24 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
         title: const Text("Pla nutricional"),
-        actions: 
-          [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: RoundButton(
-                icon: Icons.edit,
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditNutritionalPlanPage(recipes: recipes)),
-                  );
-                  if (result == true){
-                    _fetchNutritionalPlan();
-                  }
-                },
-                size: 35,
-              ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: RoundButton(
+              icon: Icons.edit,
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditNutritionalPlanPage(recipes: recipes)),
+                );
+                if (result == true){
+                  _fetchNutritionalPlan();
+                }
+              },
+              size: 35,
             ),
-          ],     
+          ),
+        ],     
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -98,36 +100,47 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Stack(
             children: [
-              if (isLoading) ...[
-                Align(
-                  child: CircularProgressIndicator(),
+              if(!isLoading) ...[
+                Column(
+                  children: [
+                    RelativeSizedBox(height: 1),
+                    RecipesContainer(
+                      recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
+                      title: "Esmorzar",
+                    ),
+                    RelativeSizedBox(height: 1),
+                    RecipesContainer(
+                      recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
+                      title: "Dinar",
+                    ),
+                    RelativeSizedBox(height: 1),
+                    RecipesContainer(
+                      recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
+                      title: "Berenar",
+                    ),
+                    RelativeSizedBox(height: 1),
+                    RecipesContainer(
+                      recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
+                      title: "Sopar",
+                    ),
+                    RelativeSizedBox(height: 1),
+                  ],
                 ),
               ]
               else ...[
                 Column(
                   children: [
-                    RelativeSizedBox(height: 2),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
-                      title: "Esmorzar",
+                    RelativeSizedBox(height: 25),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          RelativeSizedBox(height: 10),
+                          RotatingImage(),   
+                        ],
+                      ),
                     ),
-                    RelativeSizedBox(height: 2),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
-                      title: "Dinar",
-                    ),
-                    RelativeSizedBox(height: 2),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
-                      title: "Berenar",
-                    ),
-                    RelativeSizedBox(height: 2),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
-                      title: "Sopar",
-                    ),
-                    RelativeSizedBox(height: 2),
-                  ],
+                  ]
                 ),
               ]
             ]

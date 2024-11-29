@@ -147,6 +147,10 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: const Text("Requeriments nutriconals"),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
@@ -154,9 +158,8 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const RelativeSizedBox(height: 1),
               const Icon(
-                Icons.lock,
+                Icons.bar_chart,
                 size: 100,
               ),
 

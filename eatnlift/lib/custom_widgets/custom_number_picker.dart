@@ -142,7 +142,7 @@ class CustomNumberPickerState<T extends num> extends State<CustomNumberPicker<T>
               "$displayValue ${selectedValue != null ? widget.unit : ''}",
               style: TextStyle(
                 fontSize: 16,
-                color: selectedValue == null ? Colors.grey[500] : Colors.black,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),

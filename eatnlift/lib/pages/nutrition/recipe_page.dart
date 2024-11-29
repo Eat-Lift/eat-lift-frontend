@@ -1,6 +1,7 @@
 import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/custom_widgets/expandable_text.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/pages/nutrition/recipe_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +14,12 @@ import '../../services/session_storage.dart';
 
 class RecipePage extends StatefulWidget {
   final int recipeId;
+  final bool isCreating;
 
   const RecipePage({
     super.key,
     required this.recipeId,
+    this.isCreating = true,
   });
 
   @override
@@ -39,34 +42,37 @@ class _RecipePageState extends State<RecipePage> {
   @override
   void initState() {
     super.initState();
-    _fetchRecipeData();
-    _fetchCurrentUserId();
-    _fetchSaved();
+    _initPage();
+  }
+
+  Future<void> _initPage() async {
+    setState((){
+      isLoading = true;
+    });
+    await _fetchRecipeData();
+    await _fetchCurrentUserId();
+    await _fetchSaved();
+    setState((){
+      isLoading = false;
+    });
   }
 
   Future<void> _fetchCurrentUserId() async {
     final userId = await sessionStorage.getUserId();
-    setState(() {
-      currentUserId = userId;
-    });
+    currentUserId = userId;
   }
 
-  void _fetchRecipeData() async {
+  Future<void> _fetchRecipeData() async {
     final apiService = ApiNutritionService();
     final recipe = await apiService.getRecipe(widget.recipeId);
-    setState((){
-      recipeData = recipe["recipe"];
-    });
+    recipeData = recipe["recipe"];
     _calculateNutritionalInfo();
   }
 
-  void _fetchSaved() async {
+  Future<void> _fetchSaved() async {
     final apiService = ApiNutritionService();
     final response = await apiService.getRecipeSaved(widget.recipeId.toString());
-    setState((){
-      isSaved = response["is_saved"];
-      isLoading = false;
-    });
+    isSaved = response["is_saved"];
   }
 
   void _toggleSaved() async {
@@ -150,12 +156,7 @@ class _RecipePageState extends State<RecipePage> {
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Stack(
             children: [
-              if (isLoading) ...[
-                Align(
-                  child: CircularProgressIndicator(),
-                ),
-              ]
-              else ...[
+              if (!isLoading) ...[
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -170,13 +171,13 @@ class _RecipePageState extends State<RecipePage> {
                         RelativeSizedBox(width: 5),
                         Flexible(
                           child: Text(
-                            recipeData?["name"] ?? '', // Default to empty string if null
+                            recipeData?["name"] ?? '',
                             style: TextStyle(
                               color: Colors.grey[700],
                               fontSize: 22,
                             ),
-                            overflow: TextOverflow.ellipsis, // Show "..." if the text overflows
-                            maxLines: 2, // Limit to one line
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                           ),
                         ),
                       ],
@@ -193,7 +194,7 @@ class _RecipePageState extends State<RecipePage> {
                             tooltip: isSaved ? 'Unsave' : 'Save',
                             onPressed: _toggleSaved,
                           ),
-                          if (currentUserId == recipeData?["creator"].toString())
+                          if (currentUserId == recipeData?["creator"].toString() && !widget.isCreating)
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.black),
                               tooltip: 'Edit',
@@ -210,7 +211,7 @@ class _RecipePageState extends State<RecipePage> {
                                 }
                               },
                             ),
-                          if (currentUserId == recipeData?["creator"].toString())
+                          if (currentUserId == recipeData?["creator"].toString() && !widget.isCreating)
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.black),
                               tooltip: 'Delete',
@@ -247,7 +248,7 @@ class _RecipePageState extends State<RecipePage> {
                     ),
                     RelativeSizedBox(height: 2),
                     Container(
-                      height: 340,
+                      height: 320,
                       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -297,6 +298,22 @@ class _RecipePageState extends State<RecipePage> {
                       ),
                     ),
                   ],
+                ),
+              ]
+              else ...[
+                Column(
+                  children: [
+                    RelativeSizedBox(height: 25),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          RelativeSizedBox(height: 10),
+                          RotatingImage(),   
+                        ],
+                      ),
+                    ),
+                  ]
                 ),
               ]
             ]

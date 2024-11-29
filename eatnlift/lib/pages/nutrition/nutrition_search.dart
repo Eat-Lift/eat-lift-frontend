@@ -67,7 +67,6 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   void toggleSearchMode(bool isFoodItemSelected) {
     setState(() {
       isSearchingFoodItem = isFoodItemSelected;
-      suggestions.clear();
       searchController.clear();
     });
   }
@@ -106,7 +105,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
   Future<void> _searchRecipes() async {
     final query = searchController.text;
     if (query.isEmpty) {
-      if (mounted) setState(() => foodItems?.clear());
+      if (mounted) setState(() => recipes?.clear());
       return;
     }
 
@@ -114,7 +113,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
     if (response["success"]) {
       if (mounted) {
         setState(() {
-          foodItems = (response["recipes"] as List)
+          recipes = (response["recipes"] as List)
               .map((item) => item as Map<String, dynamic>)
               .toList();
         });
@@ -124,9 +123,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
 
   void _onSelectItem(Map<String, dynamic>? selectedFoodItem) {
     if (selectedFoodItem != null) {
-      // Check the "selected" property in the selected food item
       if (selectedFoodItem["selected"] == true) {
-        // If selected, add or update the item in the selectedFoodItems list
         final existingIndex = widget.selectedFoodItems?.indexWhere(
           (item) => item["id"] == selectedFoodItem["id"],
         );
@@ -136,12 +133,10 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
           widget.selectedFoodItems?[existingIndex] = selectedFoodItem;
         }
       } else {
-        // If not selected, remove the item from the selectedFoodItems list
         widget.selectedFoodItems?.removeWhere(
           (item) => item["id"] == selectedFoodItem["id"],
         );
       }
-      // Optionally, update the UI if necessary
       setState(() {});
     }
   }
@@ -259,8 +254,9 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       itemBuilder: (context, index) {
         final recipe = recipes[index];
         return RecipeCard(
+          isCreating: widget.isCreating,
           recipe: recipe,
-          isAddable: widget.searchFoodItems,
+          isAddable: widget.isCreating && widget.searchFoodItems,
           onAdd: _onAddRecipe,
           isSelectable: !widget.searchFoodItems,
           onSelect: _onSelectRecipe,
@@ -341,8 +337,8 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                         );
                       }
                     } else {
-                      if (foodItems != null && foodItems!.isNotEmpty) {
-                        return _buildRecipeList(foodItems!);
+                      if (recipes != null && recipes!.isNotEmpty) {
+                        return _buildRecipeList(recipes!);
                       } else {
                         return const Center(
                           child: Text(

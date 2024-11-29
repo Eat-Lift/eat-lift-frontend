@@ -82,6 +82,7 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
   }
 
   void onCheck(List<Map<String, dynamic>>? fromSearchFoodItems) {
+    if (!mounted) return;
     setState(() {
       selectedFoodItems = [];
       for (var foodItem in fromSearchFoodItems!) {
@@ -112,8 +113,8 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
             ),
         ],
         Container(
-          height: 180,
-          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
+          height: 178,
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(8),

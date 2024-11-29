@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/recipes_container.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +32,22 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
     _initializePage();
   }
 
+  Future<void> _initializePage() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _fetchCurrentUserId(); 
+    setState(() {
+      recipes = widget.recipes;
+      isLoading = false;
+    });
+  }
+
   void submitEdit() async {
-    // Change 'id' to 'recipe_id' in each recipe
     final updatedRecipes = recipes.map((recipe) {
       if (recipe.containsKey("id")) {
-        recipe["recipe_id"] = recipe["id"]; // Copy the value to 'recipe_id'
-        recipe.remove("id"); // Remove the old 'id' key
+        recipe["recipe_id"] = recipe["id"];
+        recipe.remove("id");
         recipe["meal_type"] = recipe["meal_type"].toString().toUpperCase();
       }
       return recipe;
@@ -59,13 +70,6 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
     }
   }
 
-  Future<void> _initializePage() async {
-    await _fetchCurrentUserId(); 
-    setState(() {
-      recipes = widget.recipes;
-      isLoading = false;
-    });
-  }
 
   Future<void> _fetchCurrentUserId() async {
     final userId = await sessionStorage.getUserId();
@@ -100,41 +104,41 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
             children: [
               if (isLoading) ...[
                 Align(
-                  child: CircularProgressIndicator(),
+                  child: RotatingImage(),
                 ),
               ]
               else ...[
                 Column(
                   children: [
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
                       title: "Esmorzar",
                       isUpdating: true,
                       onCheck: onCheck,
                     ),
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
                       title: "Dinar",
                       isUpdating: true,
                       onCheck: onCheck,
                     ),
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
                       title: "Berenar",
                       isUpdating: true,
                       onCheck: onCheck,
                     ),
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                     RecipesContainer(
                       recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
                       title: "Sopar",
                       isUpdating: true,
                       onCheck: onCheck,
                     ),
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                   ],
                 ),
               ]

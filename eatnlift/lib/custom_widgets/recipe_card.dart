@@ -11,6 +11,7 @@ class RecipeCard extends StatefulWidget {
   final bool initiallySelected;
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(List<Map<String, dynamic>>)? onAdd;
+  final bool isCreating;
 
   const RecipeCard({
     super.key,
@@ -20,6 +21,7 @@ class RecipeCard extends StatefulWidget {
     this.isAddable = false,
     this.onSelect,
     this.onAdd,
+    this.isCreating = true,
   });
 
   @override
@@ -42,12 +44,11 @@ class _RecipeCardState extends State<RecipeCard> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text("S'han afegit els aliments de la recepta."),
-            duration: const Duration(seconds: 3), // Display for 3 seconds
+            duration: const Duration(seconds: 3),
           ),
         );
       }
 
-      // Explicitly cast each item to Map<String, dynamic> and add "selected": true
       return (result["recipe"]["recipe_food_items"] as List)
           .map((item) => {
                 ...(item as Map<String, dynamic>),
@@ -82,7 +83,7 @@ class _RecipeCardState extends State<RecipeCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RecipePage(recipeId: widget.recipe["id"],),
+            builder: (context) => RecipePage(recipeId: widget.recipe["id"], isCreating: widget.isCreating),
           )
         );
       },

@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../custom_widgets/round_button.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
+import '../../custom_widgets/rotating_logo.dart';
 
 import '../../services/session_storage.dart';
 
@@ -47,6 +48,9 @@ class _NutritionPageState extends State<NutritionPage> {
   }
 
   Future<void> _initializePage() async {
+    setState(() {
+      isLoading = true;
+    });
     await _fetchCurrentUserId();
     await _loadUserData();
     await _fetchMeals();
@@ -67,9 +71,7 @@ class _NutritionPageState extends State<NutritionPage> {
     final apiService = ApiUserService();
     final result = await apiService.getPersonalInformation(currentUserId!);
     if (result?["success"]){
-      setState(() {
-        userData = result?["user"];
-      });
+      userData = result?["user"];
     }
   }
 
@@ -85,31 +87,28 @@ class _NutritionPageState extends State<NutritionPage> {
 
   Future<void> _calculateNutritionalInfo() async {
     if (meals != null) {
+      double totalCalories = 0.0;
+      double totalProteins = 0.0;
+      double totalFats = 0.0;
+      double totalCarbohydrates = 0.0;
       for (var meal in meals!) {
         String mealType = meal["meal_type"];
-        double totalCalories = 0.0;
-        double totalProteins = 0.0;
-        double totalFats = 0.0;
-        double totalCarbohydrates = 0.0;
 
         for (var item in meal["food_items"]) {
           var food = item["food_item"];
           var quantity = item["quantity"];
 
-          // Calculate totals for each nutrient
           totalCalories += (food["calories"] * quantity) / 100;
           totalProteins += (food["proteins"] * quantity) / 100;
           totalFats += (food["fats"] * quantity) / 100;
           totalCarbohydrates += (food["carbohydrates"] * quantity) / 100;
         }
 
-        // Add to specific meal type
         nutritionalInfo?[mealType]?["calories"] = totalCalories;
         nutritionalInfo?[mealType]?["proteins"] = totalProteins;
         nutritionalInfo?[mealType]?["fats"] = totalFats;
         nutritionalInfo?[mealType]?["carbohydrates"] = totalCarbohydrates;
 
-        // Add to GENERAL
         nutritionalInfo?["GENERAL"]?["calories"] = totalCalories;
         nutritionalInfo?["GENERAL"]?["proteins"] = totalProteins;
         nutritionalInfo?["GENERAL"]?["fats"] = totalFats;
@@ -164,6 +163,7 @@ class _NutritionPageState extends State<NutritionPage> {
         meal["food_items"].remove(itemToRemove);
       }
       _editMeals(mealType);
+      _calculateNutritionalInfo();
     });
   }
 
@@ -316,7 +316,7 @@ class _NutritionPageState extends State<NutritionPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading && userData != null) ...[
-                    RelativeSizedBox(height: 5),
+                    RelativeSizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -325,7 +325,7 @@ class _NutritionPageState extends State<NutritionPage> {
                           onPressed:() {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const NutritionSearchPage()),
+                              MaterialPageRoute(builder: (context) => const NutritionSearchPage(isCreating: false)),
                             );
                           },
                           size: 70
@@ -368,7 +368,7 @@ class _NutritionPageState extends State<NutritionPage> {
                         ),
                       ]
                     ),
-                    RelativeSizedBox(height: 5),
+                    RelativeSizedBox(height: 3),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -496,14 +496,18 @@ class _NutritionPageState extends State<NutritionPage> {
                     ),
                     RelativeSizedBox(height: 5),
                   ] else ...[
-                    Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          RelativeSizedBox(height: 10),
-                          CircularProgressIndicator(color: Colors.grey),   
-                        ],
-                      ),
+                    Column(
+                      children: [
+                        RelativeSizedBox(height: 37),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              RotatingImage(),
+                            ],
+                          ),
+                        ),
+                      ]
                     ),
                   ]
                 ],

@@ -39,6 +39,8 @@ class _HomePageState extends State<HomePage> {
             _currentIndex = index;
           });
         },
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),

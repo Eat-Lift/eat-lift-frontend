@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/custom_number_text.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/wrapped_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -208,7 +209,8 @@ class CheckInfoPageState extends State<CheckInfoPage> {
                   child: Column(
                     children: [
                       RelativeSizedBox(height: 10),
-                      CircularProgressIndicator(color: Colors.grey),   
+                      RotatingImage(),
+                      RelativeSizedBox(height: 15),   
                     ],
                   ),
                 ),

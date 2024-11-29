@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/messages_box.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
@@ -150,7 +151,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: const Text("Crear"),
+        title: const Text("Editar Recepta"),
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -197,11 +198,11 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   ),
                   const RelativeSizedBox(height: 1),
                   Container(
-                    height: 200,
+                    height: 180,
                     padding: const EdgeInsets.all(7.0),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: Colors.white, width: 3),
                     ),
                     child: Stack(
@@ -277,7 +278,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
               if (isCreating) ...[
                 Align(
                   alignment: Alignment.center,
-                  child:CircularProgressIndicator(),
+                  child: RotatingImage(),
                 ),
                 const RelativeSizedBox(height: 2),
               ]

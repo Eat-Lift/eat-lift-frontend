@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -189,7 +190,7 @@ class _EditUserPageState extends State<EditUserPage> {
                     RelativeSizedBox(height: 60),
                     Align(
                       alignment: Alignment.center,
-                      child: CircularProgressIndicator(color: Colors.grey),
+                      child: RotatingImage(),
                     ),
                   ]
                 ),

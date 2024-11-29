@@ -1,5 +1,6 @@
 import 'package:eatnlift/custom_widgets/check_graphs.dart';
 import 'package:eatnlift/custom_widgets/checks_container.dart';
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/pages/user/check.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -203,20 +204,25 @@ class _UserPageState extends State<UserPage> {
                         RelativeSizedBox(height: 2),
                         CheckGraphs(checks: checksSummary!),
                         RelativeSizedBox(height: 2),
-                        ChecksContainer(checks: checkDates!, height: 300),
+                        ChecksContainer(checks: checkDates!, height: 295),
                         RelativeSizedBox(height: 5),
                       ],
                     ),
                   ),
                 ] else ...[
-                  Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: [
-                        RelativeSizedBox(height: 10),
-                        CircularProgressIndicator(color: Colors.grey),   
-                      ],
-                    ),
+                  Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            RelativeSizedBox(height: 10),
+                            RotatingImage(),   
+                          ],
+                        ),
+                      ),
+                      RelativeSizedBox(height: 10)
+                    ]
                   ),
                 ]
               ],
