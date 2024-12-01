@@ -183,6 +183,17 @@ class _NutritionPageState extends State<NutritionPage> {
           });
         }
       }
+      else {
+        meals!.add(
+          {"user": currentUserId,
+          "meal_type": mealType,
+          "date":DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          "food_items": foodItems.map((foodItem) => {
+            "food_item": foodItem,
+            "quantity": foodItem["quantity"]
+          }).toList()}
+        );
+      }
       ++key;
       _editMeals(mealType);
       _calculateNutritionalInfo();

@@ -55,6 +55,9 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
     }
     _fetchCurrentUserId();
     searchController.addListener(_onSearchChanged);
+    if (isSearchingFoodItem){
+      _searchFoodItems();
+    }
   }
 
   Future<void> _fetchCurrentUserId() async {
@@ -85,11 +88,6 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
 
   Future<void> _searchFoodItems() async {
     final query = searchController.text;
-    if (query.isEmpty) {
-      if (mounted) setState(() => foodItems?.clear());
-      return;
-    }
-
     final response = await apiNutritionService.getFoodItems(query);
     if (response["success"]) {
       if (mounted) {
@@ -351,6 +349,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
                   },
                 ),
               ),
+              const RelativeSizedBox(height: 2),
             ],
           ),
         ),

@@ -66,6 +66,30 @@ class ApiUserService{
     }
   }
 
+  Future<Map<String, dynamic>> signout() async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/signout'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      
+    );
+
+    if (response.statusCode == 200){
+      return {
+        "success": true,
+      }; 
+    } else {
+      return {
+        "success": false,
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> googleLogin() async {
     final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
     final String? token;

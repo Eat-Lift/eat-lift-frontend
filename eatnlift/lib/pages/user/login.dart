@@ -118,9 +118,11 @@ class LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.lock,
-                size: 100,
+              Image.asset(
+                "lib/assets/images/EatnliftLogo.png",
+                width: 130,
+                height: 130,
+                fit: BoxFit.cover,
               ),
 
               const RelativeSizedBox(height: 0.5),

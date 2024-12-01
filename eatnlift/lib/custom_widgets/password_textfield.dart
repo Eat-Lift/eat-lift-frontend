@@ -49,7 +49,7 @@ class PasswordTextfieldState extends State<PasswordTextfield> {
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.grey.shade400,
+            color: Colors.white,
             width: 3,
           ),
         ),

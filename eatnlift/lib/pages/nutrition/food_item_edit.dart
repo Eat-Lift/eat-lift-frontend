@@ -221,8 +221,8 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                   const RelativeSizedBox(width: 1),
                   Expanded(
                     child: CustomTextfield(
-                      controller: fatsController,
-                      hintText: "Greixos",
+                      controller: carbohydratesController,
+                      hintText: "Carbohidrats",
                       isNumeric: true,
                       maxLength: 6,
                       unit: "g",
@@ -233,8 +233,8 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                   const RelativeSizedBox(width: 1),
                   Expanded(
                     child: CustomTextfield(
-                      controller: carbohydratesController,
-                      hintText: "Carbohidrats",
+                      controller: fatsController,
+                      hintText: "Greixos",
                       isNumeric: true,
                       maxLength: 6,
                       unit: "g",

@@ -126,6 +126,10 @@ class SigninPageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: Text("Registre"),
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
@@ -134,9 +138,11 @@ class SigninPageState extends State<SigninPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const RelativeSizedBox(height: 1),
-              const Icon(
-                Icons.lock,
-                size: 100,
+              Image.asset(
+                "lib/assets/images/EatnliftLogo.png",
+                width: 130,
+                height: 130,
+                fit: BoxFit.cover,
               ),
 
               const RelativeSizedBox(height: 0.5),

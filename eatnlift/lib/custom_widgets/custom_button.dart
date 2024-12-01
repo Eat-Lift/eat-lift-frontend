@@ -33,15 +33,17 @@ class CustomButton extends StatelessWidget {
             children: [
               if (icon != null)
                 Icon(icon, color: Colors.white, size: 20),
-              if (icon != null) const SizedBox(width: 8),
-              Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              if (icon != null && text != "") const SizedBox(width: 8),
+              if (text != "") ...[
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
+              ]
             ],
           ),
         ),

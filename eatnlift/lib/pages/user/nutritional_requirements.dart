@@ -39,6 +39,14 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
     super.initState();
     _calculateCalories();
     _calculateMacronutrients();
+    _correctRequirements();
+  }
+
+  void _correctRequirements() {
+    if (calories < 0 || calories > 70000) calories = 2000;
+    if (proteins < 0 || proteins > 70000) proteins = 130;
+    if (carbohydrates < 0 || carbohydrates > 70000) carbohydrates = 270;
+    if (fats < 0 || fats > 1000) fats = 50;
   }
 
   int _calculateAge(DateTime birthDate) {
@@ -222,26 +230,6 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
                   ),
 
                   RelativeSizedBox(width: 1),
-                  
-                  Expanded(
-                    child: CustomNumberPicker(
-                      key: fatsPickerKey,
-                      icon: Icons.water_drop,
-                      minValue: 0,
-                      maxValue: 150,
-                      defaultValue: fats,
-                      unit: 'g',
-                      title: "$fats g",
-                      onItemSelected: (value) {
-                        setState(() {
-                          fats = value;
-                          _recalculateCalories();
-                        });
-                      },
-                    ),
-                  ),
-
-                  RelativeSizedBox(width: 1),
 
                   Expanded(
                     child: CustomNumberPicker(
@@ -260,6 +248,27 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
                       },
                     ),
                   ),
+                  
+                  RelativeSizedBox(width: 1),
+
+                  Expanded(
+                    child: CustomNumberPicker(
+                      key: fatsPickerKey,
+                      icon: Icons.water_drop,
+                      minValue: 0,
+                      maxValue: 150,
+                      defaultValue: fats,
+                      unit: 'g',
+                      title: "$fats g",
+                      onItemSelected: (value) {
+                        setState(() {
+                          fats = value;
+                          _recalculateCalories();
+                        });
+                      },
+                    ),
+                  ),
+
                 ]
               ),
               

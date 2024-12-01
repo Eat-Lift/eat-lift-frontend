@@ -73,9 +73,116 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.logout, color: Colors.black),
+              SizedBox(width: 10),
+              Text("Tancar sessió"),
+            ],
+          ),
+          content: Text("Estàs segur que vols tancar la sessió?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                logOut(context);
+              },
+              child: Text("Confirmar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void logOut(BuildContext context) async {
     await sessionStorage.clearSession();
     if (context.mounted){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final TextEditingController confirmationController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red),
+                  SizedBox(width: 10),
+                  Text("Esborrar compte"),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Escriu 'ESBORRAR COMPTE' per continuar"),
+                  RelativeSizedBox(height: 2),
+                  TextField(
+                    controller: confirmationController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Escriu ESBORRAR COMPTE",
+                    ),
+                    autofocus: true,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancelar"),
+                ),
+                ElevatedButton(
+                  onPressed: confirmationController.text.trim() == "ESBORRAR COMPTE"
+                      ? () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("El teu compte s'ha esborrat correctament."),
+                            ),
+                          );
+                          signOut(context);
+                        }
+                      : null,
+                  child: Text("Esborrar"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void signOut(BuildContext context) async {
+    final apiService = ApiUserService();
+    await apiService.signout();
+    await sessionStorage.clearSession();
+    if (context.mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -95,18 +202,26 @@ class _UserPageState extends State<UserPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (!isLoading && userData != null) ...[
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Transform.translate(
-                      offset: Offset(-10, 10),
-                      child: CustomButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomButton(
                         text: "",
-                        onTap: () => logOut(context),
+                        onTap: () => _showLogoutDialog(context),
                         icon: Icons.logout,
                         height: 40,
                         width: 40,
                       ),
-                    ),
+                      RelativeSizedBox(width: 2),
+                      CustomButton(
+                        text: "",
+                        onTap: () => _showDeleteAccountDialog(context),
+                        icon: Icons.close,
+                        height: 40,
+                        width: 40,
+                      ),
+                      RelativeSizedBox(width: 2),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -202,10 +317,15 @@ class _UserPageState extends State<UserPage> {
                           ),
                         ),
                         RelativeSizedBox(height: 2),
-                        CheckGraphs(checks: checksSummary!),
-                        RelativeSizedBox(height: 2),
-                        ChecksContainer(checks: checkDates!, height: 295),
-                        RelativeSizedBox(height: 5),
+                        if (checksSummary != null) ...[
+                          CheckGraphs(checks: checksSummary!),
+                          RelativeSizedBox(height: 2),
+                          ChecksContainer(checks: checkDates!, height: 295),
+                          RelativeSizedBox(height: 5),
+                        ]
+                        else ...[
+                          RelativeSizedBox(height: 300),
+                        ]
                       ],
                     ),
                   ),
