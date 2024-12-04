@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eatnlift/pages/user/user.dart';
 import 'package:eatnlift/pages/nutrition/nutrition.dart';
+import 'package:eatnlift/pages/training/training.dart';
 
 class HomePage extends StatefulWidget {
   final int initialIndex;
@@ -18,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
+    const TrainingPage(),
     const NutritionPage(),
     const UserPage(),
   ];
