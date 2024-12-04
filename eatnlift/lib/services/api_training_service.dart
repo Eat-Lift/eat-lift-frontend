@@ -97,4 +97,112 @@ class ApiTrainingService {
     }
   }
 
+  Future<Map<String, dynamic>> getExerciseSaved(String exerciseId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.get(
+    Uri.parse("$baseUrl/exercises/$exerciseId/isSaved"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    return {
+      "success": true,
+      "is_saved": responseData["is_saved"],
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> saveExercise(String exerciseId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/exercises/$exerciseId/save"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 201) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> unsaveExercise(String exerciseId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/exercises/$exerciseId/unsave"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 204) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> deleteExercise(String exerciseId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.delete(
+    Uri.parse("$baseUrl/exercises/$exerciseId/delete"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 204) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+
 }
