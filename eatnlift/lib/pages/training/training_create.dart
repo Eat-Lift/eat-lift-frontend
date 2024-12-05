@@ -2,6 +2,7 @@ import 'package:eatnlift/custom_widgets/custom_dropdown.dart';
 import 'package:eatnlift/custom_widgets/custom_multiselect_dropdown.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
+import 'package:eatnlift/pages/training/exercise_page.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:eatnlift/services/storage_service.dart';
@@ -128,7 +129,14 @@ class TrainingCreateState extends State<TrainingCreatePage> {
       });
 
       if (result["success"]){
-       
+        if (mounted){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExercisePage(exerciseId: result["exercise"]),
+            ),
+          );
+        }
       }
     } else {
     //   bool emptyField = false;

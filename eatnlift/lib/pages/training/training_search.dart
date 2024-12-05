@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/exercise_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:eatnlift/services/session_storage.dart';
@@ -155,8 +156,17 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
     return ListView.builder(
       itemCount: exercises.length,
       itemBuilder: (context, index) {
-        final foodItem = exercises[index];
-        return (Text("hola"));
+        final exercise = exercises[index];
+        return ExerciseCard(
+          exercise: exercise,
+          initiallySelected: widget.selectedExercises?.firstWhere(
+                (selectedItem) => selectedItem['id'] == exercise['id'],
+                orElse: () => {'selected': false},
+              )['selected'] ??
+              false,
+          isSelectable: widget.isCreating,
+          isCreating: widget.isCreating,
+        );
       },
     );
   }
@@ -165,7 +175,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
     return ListView.builder(
       itemCount: workouts.length,
       itemBuilder: (context, index) {
-        final recipe = workouts[index];
+        final workout = workouts[index];
         return (Text("hola"));
       },
     );

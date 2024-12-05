@@ -29,7 +29,7 @@ class ApiTrainingService {
       final responseData = jsonDecode(decodedData);
       return {
         "success": true,
-        "exersice": responseData["id"]
+        "exercise": responseData["id"]
       };
     } else {
       final decodedData = utf8.decode(response.bodyBytes);
@@ -94,6 +94,28 @@ class ApiTrainingService {
       };
     } else {
       return {"success": false, "exercises": []};
+    }
+  }
+
+  Future<Map<String, dynamic>> getExercise(String exerciseId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/exercises/$exerciseId"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> exercise = json.decode(response.body);
+      return {
+        "success": true,
+        "exercise": exercise,
+      };
+    } else {
+      return {"success": false, "exercise": []};
     }
   }
 
