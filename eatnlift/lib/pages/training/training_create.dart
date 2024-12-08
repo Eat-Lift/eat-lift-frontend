@@ -1,9 +1,10 @@
-import 'package:eatnlift/custom_widgets/custom_dropdown.dart';
 import 'package:eatnlift/custom_widgets/custom_multiselect_dropdown.dart';
+import 'package:eatnlift/custom_widgets/exercise_card.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/training/exercise_page.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
+import 'package:eatnlift/pages/training/workout_page.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
     "Quadriceps",
     "Isquiotibials",
     "Adductors",
+    "Planxells",
     "Gluti",
     "Abdominals",
   ];
@@ -99,7 +101,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
 
       final exercise = {
         "name": exerciseNameController.text.trim(),
-        "descripció": exerciseDescriptionController.text.trim(),
+        "description": exerciseDescriptionController.text.trim(),
         "trained_muscles": selectedMuscles
       };
 
@@ -133,88 +135,64 @@ class TrainingCreateState extends State<TrainingCreatePage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ExercisePage(exerciseId: result["exercise"]),
+              builder: (context) => ExercisePage(exerciseId: result["exercise"], isCreating: false),
             ),
           );
         }
       }
     } else {
-    //   bool emptyField = false;
-    //   response = {};
+      bool emptyField = false;
+      response = {};
 
 
-    //   if (recipeNameController.text.trim().isEmpty) {
-    //     response["success"] = false;
-    //     if (response.containsKey('errors')) {
-    //       response['errors'].add("Es requereix el nom de la recepta");
-    //     } else {
-    //       response['errors'] = ["Es requereix el nom de la recepta"];
-    //     }
-    //     emptyField = true;
-    //   }
+      if (workoutNameController.text.trim().isEmpty) {
+        response["success"] = false;
+        if (response.containsKey('errors')) {
+          response['errors'].add("Es requereix el nom de l'entrenament");
+        } else {
+          response['errors'] = ["Es requereix el nom de l'entrenmaent"];
+        }
+        emptyField = true;
+      }
 
-    //   if (selectedFoodItems.length < 2){
-    //     response["success"] = false;
-    //     if (response.containsKey('errors')) {
-    //       response['errors'].add("Es requereixen al menys 2 aliments");
-    //     } else {
-    //       response['errors'] = ["Es requereixen al menys 2 aliments"];
-    //     }
-    //     emptyField = true;
-    //   }
+      if (selectedExercises.length < 2){
+        response["success"] = false;
+        if (response.containsKey('errors')) {
+          response['errors'].add("Es requereixen al menys 2 exercicis");
+        } else {
+          response['errors'] = ["Es requereixen al menys 2 exercicis"];
+        }
+        emptyField = true;
+      }
 
-    //   if (emptyField) {
-    //     setState(() {});
-    //     return;
-    //   }
+      if (emptyField) {
+        setState(() {});
+        return;
+      }
 
-    //   final recipe = {
-    //     "name": recipeNameController.text.trim(),
-    //     "description": descriptionController.text,
-    //     "food_items": selectedFoodItems.map((item) {
-    //       return {
-    //         "food_item": item["id"],
-    //         "quantity": item["quantity"]
-    //       };
-    //     }).toList()
-    //   };
+      final workout = {
+        "name": workoutNameController.text.trim(),
+        "description": workoutDescriptionController.text,
+        "exercises": selectedExercises.map((item) => item["id"]).toList(),
+      };
 
-    //   String? updatedImageURL;
-    //   if (_selectedImage != null) {
-    //     setState(() {
-    //       isCreating = true;
-    //     });
-
-    //     final storageService = StorageService();
-    //     updatedImageURL = await storageService.uploadImage(
-    //       _selectedImage!,
-    //       'recipes/${_selectedImage!.path.split('/').last}',
-    //     );
-
-    //     setState(() {
-    //       isCreating = false;
-    //     });
-
-    //     recipe['picture'] = updatedImageURL!;
-    //   }
-
-    //   final apiService = ApiNutritionService();
-    //   final result = await apiService.createRecipe(recipe);
-    //   if (result["success"]) {
-    //     if (mounted){
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(
-    //           builder: (context) => RecipePage(recipeId: result["recipeId"]),
-    //         ),
-    //       );
-    //     }
-    //   }
-    //   else {
-    //     setState(() {
-    //       response = result;
-    //     });
-    //   }
+      final apiService = ApiTrainingService();
+      final result = await apiService.createWorkout(workout);
+      if (result["success"]) {
+        if (mounted){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WorkoutPage(workoutId: result["workout"], isCreating: false),
+            ),
+          );
+        }
+      }
+      else {
+        setState(() {
+          response = result;
+        });
+      }
     }
   }
 
@@ -372,11 +350,20 @@ class TrainingCreateState extends State<TrainingCreatePage> {
                   ? ListView.builder(
                       itemCount: selectedExercises.length,
                       itemBuilder: (context, index) {
-                        final foodItem = selectedExercises[index];
+                        final exercise = selectedExercises[index];
                         return Row(
                           children: [
                             Expanded(
-                              child: Text("hola")
+                              child: ExerciseCard(
+                                exercise: exercise,
+                                initiallySelected: true,
+                                isSelectable: true,
+                                onSelect: (value, type) {
+                                  setState(() {
+                                    selectedExercises.removeAt(index);
+                                  });
+                                },
+                              ),
                             ),
                           ],
                         );
@@ -397,7 +384,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck),
+                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck, searchWorkouts: false),
                       ),
                     );
                   },

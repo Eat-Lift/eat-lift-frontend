@@ -6,7 +6,7 @@ class ExerciseCard extends StatefulWidget {
   final Map<String, dynamic> exercise;
   final bool isSelectable;
   final bool initiallySelected;
-  final void Function(Map<String, dynamic>)? onSelect;
+  final void Function(Map<String, dynamic>, String)? onSelect;
   final bool isCreating;
 
   const ExerciseCard({
@@ -89,7 +89,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                           isSelected = value ?? false;
                         });
                         if (widget.onSelect != null) {
-                          widget.onSelect!(_getSelectedExercise());
+                          widget.onSelect!(_getSelectedExercise(), "exercise");
                         }
                       },
                     ),

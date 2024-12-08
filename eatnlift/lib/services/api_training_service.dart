@@ -42,12 +42,12 @@ class ApiTrainingService {
     }
   }
 
-    Future<Map<String, dynamic>> editExercise(Map<String, Object> exercise, String exerciseId) async {
+  Future<Map<String, dynamic>> editExercise(Map<String, Object> exercise, String exerciseId) async {
     final SessionStorage sessionStorage = SessionStorage();
     final token = await sessionStorage.getAccessToken();
 
     final response = await http.put(
-      Uri.parse('$baseUrl/exercises/$exercise/edit'),
+      Uri.parse('$baseUrl/exercises/$exerciseId/edit'),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Token $token",
@@ -226,5 +226,222 @@ Future<Map<String, dynamic>> deleteExercise(String exerciseId) async {
   }
 }
 
+Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
 
+  final response = await http.post(
+    Uri.parse('$baseUrl/workouts/create'),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Token $token",
+    },
+    body: jsonEncode({
+      'name': workout["name"],
+      'description': workout["description"],
+      'exercises': workout["exercises"],
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    return {
+      "success": true,
+      "workout": responseData["id"]
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+  Future<Map<String, dynamic>> editWorkout(
+      Map<String, Object> workout, String workoutId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/workouts/$workoutId/edit'),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode({
+        'name': workout["name"],
+        'description': workout["description"],
+        'exercises': workout["exercises"],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      List<String> errors = List<String>.from(responseData["errors"]);
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+Future<Map<String, dynamic>> getWorkouts(String query) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.get(
+    Uri.parse("$baseUrl/workouts/?name=$query"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> workouts = json.decode(response.body);
+    return {
+      "success": true,
+      "workouts": workouts,
+    };
+  } else {
+    return {"success": false, "workouts": []};
+  }
+}
+
+Future<Map<String, dynamic>> getWorkout(String workoutId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.get(
+    Uri.parse("$baseUrl/workouts/$workoutId"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> workout = json.decode(response.body);
+    return {
+      "success": true,
+      "workout": workout,
+    };
+  } else {
+    return {"success": false, "workout": {}};
+  }
+}
+
+Future<Map<String, dynamic>> getWorkoutSaved(String workoutId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.get(
+    Uri.parse("$baseUrl/workouts/$workoutId/isSaved"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    return {
+      "success": true,
+      "is_saved": responseData["is_saved"],
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> saveWorkout(String workoutId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/workouts/$workoutId/save"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 201) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> unsaveWorkout(String workoutId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/workouts/$workoutId/unsave"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 204) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
+
+Future<Map<String, dynamic>> deleteWorkout(String workoutId) async {
+  final SessionStorage sessionStorage = SessionStorage();
+  final token = await sessionStorage.getAccessToken();
+
+  final response = await http.delete(
+    Uri.parse("$baseUrl/workouts/$workoutId/delete"),
+    headers: {
+      "Authorization": "Token $token",
+    },
+  );
+
+  if (response.statusCode == 204) {
+    return {
+      "success": true,
+    };
+  } else {
+    final decodedData = utf8.decode(response.bodyBytes);
+    final responseData = jsonDecode(decodedData);
+    List<String> errors = List<String>.from(responseData["errors"]);
+    return {
+      "success": false,
+      "errors": errors,
+    };
+  }
+}
 }

@@ -1,5 +1,6 @@
 import 'package:eatnlift/custom_widgets/exercise_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
+import 'package:eatnlift/custom_widgets/workout_card.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../custom_widgets/ying_yang_toggle.dart';
 import '../../custom_widgets/custom_textfield.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
-import '../../services/api_nutrition_service.dart';
 import 'dart:async';
 
 class TrainingSearchPage extends StatefulWidget {
@@ -114,7 +114,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       return;
     }
     final apiTrainingService = ApiTrainingService();
-    final response = {}; // = await apiTrainingService.getWorkouts(query);
+    final response = await apiTrainingService.getWorkouts(query);
     if (response["success"]) {
       if (mounted) {
         setState(() {
@@ -134,7 +134,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
 
     if (selectedList == null) return;
 
-    final String id = selectedItem["id"];
+    final String id = selectedItem["id"].toString();
     final bool isSelected = selectedItem["selected"] == true;
 
     final int existingIndex = selectedList.indexWhere((item) => item["id"] == id);
@@ -166,6 +166,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
               false,
           isSelectable: widget.isCreating,
           isCreating: widget.isCreating,
+          onSelect: _onSelectItem,
         );
       },
     );
@@ -176,7 +177,9 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       itemCount: workouts.length,
       itemBuilder: (context, index) {
         final workout = workouts[index];
-        return (Text("hola"));
+        return WorkoutCard(
+          workout: workout,
+        );
       },
     );
   }

@@ -5,30 +5,29 @@ import 'package:eatnlift/pages/training/exercise_edit.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:flutter/material.dart';
 
-import '../../custom_widgets/expandable_image.dart';
 import '../../custom_widgets/relative_sizedbox.dart';
 
 import '../../services/session_storage.dart';
 
-class ExercisePage extends StatefulWidget {
-  final int exerciseId;
+class WorkoutPage extends StatefulWidget {
+  final int workoutId;
   final bool isCreating;
 
-  const ExercisePage({
+  const WorkoutPage({
     super.key,
-    required this.exerciseId,
+    required this.workoutId,
     this.isCreating = true,
   });
 
   @override
-  State<ExercisePage> createState() => _ExercisePageState();
+  State<WorkoutPage> createState() => _WorkoutPageState();
 }
 
-class _ExercisePageState extends State<ExercisePage> {
+class _WorkoutPageState extends State<WorkoutPage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
   
-  late Map<String, dynamic>? exerciseData;
+  late Map<String, dynamic>? workoutData;
   bool isLoading = true;
   bool isSaved = false;
 
@@ -42,7 +41,7 @@ class _ExercisePageState extends State<ExercisePage> {
     setState((){
       isLoading = true;
     });
-    await _fetchExerciseData();
+    await _fetchWorkoutData();
     await _fetchCurrentUserId();
     await _fetchSaved();
     setState((){
@@ -55,22 +54,22 @@ class _ExercisePageState extends State<ExercisePage> {
     currentUserId = userId;
   }
 
-  Future<void> _fetchExerciseData() async {
+  Future<void> _fetchWorkoutData() async {
     final apiService = ApiTrainingService();
-    final exercise = await apiService.getExercise(widget.exerciseId.toString());
-    exerciseData = exercise["exercise"];
+    final workout = await apiService.getWorkout(widget.workoutId.toString());
+    workoutData = workout["workout"];
   }
 
   Future<void> _fetchSaved() async {
     final apiService = ApiTrainingService();
-    final response = await apiService.getExerciseSaved(widget.exerciseId.toString());
+    final response = await apiService.getWorkoutSaved(widget.workoutId.toString());
     isSaved = response["is_saved"];
   }
 
   void _toggleSaved() async {
     final apiService = ApiTrainingService();
     if (isSaved){
-      final response = await apiService.unsaveExercise(widget.exerciseId.toString());
+      final response = await apiService.unsaveWorkout(widget.workoutId.toString());
       if (response["success"]) {
         setState(() {
           isSaved = false;
@@ -78,7 +77,7 @@ class _ExercisePageState extends State<ExercisePage> {
       }
     }
     else {
-      final response = await apiService.saveExercise(widget.exerciseId.toString());
+      final response = await apiService.saveWorkout(widget.workoutId.toString());
       if (response["success"]) {
         setState(() {
           isSaved = true;
@@ -93,7 +92,7 @@ class _ExercisePageState extends State<ExercisePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Confirmació"),
-          content: const Text("Estàs segur que vols eliminar aquest exercici?"),
+          content: const Text("Estàs segur que vols eliminar aquest entrenament?"),
           actions: [
             TextButton(
               onPressed: () {
@@ -104,7 +103,7 @@ class _ExercisePageState extends State<ExercisePage> {
             TextButton(
               onPressed: () async {
                 final apiService = ApiTrainingService();
-                await apiService.deleteExercise(widget.exerciseId.toString());
+                await apiService.deleteWorkout(widget.workoutId.toString());
                 if (context.mounted){
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -123,7 +122,7 @@ class _ExercisePageState extends State<ExercisePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: const Text("Exercici"),
+        title: const Text("Entrenament"),
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
@@ -138,15 +137,10 @@ class _ExercisePageState extends State<ExercisePage> {
                     RelativeSizedBox(height: 1),
                     Row(
                       children: [
-                        ExpandableImage(
-                          initialImageUrl: exerciseData?["picture"],
-                          width: 70,
-                          height: 70,
-                        ),
                         RelativeSizedBox(width: 5),
                         Flexible(
                           child: Text(
-                            exerciseData?["name"] ?? '',
+                            workoutData?["name"] ?? '',
                             style: TextStyle(
                               color: Colors.grey[700],
                               fontSize: 22,
@@ -169,7 +163,7 @@ class _ExercisePageState extends State<ExercisePage> {
                             tooltip: isSaved ? 'Unsave' : 'Save',
                             onPressed: _toggleSaved,
                           ),
-                          if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
+                          if (currentUserId == workoutData?["user"].toString() && !widget.isCreating)
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.black),
                               tooltip: 'Edit',
@@ -177,16 +171,16 @@ class _ExercisePageState extends State<ExercisePage> {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditExercisePage(exercise: exerciseData),
+                                    builder: (context) => EditExercisePage(exercise: workoutData),
                                   )
                                 );
 
                                 if (result == true){
-                                  _fetchExerciseData();
+                                  _fetchWorkoutData();
                                 }
                               },
                             ),
-                          if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
+                          if (currentUserId == workoutData?["user"].toString() && !widget.isCreating)
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.black),
                               tooltip: 'Delete',
@@ -198,19 +192,19 @@ class _ExercisePageState extends State<ExercisePage> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: ExpandableText(
-                        text: exerciseData?["description"]?.isEmpty ?? true
+                        text: workoutData?["description"]?.isEmpty ?? true
                             ? "Això està una mica buit"
-                            : exerciseData?["description"],
+                            : workoutData?["description"],
                       ),
                     ),
                     RelativeSizedBox(height: 2),
-                    Center(
-                      child: HumanBody(
-                        width: 350,
-                        height: 450,
-                        overlayMuscles: exerciseData!["trained_muscles"],
-                      ),
-                    ),
+                    // Center(
+                    //   child: HumanBody(
+                    //     width: 350,
+                    //     height: 450,
+                    //     overlayMuscles: exerciseData!["trained_muscles"],
+                    //   ),
+                    // ),
                   ],
                 ),
               ]

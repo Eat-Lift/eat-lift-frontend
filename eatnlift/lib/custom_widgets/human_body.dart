@@ -18,7 +18,7 @@ class HumanBody extends StatelessWidget {
     final muscleOverlayImages = {
       "Pectoral": "lib/assets/images/ChestHighlight.png",
       "Deltoides anterior": "lib/assets/images/AnteriorDeltoidHighlight.png",
-      "Deltoides posterior": "lib/assets/images/PosteriorDeltoidrHighlight.png",
+      "Deltoides posterior": "lib/assets/images/PosteriorDeltoidHighlight.png",
       "Deltoides medial": "lib/assets/images/MedialDeltoidHighlight.png",
       "Biceps": "lib/assets/images/BicepsHighlight.png",
       "Triceps": "lib/assets/images/TricepsHighlight.png",
@@ -26,10 +26,11 @@ class HumanBody extends StatelessWidget {
       "Trapezi": "lib/assets/images/TrapsHighlight.png",
       "Lumbar": "lib/assets/images/LowerBackHighlight.png",
       "Quadriceps": "lib/assets/images/QuadsHighlight.png",
-      "Isquiotibials": "lib/assets/images/HamstringsHighlight.png",
+      "Isquiotibials": "lib/assets/images/HamstringHighlight.png",
       "Adductors": "lib/assets/images/AdductorHighlight.png",
       "Gluti": "lib/assets/images/GluteHighlight.png",
       "Abdominals": "lib/assets/images/AbsHighlight.png",
+      "Planxells": "lib/assets/images/CalvesHighlight.png"
     };
 
     return Container(
