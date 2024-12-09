@@ -47,6 +47,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
     "Gluti",
     "Abdominals",
   ];
+
   List<Map<String, dynamic>> selectedExercises = [];
   
   final TextEditingController workoutNameController = TextEditingController();
@@ -355,6 +356,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
                           children: [
                             Expanded(
                               child: ExerciseCard(
+                                key: ValueKey(exercise['id']),
                                 exercise: exercise,
                                 initiallySelected: true,
                                 isSelectable: true,

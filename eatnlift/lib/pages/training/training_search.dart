@@ -146,7 +146,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
         selectedList[existingIndex] = selectedItem;
       }
     } else {
-      selectedList.removeWhere((item) => item["id"] == id);
+      selectedList.removeWhere((item) => item["id"].toString() == id);
     }
 
     setState(() {});
@@ -179,6 +179,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
         final workout = workouts[index];
         return WorkoutCard(
           workout: workout,
+          isCreating: widget.isCreating
         );
       },
     );

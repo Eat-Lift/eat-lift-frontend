@@ -122,12 +122,9 @@ class EditExerciseState extends State<EditExercisePage> {
 
     if (result["success"]) {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExercisePage(exerciseId: widget.exercise!["id"], isCreating: false),
-          ),
-        );
+        if (mounted) {
+          Navigator.pop(context, true);
+        }
       }
     }
   }

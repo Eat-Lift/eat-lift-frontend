@@ -182,7 +182,7 @@ class _ExercisePageState extends State<ExercisePage> {
                                 );
 
                                 if (result == true){
-                                  _fetchExerciseData();
+                                  _initPage();
                                 }
                               },
                             ),
