@@ -1,4 +1,5 @@
 import 'package:eatnlift/pages/nutrition/historic_meal.dart';
+import 'package:eatnlift/pages/training/routine.dart';
 import 'package:eatnlift/pages/training/training_create.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
@@ -12,7 +13,6 @@ import '../../custom_widgets/rotating_logo.dart';
 
 import '../../services/session_storage.dart';
 
-import 'package:eatnlift/pages/nutrition/nutritional_plan.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -206,7 +206,7 @@ class _TrainingPageState extends State<TrainingPage> {
                           onPressed:() {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const NutritionalPlanPage()),
+                              MaterialPageRoute(builder: (context) => const RoutinePage()),
                             );
                           },
                           size: 70

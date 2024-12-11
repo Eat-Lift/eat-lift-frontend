@@ -386,7 +386,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck, searchWorkouts: false),
+                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck),
                       ),
                     );
                   },

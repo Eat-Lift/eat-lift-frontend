@@ -1,6 +1,5 @@
 import 'package:eatnlift/custom_widgets/custom_multiselect_dropdown.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
-import 'package:eatnlift/pages/training/exercise_page.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';

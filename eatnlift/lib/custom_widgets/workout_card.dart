@@ -1,6 +1,6 @@
 import 'package:eatnlift/custom_widgets/custom_button.dart';
 import 'package:eatnlift/pages/training/workout_page.dart';
-import 'package:eatnlift/services/api_nutrition_service.dart';
+import 'package:eatnlift/services/api_training_service.dart';
 import 'package:flutter/material.dart';
 
 
@@ -32,9 +32,9 @@ class _WorkoutCardState extends State<WorkoutCard> {
   bool isSelected = false;
   final TextEditingController quantityController = TextEditingController();
 
-  Future<List<Map<String, dynamic>>> _getSelectedFoodItems() async {
-    final apiService = ApiNutritionService();
-    final result = await apiService.getRecipe(widget.workout["id"]);
+  Future<List<Map<String, dynamic>>> _getSelectedExercises() async {
+    final apiService = ApiTrainingService();
+    final result = await apiService.getWorkout(widget.workout["id"].toString());
 
     if (result["success"] && result["workout"]["exercises"] is List) {
       if (mounted) {
@@ -48,8 +48,8 @@ class _WorkoutCardState extends State<WorkoutCard> {
 
       return (result["workout"]["exercises"] as List)
           .map((item) => {
-                ...(item as Map<String, dynamic>),
-                "id": item["exercise"],
+                "id": item["exercise"]["id"],
+                "name": item["exercise"]["name"],
                 "selected": true,
               })
           .toList();
@@ -117,8 +117,8 @@ class _WorkoutCardState extends State<WorkoutCard> {
                       height: 30,
                       onTap: () {
                         if (widget.onAdd != null) {
-                          _getSelectedFoodItems().then((selectedFoodItems) {
-                            widget.onAdd!(selectedFoodItems);
+                          _getSelectedExercises().then((selectedExercises) {
+                            widget.onAdd!(selectedExercises);
                           });
                         }
                       },

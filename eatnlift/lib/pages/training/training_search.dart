@@ -152,6 +152,28 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
     setState(() {});
   }
 
+  void _onAddWorkout(List<Map<String, dynamic>>? selectedExercises) {
+    if (selectedExercises != null) {
+      for (Map<String, dynamic> selectedExercise in selectedExercises) {
+        if (selectedExercise["selected"] == true) {
+          final existingIndex = widget.selectedExercises?.indexWhere(
+            (item) => item["id"] == selectedExercise["id"],
+          );
+          if (existingIndex == null || existingIndex == -1) {
+            widget.selectedExercises?.add(selectedExercise);
+          } else  {
+            widget.selectedExercises?[existingIndex] = selectedExercise;
+          }
+        } else {
+          widget.selectedExercises?.removeWhere(
+            (item) => item["id"] == selectedExercise["id"],
+          );
+        }
+      }
+      setState(() {});
+    }
+  }
+
   Widget _buildExerciseList(List<Map<String, dynamic>> exercises) {
     return ListView.builder(
       itemCount: exercises.length,
@@ -179,7 +201,9 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
         final workout = workouts[index];
         return WorkoutCard(
           workout: workout,
-          isCreating: widget.isCreating
+          isCreating: widget.isCreating,
+          isAddable: widget.isCreating,
+          onAdd: _onAddWorkout,
         );
       },
     );

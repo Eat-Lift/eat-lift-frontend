@@ -217,7 +217,7 @@ class EditWorkoutState extends State<EditWorkoutPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck, searchWorkouts: false),
+                        builder: (context) => TrainingSearchPage(isCreating: true, selectedExercises: selectedExercises, onCheck: onCheck),
                       ),
                     );
                   },
