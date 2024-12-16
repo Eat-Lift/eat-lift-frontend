@@ -1,9 +1,14 @@
+import 'package:eatnlift/custom_widgets/check_card.dart';
+import 'package:eatnlift/custom_widgets/custom_button.dart';
+import 'package:eatnlift/custom_widgets/session_card.dart';
 import 'package:eatnlift/pages/nutrition/historic_meal.dart';
+import 'package:eatnlift/pages/training/historic_session.dart';
 import 'package:eatnlift/pages/training/routine.dart';
+import 'package:eatnlift/pages/training/sessio.dart';
 import 'package:eatnlift/pages/training/training_create.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
-import 'package:eatnlift/services/api_user_service.dart';
+import 'package:eatnlift/services/api_training_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -26,7 +31,7 @@ class TrainingPage extends StatefulWidget {
 class _TrainingPageState extends State<TrainingPage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
-  Map<String, dynamic>? userData;
+  Map<String, dynamic> sessionsSummary = {};
 
   bool isLoading = true;
 
@@ -41,7 +46,7 @@ class _TrainingPageState extends State<TrainingPage> {
       isLoading = true;
     });
     await _fetchCurrentUserId();
-    await _loadUserData();
+    await _fetchSessionsData();
     setState(() {
       isLoading = false;
     });
@@ -54,31 +59,24 @@ class _TrainingPageState extends State<TrainingPage> {
     });
   }
 
-  Future<void> _loadUserData() async {
-    final apiService = ApiUserService();
-    final result = await apiService.getPersonalInformation(currentUserId!);
-    if (result?["success"]){
-      userData = result?["user"];
-    }
+  Future<void> _fetchSessionsData() async {
+    final apiService = ApiTrainingService();
+    final result = await apiService.getSessionsSummary(currentUserId!);
+    sessionsSummary["sessions_dates"] = result["sessions_dates"];
   }
 
   Future<Widget> _buildCalendarDialog(BuildContext context) async {
-    final apiService = ApiNutritionService();
-    final result = await apiService.getMealDates(currentUserId!);
-
     Set<DateTime> markedDates = {};
 
-    if (result["success"]) {
-      markedDates = (result["dates"] as List<dynamic>)
-          .map((date) {
-            DateTime parsedDate = DateTime.parse(date as String);
-            return DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
-          })
-          .toSet();
-      DateTime today = DateTime.now();
-      today = DateTime(today.year, today.month, today.day);
-      markedDates.remove(today);
-    }
+    markedDates = (sessionsSummary["sessions_dates"] as List<dynamic>)
+        .map((date) {
+          DateTime parsedDate = DateTime.parse(date as String);
+          return DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
+        })
+        .toSet();
+    DateTime today = DateTime.now();
+    today = DateTime(today.year, today.month, today.day);
+    markedDates.remove(today);
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -124,7 +122,7 @@ class _TrainingPageState extends State<TrainingPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HistoricMealPage(date: selectedDay),
+                      builder: (context) => HistoricSessionPage(date: DateFormat('yyyy-MM-dd').format(selectedDay)),
                     ),
                   );
                 }
@@ -160,7 +158,7 @@ class _TrainingPageState extends State<TrainingPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (!isLoading && userData != null) ...[
+                  if (!isLoading) ...[
                     RelativeSizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -214,6 +212,49 @@ class _TrainingPageState extends State<TrainingPage> {
                       ]
                     ),
                     RelativeSizedBox(height: 3),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Sessions",
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          height: 230,
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white, width: 3),
+                          ),
+                          child: Stack(
+                            children: [
+                              sessionsSummary["sessions_dates"].isNotEmpty
+                                  ? ListView.builder(
+                                      itemCount: sessionsSummary["sessions_dates"].length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                          child: SessionCard(date: sessionsSummary["sessions_dates"][index]),
+                                        );
+                                      },
+                                    )
+                                  : const Center(
+                                      child: Text(
+                                        "No hi ha sessions",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                              ],
+                            ),
+                        ),
+                      ],
+                    ), 
+                    RelativeSizedBox(height: 3),
                   ] else ...[
                     Column(
                       children: [
@@ -233,6 +274,18 @@ class _TrainingPageState extends State<TrainingPage> {
               ),
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        child: CustomButton(
+          text: "Enregistra una sessió",
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SessionPage()),
+            );
+          },
         ),
       ),
     );

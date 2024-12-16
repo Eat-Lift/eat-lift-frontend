@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'services/session_storage.dart';
 
@@ -14,6 +15,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseAppCheck.instance.activate();
+  await initializeDateFormatting('ca', null);
   runApp(const MyApp());
 }
 

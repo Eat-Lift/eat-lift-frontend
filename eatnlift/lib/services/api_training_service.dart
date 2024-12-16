@@ -519,4 +519,119 @@ Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
       };
     }
   }
+
+  // Sessions
+
+  Future<Map<String, dynamic>> getSession(String userId, String date) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.put(
+      Uri.parse("$baseUrl/sessions/$userId"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode({
+        'date': date,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+
+      return {
+        "success": true,
+        "session": responseData,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+
+      List<String> errors = [];
+      if (responseData.containsKey("errors")) {
+        errors = List<String>.from(responseData["errors"]);
+      } else {
+        errors.add("Error desconegut. Si us plau, torna-ho a intentar.");
+      }
+
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+
+  Future<Map<String, dynamic>> editSession(String userId, Map<String, dynamic> sessionData) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/sessions/$userId/edit"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+      body: jsonEncode(
+        sessionData,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return {
+        "success": true,
+      };
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+
+      List<String> errors = [];
+      if (responseData.containsKey("errors")) {
+        errors = List<String>.from(responseData["errors"]);
+      } else {
+        errors.add("Error desconegut. Si us plau, torna-ho a intentar.");
+      }
+
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getSessionsSummary(String userId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/sessions/$userId/summary"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+      return responseData;
+    } else {
+      final decodedData = utf8.decode(response.bodyBytes);
+      final responseData = jsonDecode(decodedData);
+
+      List<String> errors = [];
+      if (responseData.containsKey("errors")) {
+        errors = List<String>.from(responseData["errors"]);
+      } else {
+        errors.add("Error desconegut. Si us plau, torna-ho a intentar.");
+      }
+
+      return {
+        "success": false,
+        "errors": errors,
+      };
+    }
+  }
 }
