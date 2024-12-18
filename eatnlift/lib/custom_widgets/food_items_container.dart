@@ -1,4 +1,5 @@
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
+import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/nutrition/nutrition_search.dart';
 import 'package:flutter/material.dart';
@@ -124,8 +125,19 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
             children: [
               widget.foodItems.isNotEmpty
                   ? ListView.builder(
-                      itemCount: widget.foodItems.length,
+                      itemCount: widget.foodItems.length + 1,
                       itemBuilder: (context, index) {
+                        if (widget.editable) {
+                          if (index == widget.foodItems.length) {
+                            return const RelativeSizedBox(height: 7);
+                          }
+                        }
+                        else {
+                          if (index == widget.foodItems.length) {
+                            return const RelativeSizedBox(height: 0);
+                          }
+                        }
+                          
                         final foodItem = widget.foodItems[index];
                         return Row(
                           children: [
@@ -164,7 +176,6 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                                     widget.onSumbittedQuantity!(widget.title!.toUpperCase());
                                   }
                                 }
-
                               ),
                             ),
                           ],

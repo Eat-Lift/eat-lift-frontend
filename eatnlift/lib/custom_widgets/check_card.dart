@@ -13,7 +13,9 @@ class CheckCard extends StatelessWidget {
   String _formatDate(String date) {
     try {
       DateTime parsedDate = DateTime.parse(date);
-      return DateFormat('dd-MM-yyyy').format(parsedDate);
+      String weekDay = DateFormat('EEEE', 'ca_ES').format(parsedDate);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(parsedDate);
+      return "$weekDay $formattedDate";
     } catch (e) {
       return date;
     }

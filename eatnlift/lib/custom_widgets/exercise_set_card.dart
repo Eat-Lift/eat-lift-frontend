@@ -66,7 +66,7 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
       "sets": updatedSets,
     };
 
-
+    setsList = updatedExerciseItem["sets"];
     widget.onExerciseUpdated(updatedExerciseItem);
   }
 
@@ -81,69 +81,78 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
       );
       return;
     }
+
     setState(() {
+      double lastWeight = 0.0;
+      int lastReps = 0;
 
-      setsList.add({"weight": 0.0, "reps": 0});
+      if (setsList.isNotEmpty) {
+        final lastIndex = setsList.length - 1;
+        lastWeight = setsList[lastIndex]["weight"];
+        lastReps = setsList[lastIndex]["reps"];
+      }
 
-      weightControllers.add(TextEditingController(text: "0.0"));
-      repsControllers.add(TextEditingController(text: "0"));
+      setsList.add({"weight": lastWeight, "reps": lastReps});
+
+      weightControllers.add(TextEditingController(text: lastWeight.toString()));
+      repsControllers.add(TextEditingController(text: lastReps.toString()));
     });
 
     _updateExercise();
   }
 
-void _removeSet(int index) {
-  bool isLastSet = setsList.length == 1;
+  void _removeSet(int index) {
+    bool isLastSet = setsList.length == 1;
 
-  if (isLastSet) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar sèrie'),
-        content: const Text(
-            'Eliminar aquesta sèrie també eliminarà l\'exercici. Estàs segur que vols continuar?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel·lar'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                setsList.removeAt(index);
-
-                weightControllers[index].dispose();
-                repsControllers[index].dispose();
-
-                weightControllers.removeAt(index);
-                repsControllers.removeAt(index);
-              });
-
-              _updateExercise();
-
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              'Eliminar',
+    if (isLastSet) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Eliminar sèrie'),
+          content: const Text(
+              'Eliminar aquesta sèrie també eliminarà l\'exercici. Estàs segur que vols continuar?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel·lar'),
             ),
-          ),
-        ],
-      ),
-    );
-  } else {
-    setState(() {
-      setsList.removeAt(index);
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  setsList.removeAt(index);
 
-      weightControllers[index].dispose();
-      repsControllers[index].dispose();
+                  weightControllers[index].dispose();
+                  repsControllers[index].dispose();
 
-      weightControllers.removeAt(index);
-      repsControllers.removeAt(index);
-    });
+                  weightControllers.removeAt(index);
+                  repsControllers.removeAt(index);
+                });
 
-    _updateExercise();
+                _updateExercise();
+
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Eliminar',
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        setsList.removeAt(index);
+
+        weightControllers[index].dispose();
+        repsControllers[index].dispose();
+
+        weightControllers.removeAt(index);
+        repsControllers.removeAt(index);
+      });
+
+      _updateExercise();
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +196,7 @@ void _removeSet(int index) {
           const SizedBox(height: 12),
           ...setsList.asMap().entries.map((entry) {
             int setIndex = entry.key;
+            bool isLastSet = setIndex == setsList.length - 1;
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -234,7 +244,7 @@ void _removeSet(int index) {
                           "${repsControllers[setIndex].text} reps",
                           style: const TextStyle(fontSize: 16),
                         ),
-                  if (widget.isEditable) ...[
+                  if (widget.isEditable && isLastSet) ...[
                     const SizedBox(width: 10),
                     GestureDetector(
                       onTap: () => _removeSet(setIndex),
@@ -243,7 +253,13 @@ void _removeSet(int index) {
                         color: Colors.black,
                       ),
                     ),
-                  ],
+                  ] else ...[
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                    ),
+                  ]
                 ],
               ),
             );

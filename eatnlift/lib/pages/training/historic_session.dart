@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -71,7 +72,7 @@ class _HistoricSessionPageState extends State<HistoricSessionPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? Center(child: RotatingImage(),)
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ListView.builder(

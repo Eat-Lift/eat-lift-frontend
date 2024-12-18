@@ -226,6 +226,30 @@ Future<Map<String, dynamic>> deleteExercise(String exerciseId) async {
   }
 }
 
+Future<Map<String, dynamic>> getExerciseWeight(String exerciseId) async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/exercises/$exerciseId/weight"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> weights = json.decode(response.body);
+      return {
+        "success": true,
+        "weight": weights,
+      };
+    } else {
+      return {"success": false,};
+    }
+  }
+
+// Workouts
+
 Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
   final SessionStorage sessionStorage = SessionStorage();
   final token = await sessionStorage.getAccessToken();
@@ -601,16 +625,19 @@ Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
     }
   }
 
-  Future<Map<String, dynamic>> getSessionsSummary(String userId) async {
+  Future<Map<String, dynamic>> getSessionsSummary(String userId, String date) async {
     final SessionStorage sessionStorage = SessionStorage();
     final token = await sessionStorage.getAccessToken();
 
-    final response = await http.get(
+    final response = await http.put(
       Uri.parse("$baseUrl/sessions/$userId/summary"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Token $token",
       },
+      body: jsonEncode({
+        "date": date,
+      }),
     );
 
     if (response.statusCode == 200) {

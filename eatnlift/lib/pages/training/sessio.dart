@@ -72,16 +72,18 @@ class _SessionPageState extends State<SessionPage> {
   }
 
   Future<void> _initializeExercises() async {
+    final apiService = ApiTrainingService();
     for (var exercise in routineExercises!) {
       if (exercise["week_day"].toLowerCase() == DateFormat('EEEE', 'ca').format(sessionDate!).toLowerCase()){
         if(!sessionExercises!.any((e) => e["exercise"]["id"] == exercise["exercise"]["id"])){
-          sessionExercises!.add({"exercise": exercise["exercise"], "sets": [{"weight": 0.0, "reps": 0}]});
+          final response = await apiService.getExerciseWeight(exercise["exercise"]["id"].toString());
+          sessionExercises!.add({"exercise": exercise["exercise"], "sets": [{"weight": response["weight"]["weight"], "reps": response["weight"]["reps"]}]});
         }
       } 
     }
   }
 
-  void _onCheck(List<Map<String, dynamic>>? newExercises) {
+  Future<void> _onCheck(List<Map<String, dynamic>>? newExercises) async {
     if (newExercises == null) return;
 
     final Set<int> newExerciseIds = newExercises
@@ -113,10 +115,18 @@ class _SessionPageState extends State<SessionPage> {
       };
     }).toList();
 
+    final apiService = ApiTrainingService();
+    for (var exercise in exercisesToAdd) {
+      final response = await apiService.getExerciseWeight(exercise["exercise"]["id"].toString());
+      exercise["sets"] = [{"weight": response["weight"]["weight"], "reps": response["weight"]["reps"]}];
+    }
+
     sessionExercises!.addAll(exercisesToAdd);
 
     setState(() {});
-    Navigator.pop(context);
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   void _submitData() async {

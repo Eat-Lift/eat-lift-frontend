@@ -56,8 +56,8 @@ class EditExerciseState extends State<EditExercisePage> {
     exerciseDescriptionController = TextEditingController(text: widget.exercise?["description"]);
     initialImagePath = widget.exercise?["picture"];
     if (widget.exercise?["trained_muscles"] is List) {
-      for (var trained_muscle in widget.exercise?["trained_muscles"] ?? []) {
-        selectedMuscles.add(trained_muscle);
+      for (var trainedMuscle in widget.exercise?["trained_muscles"] ?? []) {
+        selectedMuscles.add(trainedMuscle);
       }
     }
   }

@@ -1,13 +1,11 @@
-import 'package:eatnlift/custom_widgets/check_card.dart';
-import 'package:eatnlift/custom_widgets/custom_button.dart';
+import 'package:eatnlift/custom_widgets/custom_graph.dart';
 import 'package:eatnlift/custom_widgets/session_card.dart';
-import 'package:eatnlift/pages/nutrition/historic_meal.dart';
+import 'package:eatnlift/pages/training/exercise_page.dart';
 import 'package:eatnlift/pages/training/historic_session.dart';
 import 'package:eatnlift/pages/training/routine.dart';
 import 'package:eatnlift/pages/training/sessio.dart';
 import 'package:eatnlift/pages/training/training_create.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
-import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_training_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,8 +30,18 @@ class _TrainingPageState extends State<TrainingPage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
   Map<String, dynamic> sessionsSummary = {};
+  List<dynamic> exercisesWeights = [];
 
   bool isLoading = true;
+
+  final List<Color> graphColors = [
+    Colors.red,
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+  ];
 
   @override
   void initState() {
@@ -61,7 +69,9 @@ class _TrainingPageState extends State<TrainingPage> {
 
   Future<void> _fetchSessionsData() async {
     final apiService = ApiTrainingService();
-    final result = await apiService.getSessionsSummary(currentUserId!);
+    final selectedDate = DateTime.now().toIso8601String().substring(0, 10);
+    final result = await apiService.getSessionsSummary(currentUserId!, selectedDate);
+    exercisesWeights = result["exercises"];
     sessionsSummary["sessions_dates"] = result["sessions_dates"];
   }
 
@@ -150,90 +160,121 @@ class _TrainingPageState extends State<TrainingPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (!isLoading) ...[
-                    RelativeSizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RoundButton(
-                          icon: FontAwesomeIcons.magnifyingGlass,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const TrainingSearchPage(isCreating: false)),
-                            );
-                          },
-                          size: 70
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (!isLoading) ...[
+                        RelativeSizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundButton(
+                              icon: FontAwesomeIcons.magnifyingGlass,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const TrainingSearchPage(isCreating: false)),
+                                );
+                              },
+                              size: 70,
+                            ),
+                            RelativeSizedBox(width: 3),
+                            RoundButton(
+                              icon: FontAwesomeIcons.plus,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const TrainingCreatePage()),
+                                );
+                              },
+                              size: 70,
+                            ),
+                            RelativeSizedBox(width: 3),
+                            RoundButton(
+                              icon: FontAwesomeIcons.calendar,
+                              onPressed: () async {
+                                final dialogWidget = await _buildCalendarDialog(context);
+                                if (context.mounted) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => dialogWidget,
+                                  );
+                                }
+                              },
+                              size: 70,
+                            ),
+                            RelativeSizedBox(width: 3),
+                            RoundButton(
+                              icon: FontAwesomeIcons.book,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const RoutinePage()),
+                                );
+                              },
+                              size: 70,
+                            ),
+                          ],
                         ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.plus,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const TrainingCreatePage()),
-                            );
-                          },
-                          size: 70
-                        ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.calendar,
-                          onPressed:() async {
-                            final dialogWidget = await _buildCalendarDialog(context);
-                            if (context.mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => dialogWidget,
-                              );
-                            }
-                          },
-                          size: 70
-                        ),
-                        RelativeSizedBox(width: 3),
-                        RoundButton(
-                          icon: FontAwesomeIcons.book,
-                          onPressed:() {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const RoutinePage()),
-                            );
-                          },
-                          size: 70
-                        ),
-                      ]
-                    ),
-                    RelativeSizedBox(height: 3),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Sessions",
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                        RelativeSizedBox(height: 3),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 3 / 4,
                           ),
+                          itemCount: exercisesWeights.length,
+                          itemBuilder: (context, index) {
+                            final exercise = exercisesWeights[index];
+                            final color = graphColors[index % graphColors.length];
+
+                            return SingleGraphWidget(
+                              title: exercise["name"], 
+                              dataPoints: (exercise["weights"] as List).cast<double>(), 
+                              lineColor: color, 
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ExercisePage(exerciseId: exercise["id"]),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                        Container(
-                          height: 230,
-                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white, width: 3),
-                          ),
-                          child: Stack(
-                            children: [
-                              sessionsSummary["sessions_dates"].isNotEmpty
+                        RelativeSizedBox(height: 1),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Sessions",
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Container(
+                              height: 230,
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.white, width: 3),
+                              ),
+                              child: sessionsSummary["sessions_dates"].isNotEmpty
                                   ? ListView.builder(
                                       itemCount: sessionsSummary["sessions_dates"].length,
                                       itemBuilder: (context, index) {
@@ -249,43 +290,41 @@ class _TrainingPageState extends State<TrainingPage> {
                                         style: TextStyle(color: Colors.grey),
                                       ),
                                     ),
-                              ],
                             ),
+                          ],
+                        ),
+                        RelativeSizedBox(height: 3),
+                      ] else ...[
+                        Column(
+                          children: [
+                            RelativeSizedBox(height: 37),
+                            Align(
+                              alignment: Alignment.center,
+                              child: RotatingImage(),
+                            ),
+                          ],
                         ),
                       ],
-                    ), 
-                    RelativeSizedBox(height: 3),
-                  ] else ...[
-                    Column(
-                      children: [
-                        RelativeSizedBox(height: 37),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              RotatingImage(),
-                            ],
-                          ),
-                        ),
-                      ]
-                    ),
-                  ]
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-        child: CustomButton(
-          text: "Enregistra una sessió",
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SessionPage()),
-            );
-          },
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: RoundButton(
+                size: 100,
+                icon: FontAwesomeIcons.dumbbell,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SessionPage()),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
