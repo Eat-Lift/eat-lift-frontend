@@ -6,11 +6,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'services/database_helper.dart';
 
 import 'services/session_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper.instance.database;
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

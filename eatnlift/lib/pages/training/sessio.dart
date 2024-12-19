@@ -6,6 +6,7 @@ import 'package:eatnlift/services/api_training_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 import '../../custom_widgets/relative_sizedbox.dart';
 
@@ -29,12 +30,30 @@ class _SessionPageState extends State<SessionPage> {
   bool isLoading = true;
   DateTime? sessionDate;
 
+  bool _isSubmitting = false;
+  Timer? _submitTimer;
+  final int _submitIntervalSeconds = 30;
+
   @override
   void initState() {
     super.initState();
     _initPage();
+    _startAutoSubmitTimer();
   }
 
+    @override
+  void dispose() {
+    _submitTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAutoSubmitTimer() {
+    _submitTimer = Timer.periodic(
+      Duration(seconds: _submitIntervalSeconds),
+      (timer) => _submitData(),
+    );
+  }
+  
   Future<void> _initPage() async {
     setState((){
       isLoading = true;
@@ -129,18 +148,23 @@ class _SessionPageState extends State<SessionPage> {
     }
   }
 
-  void _submitData() async {
-    Map<String, dynamic> sessionData = {};
-    sessionData["date"] =  DateFormat('yyyy-MM-dd').format(sessionDate!);
-    sessionData["exercises"] = [];
-    for (var sessionExercise in sessionExercises!) {
-      sessionData["exercises"].add({"exercise": sessionExercise["exercise"]["id"], "sets": sessionExercise["sets"]});
-    }
+  Future<void> _submitData() async {
+    if (_isSubmitting) return;
+    _isSubmitting = true;
+
+    Map<String, dynamic> sessionData = {
+      "date": DateFormat('yyyy-MM-dd').format(sessionDate!),
+      "exercises": sessionExercises!.map((sessionExercise) {
+        return {
+          "exercise": sessionExercise["exercise"]["id"],
+          "sets": sessionExercise["sets"]
+        };
+      }).toList(),
+    };
+
     final apiService = ApiTrainingService();
     await apiService.editSession(currentUserId!, sessionData);
-    if (mounted) {
-      Navigator.pop(context, true);
-    }
+    _isSubmitting = false;
   }
   
   @override
@@ -159,7 +183,10 @@ class _SessionPageState extends State<SessionPage> {
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: RoundButton(
               icon: Icons.check,
-              onPressed: _submitData,
+              onPressed: () {
+                _submitData();
+                Navigator.pop(context, true);
+              },
               size: 35,
             ),
           ),

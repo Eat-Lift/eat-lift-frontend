@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/custom_textfield.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../services/database_helper.dart';
+import '../models/food_item.dart';
 
 class FoodItemCard extends StatefulWidget {
   final Map<String, dynamic> foodItem;
@@ -92,19 +94,38 @@ class _FoodItemCardState extends State<FoodItemCard> {
   }
 
   void _toggleSave() async {
+    final apiService = ApiNutritionService();
+    final databaseHelper = DatabaseHelper.instance;
+
+    final String foodName = widget.foodItem['name'];
+    final String creatorId = widget.foodItem['creator'].toString();
+
     if (isSaved) {
-      final apiService = ApiNutritionService();
       final result = await apiService.unsaveFoodItem(widget.foodItem["id"].toString());
       if (result["success"]) {
+        final db = await databaseHelper.database;
+        await db.delete(
+          'food_items',
+          where: 'name = ? AND creator = ?',
+          whereArgs: [foodName, creatorId],
+        );
+
         setState(() {
           isSaved = false;
         });
       }
-    }
-    else {
-      final apiService = ApiNutritionService();
+    } else {
       final result = await apiService.saveFoodItem(widget.foodItem["id"].toString());
       if (result["success"]) {
+        final foodItem = FoodItem(
+          name: foodName,
+          calories: widget.foodItem['calories'],
+          proteins: widget.foodItem['proteins'],
+          fats: widget.foodItem['fats'],
+          carbohydrates: widget.foodItem['carbohydrates'],
+        );
+        await databaseHelper.insertFoodItem(foodItem);
+
         setState(() {
           isSaved = true;
         });
