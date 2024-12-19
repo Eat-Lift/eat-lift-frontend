@@ -1,10 +1,16 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:io';
 
 class InternetChecker {
   static Future<bool> getConnectivity() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
 
-    return connectivityResult == ConnectivityResult.mobile || 
-           connectivityResult == ConnectivityResult.wifi;
+    return false;
   }
 }

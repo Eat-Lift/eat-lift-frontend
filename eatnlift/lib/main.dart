@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/pages/user/login.dart';
 import 'package:eatnlift/pages/home.dart'; 
@@ -21,17 +24,39 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Key _sessionKey = UniqueKey();
+
+  @override
+  void initState() {
+    super.initState();
+    Connectivity().onConnectivityChanged.listen((result) { 
+      _reloadApp();
+    });
+  }
+
+  void _reloadApp() {
+    setState(() {
+      _sessionKey = UniqueKey();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SessionCheckWrapper(),
+      home: SessionCheckWrapper(key: _sessionKey),
     );
   }
 }
+
 
 class SessionCheckWrapper extends StatelessWidget {
   const SessionCheckWrapper({super.key});
