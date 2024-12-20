@@ -1,6 +1,7 @@
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/recipe_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,7 @@ class NutritionSearchPage extends StatefulWidget {
   final bool searchFoodItems;
   final bool searchRecipes;
   final bool isCreating;
+  final bool offline;
 
   const NutritionSearchPage({
     super.key,
@@ -26,6 +28,7 @@ class NutritionSearchPage extends StatefulWidget {
     this.isCreating = false,
     this.searchFoodItems = true,
     this.searchRecipes = true,
+    this.offline = false,
   });
 
   @override
@@ -88,14 +91,27 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
 
   Future<void> _searchFoodItems() async {
     final query = searchController.text;
-    final response = await apiNutritionService.getFoodItems(query);
-    if (response["success"]) {
+
+    if (widget.offline) {
+      final databaseHelper = DatabaseHelper.instance;
+      final localResults = await databaseHelper.fetchFoodItemsByName(query);
+
       if (mounted) {
         setState(() {
-          foodItems = (response["foodItems"] as List)
-              .map((item) => item as Map<String, dynamic>)
-              .toList();
+          foodItems = localResults;
         });
+      }
+    } else {
+      final response = await apiNutritionService.getFoodItems(query);
+
+      if (response["success"]) {
+        if (mounted) {
+          setState(() {
+            foodItems = (response["foodItems"] as List)
+                .map((item) => item as Map<String, dynamic>)
+                .toList();
+          });
+        }
       }
     }
   }

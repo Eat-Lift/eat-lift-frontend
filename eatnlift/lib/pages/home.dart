@@ -1,6 +1,7 @@
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
+import 'package:eatnlift/pages/nutrition/offline_meal.dart';
 import 'package:eatnlift/pages/training/sessio.dart';
 import 'package:eatnlift/services/internet_checker.dart';
 import 'package:eatnlift/services/session_storage.dart';
@@ -142,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const SessionPage(),
+                                    builder: (context) => const OfflineMealPage(),
                                   ),
                                 );
                               },

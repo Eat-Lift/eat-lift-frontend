@@ -8,6 +8,8 @@ import '../../custom_widgets/messages_box.dart';
 import '../../custom_widgets/custom_number_picker.dart';
 
 import '../../services/api_user_service.dart';
+import '../../models/user_profile.dart';
+import '../../services/database_helper.dart';
 
 
 class NutritionalRequirementsPage extends StatefulWidget {
@@ -140,7 +142,18 @@ class NutritionalRequirementsState extends State<NutritionalRequirementsPage> {
     final apiService = ApiUserService();
     final result = await apiService.updatePersonalInformation(widget.personalInfo);
 
-    if (result["success"]){
+    if (result["success"]) {
+      final databaseHelper = DatabaseHelper.instance;
+
+      final userProfile = UserProfile(
+        calories: calories,
+        proteins: proteins,
+        fats: fats,
+        carbohydrates: carbohydrates,
+      );
+
+      await databaseHelper.insertUserProfile(userProfile);
+
       if (context.mounted) {
         Navigator.pushReplacement(
           context,

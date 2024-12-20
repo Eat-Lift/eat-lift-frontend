@@ -10,6 +10,9 @@ import '../../custom_widgets/relative_sizedbox.dart';
 
 import '../../services/session_storage.dart';
 
+import '../../models/exercise.dart';
+import '../../services/database_helper.dart';
+
 class ExercisePage extends StatefulWidget {
   final int exerciseId;
   final bool isCreating;
@@ -69,17 +72,39 @@ class _ExercisePageState extends State<ExercisePage> {
 
   void _toggleSaved() async {
     final apiService = ApiTrainingService();
-    if (isSaved){
+    final databaseHelper = DatabaseHelper.instance;
+
+    final String exerciseName = exerciseData!["name"];
+    final String userId = exerciseData!["user"].toString();
+
+    if (isSaved) {
       final response = await apiService.unsaveExercise(widget.exerciseId.toString());
+
       if (response["success"]) {
+        final db = await databaseHelper.database;
+        await db.delete(
+          'exercises',
+          where: 'name = ? AND user = ?',
+          whereArgs: [exerciseName, userId],
+        );
+
         setState(() {
           isSaved = false;
         });
       }
-    }
-    else {
+    } else {
       final response = await apiService.saveExercise(widget.exerciseId.toString());
+
       if (response["success"]) {
+        final exercise = Exercise(
+          name: exerciseName,
+          description: exerciseData!["description"],
+          user: userId,
+          trainedMuscles: List<String>.from(exerciseData!["trained_muscles"]),
+        );
+
+        await databaseHelper.insertExercise(exercise);
+
         setState(() {
           isSaved = true;
         });

@@ -15,6 +15,7 @@ class FoodItemsContainer extends StatefulWidget {
   final bool editable;
   final bool enableQuantityEdit;
   final bool isSelectable;
+  final bool offline;
 
   const FoodItemsContainer({
     super.key,
@@ -27,6 +28,7 @@ class FoodItemsContainer extends StatefulWidget {
     this.editable = true,
     this.enableQuantityEdit = true,
     this.isSelectable = true,
+    this.offline = false,
   });
 
   @override
@@ -198,7 +200,7 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: transformFoodItems(), onCheck: onCheck),
+                          builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: transformFoodItems(), onCheck: onCheck, offline: widget.offline, searchRecipes: !widget.offline),
                         ),
                       );
                     },
