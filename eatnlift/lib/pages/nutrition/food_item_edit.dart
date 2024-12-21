@@ -1,3 +1,5 @@
+import 'package:eatnlift/models/food_item.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../custom_widgets/relative_sizedbox.dart';
@@ -127,6 +129,22 @@ class EditFoodItemState extends State<EditFoodItemPage> {
     });
 
     if (result["success"]) {
+      final databaseHelper = DatabaseHelper.instance;
+      final foodItem = FoodItem(
+        name: updatedFoodItem["name"].toString(),
+        calories: updatedFoodItem["calories"] as double,
+        proteins: updatedFoodItem["proteins"] as double,
+        fats: updatedFoodItem["fats"] as double,
+        carbohydrates: updatedFoodItem["carbohydrates"] as double,
+        user: widget.foodItem["creator"].toString(),
+      );
+
+      await databaseHelper.updateFoodItemByNameAndUser(
+        name: foodItem.name,
+        user: foodItem.user,
+        updatedData: foodItem.toJson(),
+      );
+
       _showSuccessDialog("L'aliment s'ha actualitzat correctament");
     }
   }

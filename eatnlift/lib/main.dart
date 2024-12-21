@@ -15,6 +15,7 @@ import 'services/session_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //await DatabaseHelper.instance.deleteDatabaseFile();
   await DatabaseHelper.instance.database;
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

@@ -1,9 +1,12 @@
 import 'package:eatnlift/custom_widgets/current_target_display.dart';
 import 'package:eatnlift/custom_widgets/food_items_container.dart';
 import 'package:eatnlift/custom_widgets/nutritient_circular_graph.dart';
+import 'package:eatnlift/models/food_item.dart';
+import 'package:eatnlift/models/meals.dart';
 import 'package:eatnlift/pages/nutrition/historic_meal.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_user_service.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -201,6 +204,8 @@ class _NutritionPageState extends State<NutritionPage> {
   }
 
   void _editMeals(String mealType) async {
+    final databaseHelper = DatabaseHelper.instance;
+
     List<Map<String, dynamic>> foodItems = [];
     var meal = meals!.firstWhere(
       (meal) => meal['meal_type'] == mealType,
@@ -213,14 +218,55 @@ class _NutritionPageState extends State<NutritionPage> {
           "food_item_id": foodItem["food_item"]["id"],
           "quantity": foodItem["quantity"],
         });
+
+        final foodItemExists = await databaseHelper.fetchFoodItemsByName(foodItem["food_item"]["name"]);
+        if (foodItemExists.isEmpty) {
+          final foodItemData = FoodItem(
+            name: foodItem["food_item"]["name"],
+            calories: foodItem["food_item"]["calories"] is double
+                ? foodItem["food_item"]["calories"]
+                : double.tryParse(foodItem["food_item"]["calories"].toString()) ?? 0.0,
+            proteins: foodItem["food_item"]["proteins"] is double
+                ? foodItem["food_item"]["proteins"]
+                : double.tryParse(foodItem["food_item"]["proteins"].toString()) ?? 0.0,
+            fats: foodItem["food_item"]["fats"] is double
+                ? foodItem["food_item"]["fats"]
+                : double.tryParse(foodItem["food_item"]["fats"].toString()) ?? 0.0,
+            carbohydrates: foodItem["food_item"]["carbohydrates"] is double
+                ? foodItem["food_item"]["carbohydrates"]
+                : double.tryParse(foodItem["food_item"]["carbohydrates"].toString()) ?? 0.0,
+            user: currentUserId!,
+          );
+          await databaseHelper.insertFoodItem(foodItemData);
+        }
       }
     }
 
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+    await databaseHelper.deleteMealByType(formattedDate, mealType, currentUserId!);
+
+    final localMeal = Meal(
+      user: currentUserId!,
+      mealType: mealType,
+      date: formattedDate,
+    );
+    final mealId = await databaseHelper.insertMeal(localMeal);
+
+    for (var foodItem in meal["food_items"]) {
+      final foodItemMeal = FoodItemMeal(
+        mealId: mealId,
+        foodItemName: foodItem["food_item"]["name"],
+        quantity: foodItem["quantity"].toDouble(),
+        foodItemUser: foodItem["food_item"]["creator"].toString(),
+      );
+      await databaseHelper.insertFoodItemMeal(foodItemMeal);
+    }
+
     final apiService = ApiNutritionService();
     final result = await apiService.editMeal(currentUserId!, formattedDate, mealType, foodItems);
-    if (result["success"]){
+    if (result["success"]) {
       setState(() {
         meal = result[meal];
         ++key;

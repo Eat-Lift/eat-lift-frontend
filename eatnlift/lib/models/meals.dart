@@ -34,12 +34,14 @@ class FoodItemMeal {
   final int? id;
   final int mealId;
   final String foodItemName;
+  final String foodItemUser;
   final double quantity;
 
   FoodItemMeal({
     this.id,
     required this.mealId,
     required this.foodItemName,
+    required this.foodItemUser,
     required this.quantity,
   });
 
@@ -48,6 +50,7 @@ class FoodItemMeal {
       id: json['id'],
       mealId: json['meal_id'],
       foodItemName: json['food_item_name'],
+      foodItemUser: json['food_item_user'],
       quantity: json['quantity'],
     );
   }
@@ -57,6 +60,7 @@ class FoodItemMeal {
       'id': id,
       'meal_id': mealId,
       'food_item_name': foodItemName,
+      'food_item_user': foodItemUser,
       'quantity': quantity,
     };
   }

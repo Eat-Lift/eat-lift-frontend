@@ -237,6 +237,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
         foodItems.add({
           "food_item_name": foodItem["food_item"]["name"],
           "quantity": foodItem["quantity"],
+          "user": foodItem["food_item"]["user"],
         });
       }
     }
@@ -254,6 +255,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
         mealId: mealId,
         foodItemName: foodItem["food_item_name"],
         quantity: foodItem["quantity"].toDouble(),
+        foodItemUser: foodItem["user"],
       );
       await databaseHelper.insertFoodItemMeal(foodItemMeal);
     }
@@ -348,7 +350,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                     ),
                     RelativeSizedBox(height: 2),
                     FoodItemsContainer(
-                      key: ValueKey(key),
+                      key: ValueKey('ESMORZAR_${meals!.hashCode}'),
                       title: "Esmorzar",
                       foodItems: meals!
                           .where((meal) => meal['meal_type'] == "ESMORZAR")
@@ -364,7 +366,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
-                      key: ValueKey(key+1),
+                      key: ValueKey('DINAR_${meals!.hashCode}'),
                       title: "Dinar",
                       foodItems: meals!
                           .where((meal) => meal['meal_type'] == "DINAR")
@@ -380,7 +382,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
-                      key: ValueKey(key+2),
+                      key: ValueKey('BERENAR_${meals!.hashCode}'),
                       title: "Berenar",
                       foodItems: meals!
                           .where((meal) => meal['meal_type'] == "BERENAR")
@@ -396,7 +398,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
-                      key: ValueKey(key+3),
+                      key: ValueKey('SOPAR_${meals!.hashCode}'),
                       title: "Sopar",
                       foodItems: meals!
                           .where((meal) => meal['meal_type'] == "SOPAR")

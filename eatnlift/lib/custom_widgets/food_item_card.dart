@@ -122,7 +122,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
       final result = await apiService.saveFoodItem(widget.foodItem["id"].toString());
       if (result["success"]) {
         final foodItem = FoodItem(
-          user: userId.toString(),
+          user: widget.foodItem["creator"].toString(),
           name: foodName,
           calories: widget.foodItem['calories'],
           proteins: widget.foodItem['proteins'],
@@ -155,9 +155,26 @@ class _FoodItemCardState extends State<FoodItemCard> {
             TextButton(
               onPressed: () async {
                 final apiService = ApiNutritionService();
-                await apiService.deleteFoodItem(widget.foodItem["id"].toString());
-                if (context.mounted){
-                  Navigator.of(context).pop();
+                final databaseHelper = DatabaseHelper.instance;
+
+                final response = await apiService.deleteFoodItem(widget.foodItem["id"].toString());
+
+                if (response["success"]) {
+                  await databaseHelper.deleteFoodItemByNameAndUser(
+                    widget.foodItem["name"],
+                    widget.foodItem["creator"].toString(),
+                  );
+
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                } else {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error eliminant l'aliment")),
+                    );
+                  }
                 }
               },
               child: const Text("Eliminar"),
