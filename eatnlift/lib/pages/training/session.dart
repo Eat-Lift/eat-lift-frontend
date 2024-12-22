@@ -3,9 +3,11 @@ import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
 import 'package:eatnlift/services/api_training_service.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 
 import '../../custom_widgets/relative_sizedbox.dart';
@@ -163,8 +165,69 @@ class _SessionPageState extends State<SessionPage> {
     };
 
     final apiService = ApiTrainingService();
-    await apiService.editSession(currentUserId!, sessionData);
-    _isSubmitting = false;
+    final databaseHelper = DatabaseHelper.instance;
+
+    try {
+      await apiService.editSession(currentUserId!, sessionData);
+
+      final db = await databaseHelper.database;
+
+      final sessionId = await db.insert(
+        'sessions',
+        {
+          'user': currentUserId!,
+          'date': DateFormat('yyyy-MM-dd').format(sessionDate!),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      for (final sessionExercise in sessionExercises!) {
+        final exercise = sessionExercise['exercise'];
+
+        final existingExercise = await db.query(
+          'exercises',
+          where: 'name = ? AND user = ?',
+          whereArgs: [exercise['name'], exercise['user']],
+        );
+
+        if (existingExercise.isEmpty) {
+          await db.insert(
+            'exercises',
+            {
+              'name': exercise['name'],
+              'description': exercise['description'],
+              'user': exercise['user'],
+              'trained_muscles': (exercise['trained_muscles'] as List<dynamic>).join(','),
+            },
+          );
+        }
+
+        final exerciseId = await db.insert(
+          'session_exercises',
+          {
+            'session_id': sessionId,
+            'exercise_name': exercise['name'],
+            'exercise_user': exercise['user'],
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        for (final set in sessionExercise['sets']) {
+          await db.insert(
+            'session_sets',
+            {
+              'session_exercise_id': exerciseId,
+              'weight': set['weight'],
+              'reps': set['reps'],
+            },
+          );
+        }
+      }
+    } catch (error) {
+      print("Error submitting data: $error");
+    } finally {
+      _isSubmitting = false;
+    }
   }
   
   @override

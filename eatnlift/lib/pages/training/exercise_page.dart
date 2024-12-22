@@ -99,7 +99,7 @@ class _ExercisePageState extends State<ExercisePage> {
         final exercise = Exercise(
           name: exerciseName,
           description: exerciseData!["description"],
-          user: userId,
+          user: exerciseData!["user"].toString(),
           trainedMuscles: List<String>.from(exerciseData!["trained_muscles"]),
         );
 
@@ -129,10 +129,32 @@ class _ExercisePageState extends State<ExercisePage> {
             TextButton(
               onPressed: () async {
                 final apiService = ApiTrainingService();
-                await apiService.deleteExercise(widget.exerciseId.toString());
-                if (context.mounted){
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                final databaseHelper = DatabaseHelper.instance;
+                try {
+                  final response = await apiService.deleteExercise(widget.exerciseId.toString());
+
+                  if (response["success"]) {
+                    await databaseHelper.deleteExerciseById(widget.exerciseId);
+
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Exercici eliminat correctament")),
+                    );
+                  } else {
+                    throw Exception("Failed to delete exercise on the backend.");
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error: $e")),
+                  );
                 }
               },
               child: const Text("Eliminar"),

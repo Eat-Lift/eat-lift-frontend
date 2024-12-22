@@ -8,6 +8,7 @@ class ExerciseCard extends StatefulWidget {
   final bool initiallySelected;
   final void Function(Map<String, dynamic>, String)? onSelect;
   final bool isCreating;
+  final bool clickable;
 
   const ExerciseCard({
     super.key,
@@ -16,6 +17,7 @@ class ExerciseCard extends StatefulWidget {
     this.isSelectable = false,
     this.onSelect,
     this.isCreating = true,
+    this.clickable = true,
   });
 
   @override
@@ -48,12 +50,14 @@ class _ExerciseCardState extends State<ExerciseCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExercisePage(exerciseId: widget.exercise["id"], isCreating: widget.isCreating),
-          )
-        );
+        if (widget.clickable){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExercisePage(exerciseId: widget.exercise["id"], isCreating: widget.isCreating),
+            )
+          );
+        }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),

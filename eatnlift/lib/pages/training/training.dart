@@ -3,7 +3,7 @@ import 'package:eatnlift/custom_widgets/session_card.dart';
 import 'package:eatnlift/pages/training/exercise_page.dart';
 import 'package:eatnlift/pages/training/historic_session.dart';
 import 'package:eatnlift/pages/training/routine.dart';
-import 'package:eatnlift/pages/training/sessio.dart';
+import 'package:eatnlift/pages/training/session.dart';
 import 'package:eatnlift/pages/training/training_create.dart';
 import 'package:eatnlift/pages/training/training_search.dart';
 import 'package:eatnlift/services/api_training_service.dart';

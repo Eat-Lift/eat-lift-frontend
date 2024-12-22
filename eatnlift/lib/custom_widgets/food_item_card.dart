@@ -1,7 +1,6 @@
 import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/pages/nutrition/food_item_edit.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
-import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/custom_textfield.dart';
@@ -95,9 +94,6 @@ class _FoodItemCardState extends State<FoodItemCard> {
   }
 
   void _toggleSave() async {
-    final SessionStorage sessionStorage = SessionStorage();
-    final userId = await sessionStorage.getUserId();
-    
     final apiService = ApiNutritionService();
     final databaseHelper = DatabaseHelper.instance;
 

@@ -1,6 +1,8 @@
 import 'package:eatnlift/custom_widgets/custom_multiselect_dropdown.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
+import 'package:eatnlift/models/exercise.dart';
 import 'package:eatnlift/services/api_training_service.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:eatnlift/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -110,20 +112,30 @@ class EditExerciseState extends State<EditExercisePage> {
       setState(() {
         isCreating = false;
       });
-
     }
 
     final apiService = ApiTrainingService();
     final result = await apiService.editExercise(exercise, widget.exercise!["id"].toString());
+
     setState(() {
       response = result;
     });
 
     if (result["success"]) {
+      final databaseHelper = DatabaseHelper.instance;
+
+      final updatedExercise = Exercise(
+        id: widget.exercise!["id"],
+        name: exercise["name"].toString(),
+        description: exercise["descripció"].toString(),
+        user: widget.exercise!["user"].toString(),
+        trainedMuscles: (exercise["trained_muscles"] as List<dynamic>).map((e) => e.toString()).toList(),
+      );
+
+      await databaseHelper.updateExercise(updatedExercise);
+
       if (mounted) {
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
+        Navigator.pop(context, true);
       }
     }
   }

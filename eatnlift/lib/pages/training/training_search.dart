@@ -2,6 +2,7 @@ import 'package:eatnlift/custom_widgets/exercise_card.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/custom_widgets/workout_card.dart';
 import 'package:eatnlift/services/api_training_service.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,7 @@ class TrainingSearchPage extends StatefulWidget {
   final bool searchExercises;
   final bool searchWorkouts;
   final bool isCreating;
+  final bool offline;
 
   const TrainingSearchPage({
     super.key,
@@ -26,6 +28,7 @@ class TrainingSearchPage extends StatefulWidget {
     this.searchExercises = true,
     this.searchWorkouts = true,
     this.isCreating = false,
+    this.offline = false,
   });
 
   @override
@@ -94,15 +97,35 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       if (mounted) setState(() => exercises?.clear());
       return;
     }
-    final apiTrainingService = ApiTrainingService();
-    final response = await apiTrainingService.getExercises(query);
-    if (response["success"]) {
+
+    if (widget.offline) {
+      // Search in the local database
+      final databaseHelper = DatabaseHelper.instance;
+      final localExercises = await databaseHelper.searchExercises(query);
       if (mounted) {
         setState(() {
-          exercises = (response["exercises"] as List)
-              .map((item) => item as Map<String, dynamic>)
+          exercises = localExercises
+              .map((exercise) => {
+                    "id": exercise.id,
+                    "name": exercise.name,
+                    "description": exercise.description,
+                    "user": exercise.user,
+                    "trained_muscles": exercise.trainedMuscles,
+                  })
               .toList();
         });
+      }
+    } else {
+      final apiTrainingService = ApiTrainingService();
+      final response = await apiTrainingService.getExercises(query);
+      if (response["success"]) {
+        if (mounted) {
+          setState(() {
+            exercises = (response["exercises"] as List)
+                .map((item) => item as Map<String, dynamic>)
+                .toList();
+          });
+        }
       }
     }
   }
@@ -189,6 +212,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
           isSelectable: widget.isCreating,
           isCreating: widget.isCreating,
           onSelect: _onSelectItem,
+          clickable: false,
         );
       },
     );
