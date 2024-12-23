@@ -96,6 +96,28 @@ class ApiNutritionService {
     }
   }
 
+    Future<Map<String, dynamic>> getSavedFoodItems() async {
+      final SessionStorage sessionStorage = SessionStorage();
+      final token = await sessionStorage.getAccessToken();
+
+      final response = await http.get(
+        Uri.parse("$baseUrl/foodItems/saved"),
+        headers: {
+          "Authorization": "Token $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> foodItemsJson = json.decode(response.body);
+        return {
+          "success": true,
+          "foodItems": foodItemsJson,
+        };
+      } else {
+        return {"success": false, "foodItems": []};
+      }
+    }
+
   Future<Map<String, dynamic>> getFoodItemSaved(String foodItemId) async {
     final SessionStorage sessionStorage = SessionStorage();
     final token = await sessionStorage.getAccessToken();

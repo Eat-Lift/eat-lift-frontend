@@ -235,7 +235,7 @@ class _NutritionPageState extends State<NutritionPage> {
             carbohydrates: foodItem["food_item"]["carbohydrates"] is double
                 ? foodItem["food_item"]["carbohydrates"]
                 : double.tryParse(foodItem["food_item"]["carbohydrates"].toString()) ?? 0.0,
-            user: currentUserId!,
+            user: foodItem["food_item"]["creator"].toString(),
           );
           await databaseHelper.insertFoodItem(foodItemData);
         }

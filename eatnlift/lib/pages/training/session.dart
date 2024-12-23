@@ -241,7 +241,7 @@ class _SessionPageState extends State<SessionPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
         title: Text(capitalizedDate),
-                 actions: [
+        actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: RoundButton(

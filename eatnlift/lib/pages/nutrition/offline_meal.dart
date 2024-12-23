@@ -1,6 +1,7 @@
 import 'package:eatnlift/custom_widgets/current_target_display.dart';
 import 'package:eatnlift/custom_widgets/food_items_container.dart';
 import 'package:eatnlift/custom_widgets/nutritient_circular_graph.dart';
+import 'package:eatnlift/custom_widgets/round_button.dart';
 import 'package:eatnlift/models/meals.dart';
 import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
@@ -271,6 +272,22 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: Text("Nutrició offline"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: RoundButton(
+              icon: Icons.check,
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              size: 35,
+            ),
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: SingleChildScrollView(
@@ -282,7 +299,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading) ...[
-                    RelativeSizedBox(height: 4),
+                    RelativeSizedBox(height: 2),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

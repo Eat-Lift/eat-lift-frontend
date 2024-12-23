@@ -273,16 +273,11 @@ class _OfflineSessionPageState extends State<OfflineSessionPage> {
   
   @override
   Widget build(BuildContext context) {
-    final String capitalizedDate = sessionDate != null
-        ? _capitalizeFirstLetter(
-            DateFormat('EEEE dd/MM/yyyy', 'ca').format(sessionDate!))
-        : "Entrenament";
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text(capitalizedDate),
-                 actions: [
+        title: Text("Entrenament offline"),
+        actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: RoundButton(

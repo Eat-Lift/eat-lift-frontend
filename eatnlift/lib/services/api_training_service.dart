@@ -119,6 +119,28 @@ class ApiTrainingService {
     }
   }
 
+  Future<Map<String, dynamic>> getSavedExercises() async {
+    final SessionStorage sessionStorage = SessionStorage();
+    final token = await sessionStorage.getAccessToken();
+
+    final response = await http.get(
+      Uri.parse("$baseUrl/exercises/saved"),
+      headers: {
+        "Authorization": "Token $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> exercises = json.decode(response.body);
+      return {
+        "success": true,
+        "exercises": exercises,
+      };
+    } else {
+      return {"success": false, "exercises": []};
+    }
+  }
+
   Future<Map<String, dynamic>> getExerciseSaved(String exerciseId) async {
   final SessionStorage sessionStorage = SessionStorage();
   final token = await sessionStorage.getAccessToken();

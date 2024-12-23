@@ -93,13 +93,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
 
   Future<void> _searchExercises() async {
     final query = searchController.text;
-    if (query.isEmpty) {
-      if (mounted) setState(() => exercises?.clear());
-      return;
-    }
-
     if (widget.offline) {
-      // Search in the local database
       final databaseHelper = DatabaseHelper.instance;
       final localExercises = await databaseHelper.searchExercises(query);
       if (mounted) {

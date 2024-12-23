@@ -2,6 +2,7 @@ import 'package:eatnlift/models/meals.dart';
 import 'package:eatnlift/models/session.dart';
 import 'package:eatnlift/services/api_nutrition_service.dart';
 import 'package:eatnlift/services/api_training_service.dart';
+import 'package:eatnlift/services/api_user_service.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -167,6 +168,7 @@ class DatabaseHelper {
       'food_items',
       where: 'LOWER(name) LIKE ?',
       whereArgs: ['%${query.toLowerCase()}%'],
+      limit: 50,
     );
   }
 
@@ -185,10 +187,10 @@ class DatabaseHelper {
     return result.map((json) => Exercise.fromJson(json)).toList();
   }
 
-  Future<List<Exercise>> fetchExercisesByName(String? query) async {
+  Future<List<Exercise>> fetchExercisesByName(String query) async {
     final db = await instance.database;
 
-    final result = query == null || query.trim().isEmpty
+    final result = query.trim().isEmpty
         ? await db.query('exercises')
         : await db.query(
             'exercises',
@@ -380,6 +382,70 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> insertSession(Session session) async {
+    final db = await instance.database;
+    return await db.insert('sessions', session.toJson());
+  }
+
+  Future<int> insertSessionExercise(SessionExercise sessionExercise) async {
+    final db = await instance.database;
+    return await db.insert('session_exercises', sessionExercise.toJson());
+  }
+
+  Future<int> insertSessionSet(SessionSet sessionSet) async {
+    final db = await instance.database;
+    return await db.insert('session_sets', sessionSet.toJson());
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSessionsByDate(String date, String user) async {
+    final db = await instance.database;
+
+    final sessions = await db.query(
+      'sessions',
+      where: 'date = ? AND user = ?',
+      whereArgs: [date, user],
+    );
+
+    final List<Map<String, dynamic>> sessionsWithExercises = [];
+
+    for (var session in sessions) {
+      final mutableSession = Map<String, dynamic>.from(session);
+
+      final sessionId = session['id'];
+
+      final sessionExercises = await db.query(
+        'session_exercises',
+        where: 'session_id = ?',
+        whereArgs: [sessionId],
+      );
+
+      final List<Map<String, dynamic>> exercisesWithSets = [];
+
+      for (var sessionExercise in sessionExercises) {
+        final mutableSessionExercise = Map<String, dynamic>.from(sessionExercise);
+
+        final sessionExerciseId = sessionExercise['id'];
+
+        final sessionSets = await db.query(
+          'session_sets',
+          where: 'session_exercise_id = ?',
+          whereArgs: [sessionExerciseId],
+        );
+
+        mutableSessionExercise['sets'] = List<Map<String, dynamic>>.from(sessionSets);
+
+        exercisesWithSets.add(mutableSessionExercise);
+      }
+
+      mutableSession['exercises'] = exercisesWithSets;
+
+      sessionsWithExercises.add(mutableSession);
+    }
+
+    return sessionsWithExercises;
+  }
+    
+
   Future<void> syncMeals() async {
     final databaseHelper = DatabaseHelper.instance;
     final apiService = ApiNutritionService();
@@ -434,154 +500,384 @@ class DatabaseHelper {
     
   }
 
-  Future<void> deleteDatabaseFile() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'app_database.db');
-    await deleteDatabase(path);
-  }
+  Future<void> syncSessions() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiTrainingService();
 
-  Future<int> insertSession(Session session) async {
-    final db = await instance.database;
-    return await db.insert('sessions', session.toJson());
-  }
+    try {
+      final userId = await SessionStorage().getUserId();
+      final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-  Future<int> insertSessionExercise(SessionExercise sessionExercise) async {
-    final db = await instance.database;
-    return await db.insert('session_exercises', sessionExercise.toJson());
-  }
+      final localSessions = await databaseHelper.fetchSessionsByDate(formattedDate, userId!);
 
-  Future<int> insertSessionSet(SessionSet sessionSet) async {
-    final db = await instance.database;
-    return await db.insert('session_sets', sessionSet.toJson());
-  }
+      for (final session in localSessions) {
+        final exercises = List<Map<String, dynamic>>.from(session['exercises'] as List);
 
-Future<List<Map<String, dynamic>>> fetchSessionsByDate(String date, String user) async {
-  final db = await instance.database;
+        final List<Map<String, dynamic>> exercisesForSession = [];
 
-  final sessions = await db.query(
-    'sessions',
-    where: 'date = ? AND user = ?',
-    whereArgs: [date, user],
-  );
+        for (final exercise in exercises) {
+          final exerciseName = exercise['exercise_name'];
+          final exerciseUser = exercise['exercise_user'];
 
-  final List<Map<String, dynamic>> sessionsWithExercises = [];
+          String? backendExerciseId;
+          final response = await apiService.getExercises(exerciseName);
 
-  for (var session in sessions) {
-    final mutableSession = Map<String, dynamic>.from(session);
+          if (response["success"] && (response["exercises"] as List).isNotEmpty) {
+            final matchingExercise = (response["exercises"] as List).firstWhere(
+              (backendExercise) =>
+                  backendExercise["name"] == exerciseName &&
+                  backendExercise["user"].toString() == exerciseUser,
+              orElse: () => null,
+            );
 
-    final sessionId = session['id'];
+            if (matchingExercise != null) {
+              backendExerciseId = matchingExercise["id"].toString();
+            }
+          }
 
-    final sessionExercises = await db.query(
-      'session_exercises',
-      where: 'session_id = ?',
-      whereArgs: [sessionId],
-    );
+          if (backendExerciseId == null) {
+            print("No matching backend exercise found for name: $exerciseName, user: $exerciseUser");
+            continue;
+          }
 
-    final List<Map<String, dynamic>> exercisesWithSets = [];
+          final sets = List<Map<String, dynamic>>.from(exercise['sets'] as List);
+          final List<Map<String, dynamic>> setsForExercise = sets.map((set) {
+            return {
+              'weight': set['weight'],
+              'reps': set['reps'],
+            };
+          }).toList();
 
-    for (var sessionExercise in sessionExercises) {
-      final mutableSessionExercise = Map<String, dynamic>.from(sessionExercise);
+          exercisesForSession.add({
+            'exercise': backendExerciseId,
+            'sets': setsForExercise,
+          });
+        }
 
-      final sessionExerciseId = sessionExercise['id'];
+        if (exercisesForSession.isNotEmpty) {
+          final sessionData = {
+            'date': formattedDate,
+            'exercises': exercisesForSession,
+          };
 
-      final sessionSets = await db.query(
-        'session_sets',
-        where: 'session_exercise_id = ?',
-        whereArgs: [sessionExerciseId],
-      );
+          final result = await apiService.editSession(userId, sessionData);
 
-      mutableSessionExercise['sets'] = List<Map<String, dynamic>>.from(sessionSets);
-
-      exercisesWithSets.add(mutableSessionExercise);
-    }
-
-    mutableSession['exercises'] = exercisesWithSets;
-
-    sessionsWithExercises.add(mutableSession);
-  }
-
-  return sessionsWithExercises;
-}
-  
-
-Future<void> syncSessions() async {
-  final databaseHelper = DatabaseHelper.instance;
-  final apiService = ApiTrainingService();
-
-  try {
-    final userId = await SessionStorage().getUserId();
-    final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-    // Fetch local sessions for today
-    final localSessions = await databaseHelper.fetchSessionsByDate(formattedDate, userId!);
-
-    for (final session in localSessions) {
-      final exercises = List<Map<String, dynamic>>.from(session['exercises'] as List);
-
-      final List<Map<String, dynamic>> exercisesForSession = [];
-
-      for (final exercise in exercises) {
-        final exerciseName = exercise['exercise_name'];
-        final exerciseUser = exercise['exercise_user'];
-
-        // Fetch exercise ID from the backend
-        String? backendExerciseId;
-        final response = await apiService.getExercises(exerciseName);
-
-        if (response["success"] && (response["exercises"] as List).isNotEmpty) {
-          final matchingExercise = (response["exercises"] as List).firstWhere(
-            (backendExercise) =>
-                backendExercise["name"] == exerciseName &&
-                backendExercise["user"].toString() == exerciseUser,
-            orElse: () => null,
-          );
-
-          if (matchingExercise != null) {
-            backendExerciseId = matchingExercise["id"].toString();
+          if (!result['success']) {
+            print("Failed to sync session for $formattedDate");
           }
         }
-
-        if (backendExerciseId == null) {
-          print("No matching backend exercise found for name: $exerciseName, user: $exerciseUser");
-          continue;
-        }
-
-        // Process sets for the exercise
-        final sets = List<Map<String, dynamic>>.from(exercise['sets'] as List);
-        final List<Map<String, dynamic>> setsForExercise = sets.map((set) {
-          return {
-            'weight': set['weight'],
-            'reps': set['reps'],
-          };
-        }).toList();
-
-        exercisesForSession.add({
-          'exercise': backendExerciseId,
-          'sets': setsForExercise,
-        });
       }
+    } catch (error) {
+      print("Error syncing sessions: $error");
+    }
+  }
 
-      if (exercisesForSession.isNotEmpty) {
-        final sessionData = {
-          'date': formattedDate,
-          'exercises': exercisesForSession,
-        };
+  Future<void> getMeals() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiNutritionService();
 
-        // Sync session to the backend
-        final result = await apiService.editSession(userId, sessionData);
+    try {
+      final currentUserId = await SessionStorage().getUserId();
+      final String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-        if (!result['success']) {
-          print("Failed to sync session for $formattedDate");
+      final response = await apiService.getMeals(currentUserId!, formattedDate);
+
+      if (response["success"]) {
+        final mealsFromBackend = response["meals"] as List<dynamic>;
+
+        for (final mealData in mealsFromBackend) {
+          await databaseHelper.saveMealFromBackend(mealData);
         }
+      } else {
+        print("Failed to fetch meals from backend: ${response['errors']}");
+      }
+    } catch (error) {
+      print("Error fetching meals: $error");
+    }
+  }
+
+
+Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
+  final databaseHelper = DatabaseHelper.instance;
+
+  try {
+    final String mealType = mealData['meal_type'];
+    final String date = mealData['date'];
+    final String userId = mealData['user'].toString();
+
+    final List<Map<String, dynamic>> foodItems = (mealData['food_items'] as List<dynamic>)
+        .map((item) => item as Map<String, dynamic>)
+        .toList();
+
+    for (final foodItem in foodItems) {
+      final foodItemDetails = foodItem['food_item'];
+
+      final existingFoodItem =
+          await databaseHelper.fetchFoodItemsByName(foodItemDetails['name']);
+      if (existingFoodItem.isEmpty) {
+        final newFoodItem = FoodItem(
+          name: foodItemDetails['name'],
+          calories: foodItemDetails['calories'] is double
+              ? foodItemDetails['calories']
+              : double.tryParse(foodItemDetails['calories'].toString()) ?? 0.0,
+          proteins: foodItemDetails['proteins'] is double
+              ? foodItemDetails['proteins']
+              : double.tryParse(foodItemDetails['proteins'].toString()) ?? 0.0,
+          fats: foodItemDetails['fats'] is double
+              ? foodItemDetails['fats']
+              : double.tryParse(foodItemDetails['fats'].toString()) ?? 0.0,
+          carbohydrates: foodItemDetails['carbohydrates'] is double
+              ? foodItemDetails['carbohydrates']
+              : double.tryParse(foodItemDetails['carbohydrates'].toString()) ?? 0.0,
+          user: foodItemDetails['creator'].toString(),
+        );
+        await databaseHelper.insertFoodItem(newFoodItem);
       }
     }
+
+    final Meal localMeal = Meal(
+      user: userId,
+      mealType: mealType,
+      date: date,
+    );
+    final int mealId = await databaseHelper.insertMeal(localMeal);
+
+    for (final foodItem in foodItems) {
+      final FoodItemMeal foodItemMeal = FoodItemMeal(
+        mealId: mealId,
+        foodItemName: foodItem['food_item']['name'],
+        quantity: foodItem['quantity'] is double
+            ? foodItem['quantity']
+            : double.tryParse(foodItem['quantity'].toString()) ?? 0.0,
+        foodItemUser: foodItem['food_item']['creator'].toString(),
+      );
+      await databaseHelper.insertFoodItemMeal(foodItemMeal);
+    }
+
+    print("Meal saved successfully from backend");
   } catch (error) {
-    print("Error syncing sessions: $error");
+    print("Error saving meal from backend: $error");
   }
 }
+
+  Future<void> getSession() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiTrainingService();
+
+    try {
+      final currentUserId = await SessionStorage().getUserId();
+      final String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      final response = await apiService.getSession(currentUserId!, formattedDate);
+
+      if (response["success"]) {
+        final sessionsFromBackend = response["sessions"] as List<dynamic>? ?? [];
+
+        for (final sessionData in sessionsFromBackend) {
+          await databaseHelper.saveSessionFromBackend(sessionData);
+        }
+      } else {
+        print("Failed to fetch sessions from backend: ${response['errors']}");
+      }
+    } catch (error) {
+      print("Error fetching sessions: $error");
+    }
+  }
+
+
+  Future<void> saveSessionFromBackend(Map<String, dynamic> session) async {
+    final databaseHelper = DatabaseHelper.instance;
+
+    try {
+      final db = await databaseHelper.database;
+
+      final sessionId = await db.insert(
+        'sessions',
+        {
+          'user': session['user'],
+          'date': session['date'],
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      for (final sessionExercise in session['exercises']) {
+        final exercise = sessionExercise['exercise'];
+
+
+        final existingExercise = await db.query(
+          'exercises',
+          where: 'name = ? AND user = ?',
+          whereArgs: [exercise['name'], exercise['user']],
+        );
+
+        if (existingExercise.isEmpty) {
+          await db.insert(
+            'exercises',
+            {
+              'name': exercise['name'],
+              'description': exercise['description'],
+              'user': exercise['user'],
+              'trained_muscles': (exercise['trained_muscles'] as List<dynamic>).join(','),
+            },
+          );
+        }
+
+        final exerciseId = await db.insert(
+          'session_exercises',
+          {
+            'session_id': sessionId,
+            'exercise_name': exercise['name'],
+            'exercise_user': exercise['user'],
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        for (final set in sessionExercise['sets']) {
+          await db.insert(
+            'session_sets',
+            {
+              'session_exercise_id': exerciseId,
+              'weight': set['weight'],
+              'reps': set['reps'],
+            },
+          );
+        }
+      }
+      print("Session successfully inserted into the local database.");
+    } catch (error) {
+      print("Error inserting session into the local database: $error");
+    }
+  }
+
+  Future<void> getSavedFoodItems() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiNutritionService();
+
+    try {
+      final response = await apiService.getSavedFoodItems();
+
+      if (response["success"]) {
+        final savedFoodItems = response["saved_food_items"] as List<dynamic>? ?? [];
+
+        for (final foodItemData in savedFoodItems) {
+          final existingFoodItem = await databaseHelper.fetchFoodItemsByName(foodItemData["name"]);
+
+          if (existingFoodItem.isEmpty) {
+            final foodItem = FoodItem(
+              name: foodItemData["name"],
+              calories: foodItemData["calories"] is double
+                  ? foodItemData["calories"]
+                  : double.tryParse(foodItemData["calories"].toString()) ?? 0.0,
+              proteins: foodItemData["proteins"] is double
+                  ? foodItemData["proteins"]
+                  : double.tryParse(foodItemData["proteins"].toString()) ?? 0.0,
+              fats: foodItemData["fats"] is double
+                  ? foodItemData["fats"]
+                  : double.tryParse(foodItemData["fats"].toString()) ?? 0.0,
+              carbohydrates: foodItemData["carbohydrates"] is double
+                  ? foodItemData["carbohydrates"]
+                  : double.tryParse(foodItemData["carbohydrates"].toString()) ?? 0.0,
+              user: foodItemData["user"],
+            );
+            await databaseHelper.insertFoodItem(foodItem);
+          }
+        }
+      } else {
+        print("Failed to fetch saved food items: ${response['errors']}");
+      }
+    } catch (error) {
+      print("Error fetching saved food items: $error");
+    }
+  }
+
+
+  Future<void> getSavedExercises() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiTrainingService();
+
+    try {
+      final response = await apiService.getSavedExercises();
+
+      if (response["success"]) {
+        final savedExercises = response["saved_exercises"] as List<dynamic>? ?? [];
+
+        for (final exerciseData in savedExercises) {
+          final existingExercise = await databaseHelper.fetchExercisesByName(exerciseData["name"]);
+
+          if (existingExercise.isEmpty) {
+            final exercise = Exercise(
+              id: exerciseData["id"], // Include backend ID
+              name: exerciseData["name"],
+              description: exerciseData["description"],
+              user: exerciseData["user"],
+              trainedMuscles: List<String>.from(exerciseData["trained_muscles"] ?? []),
+            );
+
+            await databaseHelper.insertExercise(exercise);
+          }
+        }
+      } else {
+        print("Failed to fetch saved exercises: ${response['errors']}");
+      }
+    } catch (error) {
+      print("Error fetching saved exercises: $error");
+    }
+  }
+
+  Future<void> getPersonalInformation() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final apiService = ApiUserService();
+    final currentUserId = await SessionStorage().getUserId();
+
+    try {
+      final response = await apiService.getPersonalInformation(currentUserId!);
+
+      if (response?["success"]) {
+        final userData = response?["user"] as Map<String, dynamic>;
+
+        final userProfile = UserProfile(
+          calories: userData["calories"],
+          proteins: userData["proteins"],
+          fats: userData["fats"],
+          carbohydrates: userData["carbohydrates"],
+        );
+
+        await databaseHelper.insertUserProfile(userProfile);
+      } else {
+        print("Failed to fetch personal information: ${response?['errors']}");
+      }
+    } catch (error) {
+      print("Error fetching personal information: $error");
+    }
+  }
+
+  Future<void> emptyDatabase() async {
+    final databaseHelper = DatabaseHelper.instance;
+    final db = await databaseHelper.database;
+
+    await db.delete('meals');
+    await db.delete('session_exercises');
+    await db.delete('session_sets');
+    await db.delete('sessions');
+    await db.delete('food_items');
+    await db.delete('exercises');
+    await db.delete('user_profile');
+  }
 
   Future<void> syncDatabase() async {
     await syncMeals();
     await syncSessions();
+    await emptyDatabase();
+    await getMeals();
+    await getSession();
+    await getSavedFoodItems();
+    await getSavedExercises();
+    await getPersonalInformation();
+  }
+
+  Future<void> deleteDatabaseFile() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'app_database.db');
+    await deleteDatabase(path);
   }
 }
