@@ -1,4 +1,5 @@
 import 'package:eatnlift/pages/home.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
 
 import '../../custom_widgets/custom_textfield.dart';
@@ -68,6 +69,7 @@ class LoginPageState extends State<LoginPage> {
 
     if (result["success"]){
       await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+      await DatabaseHelper.instance.syncDatabase();
       if (context.mounted){
         Navigator.pushReplacement(
           context,
@@ -86,6 +88,7 @@ class LoginPageState extends State<LoginPage> {
     final result = await apiService.googleLogin();
     if (result["success"]){
       await sessionStorage.saveSession(result["token"], result["user"]["id"].toString());
+      await DatabaseHelper.instance.syncDatabase();
       if (result["signin"]){
         if (mounted){
           Navigator.pushReplacement(

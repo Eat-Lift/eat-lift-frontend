@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'session_storage.dart';
 
 class ApiNutritionService {
-   final String baseUrl = "http://10.0.2.2:8000/nutrition";
+   final String baseUrl = "http://192.168.1.136:8000/nutrition";
 
   //Food items
   Future<Map<String, dynamic>> createFoodItem(Map<String, Object> foodItem) async {

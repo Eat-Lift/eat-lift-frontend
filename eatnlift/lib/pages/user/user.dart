@@ -2,6 +2,7 @@ import 'package:eatnlift/custom_widgets/check_graphs.dart';
 import 'package:eatnlift/custom_widgets/checks_container.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/pages/user/check.dart';
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -108,6 +109,7 @@ class _UserPageState extends State<UserPage> {
 
   void logOut(BuildContext context) async {
     await sessionStorage.clearSession();
+    await DatabaseHelper.instance.emptyDatabase();
     if (context.mounted){
       Navigator.pushReplacement(
         context,
@@ -182,6 +184,7 @@ class _UserPageState extends State<UserPage> {
     final apiService = ApiUserService();
     await apiService.signout();
     await sessionStorage.clearSession();
+    await DatabaseHelper.instance.emptyDatabase();
     if (context.mounted) {
       Navigator.pushReplacement(
         context,

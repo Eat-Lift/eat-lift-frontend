@@ -113,25 +113,33 @@ class _NutritionPageState extends State<HistoricMealPage> {
     }
   }
 
+  String _capitalizeFirstLetter(String input) {
+    if (input.isEmpty) return input;
+    return '${input[0].toUpperCase()}${input.substring(1)}';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final String capitalizedDate = _capitalizeFirstLetter(
+      DateFormat('EEEE dd/MM/yyyy', 'ca').format(widget.date),
+    );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text(DateFormat('dd-MM-yyyy').format(widget.date)),
+        title: Text(capitalizedDate),
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading && userData != null) ...[
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 1),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -192,13 +200,14 @@ class _NutritionPageState extends State<HistoricMealPage> {
                           fatsCurrent: nutritionalInfo?["GENERAL"]?["fats"],
                           carbsTarget: userData?["carbohydrates"].toDouble(),
                           carbsCurrent: nutritionalInfo?["GENERAL"]?["carbohydrates"],
-                          size: 160,
+                          size: 140,
                           barThickness: 15,
                         ),
                       ],
                     ),
                     RelativeSizedBox(height: 2),
                     FoodItemsContainer(
+                      size: 167,
                       key: ValueKey(key),
                       title: "Esmorzar",
                       foodItems: meals!
@@ -213,6 +222,7 @@ class _NutritionPageState extends State<HistoricMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
+                      size: 167,
                       key: ValueKey(key+1),
                       title: "Dinar",
                       foodItems: meals!
@@ -227,6 +237,7 @@ class _NutritionPageState extends State<HistoricMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
+                      size: 167,
                       key: ValueKey(key+2),
                       title: "Berenar",
                       foodItems: meals!
@@ -241,6 +252,7 @@ class _NutritionPageState extends State<HistoricMealPage> {
                     ),
                     RelativeSizedBox(height: 1),
                     FoodItemsContainer(
+                      size: 167,
                       key: ValueKey(key+3),
                       title: "Sopar",
                       foodItems: meals!

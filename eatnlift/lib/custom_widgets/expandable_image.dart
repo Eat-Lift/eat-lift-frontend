@@ -30,7 +30,6 @@ class ExpandableImageState extends State<ExpandableImage> {
   @override
   void initState() {
     super.initState();
-    // initial image will display via URL if provided
   }
 
   Future<void> _pickImage() async {
@@ -41,7 +40,7 @@ class ExpandableImageState extends State<ExpandableImage> {
         selectedImageFile = imageFile;
       });
       if (widget.onImageSelected != null) {
-        widget.onImageSelected!(imageFile);  // Return the File to the parent widget
+        widget.onImageSelected!(imageFile);
       }
     }
   }

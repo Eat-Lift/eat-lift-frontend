@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/custom_widgets/round_button.dart';
@@ -45,6 +44,11 @@ class NutritionCreateState extends State<NutritionCreatePage> {
   Map<String, dynamic> response = {};
 
   bool isCreating = false;
+
+  double calories = 0;
+  double proteins = 0;
+  double fats = 0;
+  double carbohydrates = 0;
 
   void toggleCreateMode(bool isFoodItemSelected) {
     setState(() {
@@ -251,6 +255,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
       selectedFoodItems = fromSearchFoodItems!;
     });
     Navigator.pop(context);
+    _calculateNutritionalInfo();
   }
 
   @override
@@ -263,80 +268,93 @@ class NutritionCreateState extends State<NutritionCreatePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isCreatingFoodItem) ...[
-                const Icon(
-                  Icons.fastfood,
-                  size: 100,
-                  color: Colors.black,
-                ),
-              ] else ...[
-                ExpandableImage(
-                  initialImageUrl: initialImagePath,
-                  onImageSelected: (imageFile) {
-                    setState(() {
-                      _selectedImage = imageFile;
-                    });
-                  },
-                  editable: true,
-                  width: 70,
-                  height: 70,
-                ),
-              ],
-              const RelativeSizedBox(height: 0.5),
-              Text(
-                isCreatingFoodItem ? "Crea un Aliment" : "Crea una Recepta",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
-              ),
-              const RelativeSizedBox(height: 2),
-              YinYangToggle(
-                isLeftSelected: isCreatingFoodItem,
-                leftText: "Aliment",
-                rightText: "Recepta",
-                onToggle: toggleCreateMode,
-                height: 57,
-              ),
-              const RelativeSizedBox(height: 2),
-              if (isCreatingFoodItem) ...[
-                _buildFoodItemForm(),
-              ] else ...[
-                _buildRecipeForm(),
-              ],
-              const RelativeSizedBox(height: 2),
-              CustomButton(
-                text: isCreatingFoodItem? "Crear aliments" : "Crear recepta",
-                onTap: _submitData,
-              ),
-              const RelativeSizedBox(height: 2),
-              if (isCreating) ...[
-                RotatingImage(),
-                const RelativeSizedBox(height: 2),
-              ]
-              else ...[
-                if (response.isNotEmpty && !response["success"]) ...[
-                  MessagesBox(
-                    messages: response["errors"],
-                    height: 6,
-                    color: Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (isCreatingFoodItem) ...[
+                  RelativeSizedBox(height: 10),
+                  const Icon(
+                    Icons.fastfood,
+                    size: 100,
+                    color: Colors.black,
                   ),
-                  const RelativeSizedBox(height: 4)
                 ] else ...[
-                  const RelativeSizedBox(height: 10)
-                ]
+                  Align(
+                    alignment: Alignment.center,
+                    child: ExpandableImage(
+                      initialImageUrl: initialImagePath,
+                      onImageSelected: (imageFile) {
+                        setState(() {
+                          _selectedImage = imageFile;
+                        });
+                      },
+                      editable: true,
+                      width: 70,
+                      height: 70,
+                    ),
+                  ),
+                ],
+                const RelativeSizedBox(height: 0.5),
+                Text(
+                  isCreatingFoodItem ? "Crea un aliment" : "Crea una recepta",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const RelativeSizedBox(height: 2),
+                YinYangToggle(
+                  isLeftSelected: isCreatingFoodItem,
+                  leftText: "Aliment",
+                  rightText: "Recepta",
+                  onToggle: toggleCreateMode,
+                  height: 57,
+                ),
+                const RelativeSizedBox(height: 2),
+                if (isCreatingFoodItem) ...[
+                  _buildFoodItemForm(),
+                ] else ...[
+                  _buildRecipeForm(),
+                ],
+                const RelativeSizedBox(height: 2),
+                CustomButton(
+                  text: isCreatingFoodItem ? "Crear aliment" : "Crear recepta",
+                  onTap: _submitData,
+                ),
+                const RelativeSizedBox(height: 2),
+                if (isCreating) ...[
+                  Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        RotatingImage(),   
+                      ],
+                    ),
+                  ),
+                  const RelativeSizedBox(height: 2),
+                ] else ...[
+                  if (response.isNotEmpty && !response["success"]) ...[
+                    MessagesBox(
+                      messages: response["errors"],
+                      height: 6,
+                      color: Colors.red,
+                    ),
+                    const RelativeSizedBox(height: 4)
+                  ] else ...[
+                    const RelativeSizedBox(height: 5)
+                  ]
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-
+  
   Widget _buildFoodItemForm() {
     return Column(
       children: [
@@ -348,14 +366,15 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(
-                controller: caloriesController,
-                hintText: "Caloríes",
-                isNumeric: true,
-                maxLength: 6,
-                unit: "kcal",
-                centerText: true,
-                allowDecimal: true,
-              ),
+          controller: caloriesController,
+          hintText: "Caloríes",
+          hintIcon: Icons.local_fire_department,
+          isNumeric: true,
+          maxLength: 6,
+          unit: "kcal",
+          centerText: true,
+          allowDecimal: true,
+        ),
         const RelativeSizedBox(height: 0.5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -364,6 +383,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               child: CustomTextfield(
                 controller: proteinsController,
                 hintText: "Proteïnes",
+                hintIcon: FontAwesomeIcons.drumstickBite,
                 isNumeric: true,
                 maxLength: 6,
                 unit: "g",
@@ -376,6 +396,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               child: CustomTextfield(
                 controller: carbohydratesController,
                 hintText: "Carbohidrats",
+                hintIcon: FontAwesomeIcons.wheatAwn,
                 isNumeric: true,
                 maxLength: 6,
                 unit: "g",
@@ -388,6 +409,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
               child: CustomTextfield(
                 controller: fatsController,
                 hintText: "Greixos",
+                hintIcon: Icons.water_drop,
                 isNumeric: true,
                 maxLength: 6,
                 unit: "g",
@@ -401,14 +423,55 @@ class NutritionCreateState extends State<NutritionCreatePage> {
     );
   }
 
+  void _calculateNutritionalInfo() {
+    calories = 0;
+    proteins = 0;
+    fats = 0;
+    carbohydrates = 0;
+
+    for (Map<String, dynamic> foodItem in selectedFoodItems) {
+      calories += (foodItem["quantity"] * foodItem["calories"]) / 100;
+      proteins += (foodItem["quantity"] * foodItem["proteins"]) / 100;
+      fats += (foodItem["quantity"] * foodItem["fats"]) / 100;
+      carbohydrates += (foodItem["quantity"] * foodItem["carbohydrates"]) / 100;
+    }
+
+    setState(() {});
+  }
+
   Widget _buildRecipeForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+          Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomNumber(number: calories, width: 330, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
+            RelativeSizedBox(height: 0.5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: CustomNumber(number: proteins, width: 107, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                ),
+                RelativeSizedBox(width: 1),
+                Expanded(
+                  child: CustomNumber(number: carbohydrates, width: 107, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+
+                ),
+                RelativeSizedBox(width: 1),
+                Expanded(
+                  child: CustomNumber(number: fats, width: 107, icon: Icons.water_drop, unit: "g", size: 13),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const RelativeSizedBox(height: 2),
         CustomTextfield(
           controller: recipeNameController,
           hintText: "Nom",
-          maxLength: 50,
+          maxLength: 30,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(
@@ -430,14 +493,17 @@ class NutritionCreateState extends State<NutritionCreatePage> {
             children: [
               selectedFoodItems.isNotEmpty
                   ? ListView.builder(
-                      itemCount: selectedFoodItems.length,
+                      itemCount: selectedFoodItems.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == selectedFoodItems.length) {
+                          return const RelativeSizedBox(height: 8);
+                        }
                         final foodItem = selectedFoodItems[index];
                         return Row(
                           children: [
                             Expanded(
                               child: FoodItemCard(
-                                key: ValueKey(Random().nextInt(1000000)),
+                                key: ValueKey(foodItem["id"]),
                                 foodItem: foodItem,
                                 onSelect: (value) {
                                   setState(() {
@@ -455,6 +521,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                                   else {
                                     foodItem["quantity"] = double.parse(updatedQuantity);
                                   }
+                                  _calculateNutritionalInfo();
                                 },
                               ),
                             ),

@@ -153,7 +153,7 @@ class _RecipePageState extends State<RecipePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             children: [
               if (!isLoading) ...[
@@ -199,16 +199,13 @@ class _RecipePageState extends State<RecipePage> {
                               icon: const Icon(Icons.edit, color: Colors.black),
                               tooltip: 'Edit',
                               onPressed: () async {
-                                final result = await Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EditRecipePage(recipeData: recipeData),
-                                  )
+                                  ),
                                 );
-
-                                if (result == true){
-                                  _fetchRecipeData();
-                                }
+                                _fetchRecipeData();
                               },
                             ),
                           if (currentUserId == recipeData?["creator"].toString() && !widget.isCreating)
@@ -220,12 +217,16 @@ class _RecipePageState extends State<RecipePage> {
                       ],
                     ),
                     RelativeSizedBox(height: 1),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: ExpandableText(
-                        text: recipeData?["description"]?.isEmpty ?? true
-                            ? "Això està una mica buit"
-                            : recipeData?["description"],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: 
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ExpandableText(
+                          text: recipeData?["description"]?.isEmpty ?? true
+                              ? "Això està una mica buit"
+                              : recipeData?["description"],
+                        ),
                       ),
                     ),
                     RelativeSizedBox(height: 2),
@@ -237,18 +238,25 @@ class _RecipePageState extends State<RecipePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CustomNumber(number: proteins, width: 107, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                            Expanded(
+                              child: CustomNumber(number: proteins, width: 107, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                            ),
                             RelativeSizedBox(width: 1),
-                            CustomNumber(number: carbohydrates, width: 107, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+                            Expanded(
+                              child: CustomNumber(number: carbohydrates, width: 107, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+
+                            ),
                             RelativeSizedBox(width: 1),
-                            CustomNumber(number: fats, width: 107, icon: Icons.water_drop, unit: "g", size: 13),
+                            Expanded(
+                              child: CustomNumber(number: fats, width: 107, icon: Icons.water_drop, unit: "g", size: 13),
+                            ),
                           ],
                         ),
                       ],
                     ),
                     RelativeSizedBox(height: 2),
                     Container(
-                      height: 320,
+                      height: 315,
                       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -273,15 +281,7 @@ class _RecipePageState extends State<RecipePage> {
                                             isSaveable: false,
                                             isDeleteable: false,
                                             enableQuantitySelection: true,
-                                            onChangeQuantity: (updatedQuantity) {
-                                              if (updatedQuantity.isEmpty) {
-                                                foodItem["quantity"] = 100.0;
-                                              }
-                                              else {
-                                                foodItem["quantity"] = double.parse(updatedQuantity);
-                                              }
-                                              _calculateNutritionalInfo();
-                                            },
+                                            enableQuantityEdit: false,
                                           ),
                                         ),
                                       ],

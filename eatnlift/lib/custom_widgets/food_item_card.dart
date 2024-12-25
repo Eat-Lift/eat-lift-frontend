@@ -217,12 +217,19 @@ class _FoodItemCardState extends State<FoodItemCard> {
             children: [
               Row(
                 children: [
-                  Text(
-                    widget.foodItem['name'] ?? 'Desconegut',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        widget.foodItem['name'] ?? 'Desconegut',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ),
                   Spacer(),
@@ -252,7 +259,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                               },
                             )
                           : Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
+                              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
                               child: Text(
                                 '${quantityController.text} g',
                                 style: const TextStyle(
@@ -287,11 +294,18 @@ class _FoodItemCardState extends State<FoodItemCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['proteins'], width: 92, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                      Expanded(
+                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['proteins'], width: 92, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                      ),
                       RelativeSizedBox(width: 1),
-                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'], width: 92, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+                      Expanded(
+                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'], width: 92, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+
+                      ),
                       RelativeSizedBox(width: 1),
-                      CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'], width: 92, icon: Icons.water_drop, unit: "g", size: 13),
+                      Expanded(
+                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'], width: 92, icon: Icons.water_drop, unit: "g", size: 13),
+                      ),
                     ],
                   ),
                 ],

@@ -307,6 +307,7 @@ class _NutritionPageState extends State<NutritionPage> {
             ),
             const SizedBox(height: 10),
             TableCalendar(
+              locale: 'ca',
               startingDayOfWeek: StartingDayOfWeek.monday,
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
@@ -345,13 +346,13 @@ class _NutritionPageState extends State<NutritionPage> {
                 formatButtonVisible: false,
                 titleCentered: true,
                 titleTextFormatter: (date, locale) => 
-                    DateFormat('MMMM yyyy').format(date),
+                    DateFormat('MMMM yyyy', 'ca').format(date),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
+              child: Text("Tanca"),
             ),
           ],
         ),
@@ -366,14 +367,14 @@ class _NutritionPageState extends State<NutritionPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading && userData != null) ...[
-                    RelativeSizedBox(height: 4),
+                    RelativeSizedBox(height: 2),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -486,7 +487,7 @@ class _NutritionPageState extends State<NutritionPage> {
                           fatsCurrent: nutritionalInfo?["GENERAL"]?["fats"],
                           carbsTarget: userData?["carbohydrates"].toDouble(),
                           carbsCurrent: nutritionalInfo?["GENERAL"]?["carbohydrates"],
-                          size: 160,
+                          size: 140,
                           barThickness: 15,
                         ),
                       ],
@@ -551,7 +552,7 @@ class _NutritionPageState extends State<NutritionPage> {
                       onCheck: _onCheck,
                       updateMeal: _updateMeal,
                     ),
-                    RelativeSizedBox(height: 5),
+                    RelativeSizedBox(height: 2),
                   ] else ...[
                     Column(
                       children: [

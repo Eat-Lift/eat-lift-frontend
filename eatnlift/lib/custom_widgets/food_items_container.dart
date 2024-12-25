@@ -16,6 +16,7 @@ class FoodItemsContainer extends StatefulWidget {
   final bool enableQuantityEdit;
   final bool isSelectable;
   final bool offline;
+  final double size;
 
   const FoodItemsContainer({
     super.key,
@@ -29,6 +30,7 @@ class FoodItemsContainer extends StatefulWidget {
     this.enableQuantityEdit = true,
     this.isSelectable = true,
     this.offline = false,
+    this.size = 178,
   });
 
   @override
@@ -116,7 +118,7 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
             ),
         ],
         Container(
-          height: 178,
+          height: widget.size,
           padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
@@ -131,7 +133,7 @@ class _FoodItemsContainerState extends State<FoodItemsContainer> {
                       itemBuilder: (context, index) {
                         if (widget.editable) {
                           if (index == widget.foodItems.length) {
-                            return const RelativeSizedBox(height: 7);
+                            return const RelativeSizedBox(height: 8);
                           }
                         }
                         else {

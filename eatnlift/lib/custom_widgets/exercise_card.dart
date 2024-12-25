@@ -76,12 +76,19 @@ class _ExerciseCardState extends State<ExerciseCard> {
             children: [
               Row(
                 children: [
-                  Text(
-                    widget.exercise['name'] ?? 'Desconegut',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        widget.exercise['name'] ?? 'Desconegut',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ),
                   Spacer(),

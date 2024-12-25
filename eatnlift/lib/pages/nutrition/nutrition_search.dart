@@ -75,6 +75,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       isSearchingFoodItem = isFoodItemSelected;
       searchController.clear();
     });
+    _onSearchChanged();
   }
 
   void _onSearchChanged() {
@@ -118,10 +119,6 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
 
   Future<void> _searchRecipes() async {
     final query = searchController.text;
-    if (query.isEmpty) {
-      if (mounted) setState(() => recipes?.clear());
-      return;
-    }
 
     final response = await apiNutritionService.getRecipes(query);
     if (response["success"]) {
@@ -228,6 +225,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       itemBuilder: (context, index) {
         final foodItem = foodItems[index];
         return FoodItemCard(
+          key: ValueKey(foodItem["id"]),
           foodItem: foodItem,
           onDelete: _onDeleteFoodItem,
           isDeleteable: !widget.isCreating,
@@ -315,7 +313,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
               if (widget.searchFoodItems && widget.searchRecipes) ...[

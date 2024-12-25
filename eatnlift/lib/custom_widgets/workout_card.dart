@@ -101,12 +101,19 @@ class _WorkoutCardState extends State<WorkoutCard> {
             children: [
               Row(
                 children: [
-                  Text(
-                    widget.workout['name'] ?? 'Desconegut',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        widget.workout['name'] ?? 'Desconegut',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ),
                   Spacer(),
@@ -137,7 +144,6 @@ class _WorkoutCardState extends State<WorkoutCard> {
                       },
                     ),
                   ],
-
                 ],
               ),
             ],

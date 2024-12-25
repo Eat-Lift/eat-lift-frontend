@@ -1,3 +1,4 @@
+import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionStorage {
@@ -17,6 +18,7 @@ class SessionStorage {
   }
 
   Future<void> logout() async {
+    await DatabaseHelper.instance.emptyDatabase();
     await clearSession();
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
+import 'package:eatnlift/custom_widgets/custom_number.dart';
 import 'package:eatnlift/custom_widgets/food_item_card.dart';
 import 'package:eatnlift/custom_widgets/messages_box.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
@@ -16,7 +16,7 @@ import 'package:eatnlift/custom_widgets/expandable_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditRecipePage extends StatefulWidget {
-  final Map<String, dynamic>? recipeData; // Preloaded recipe data
+  final Map<String, dynamic>? recipeData;
 
   const EditRecipePage({
     super.key,
@@ -38,6 +38,11 @@ class _EditRecipePageState extends State<EditRecipePage> {
   bool isUpdating = false;
   Map<String, dynamic> response = {};
 
+  double calories = 0;
+  double proteins = 0;
+  double fats = 0;
+  double carbohydrates = 0;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +58,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
         }
       }
     }
+    _calculateNutritionalInfo();
   }
 
   @override
@@ -67,6 +73,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
       selectedFoodItems = fromSearchFoodItems!;
     });
     Navigator.pop(context);
+    _calculateNutritionalInfo();
   }
 
   void _submitUpdatedRecipe() async {
@@ -146,17 +153,33 @@ class _EditRecipePageState extends State<EditRecipePage> {
     }
   }
 
+  void _calculateNutritionalInfo() {
+    calories = 0;
+    proteins = 0;
+    fats = 0;
+    carbohydrates = 0;
+
+    for (Map<String, dynamic> foodItem in selectedFoodItems) {
+      calories += (foodItem["quantity"] * foodItem["calories"]) / 100;
+      proteins += (foodItem["quantity"] * foodItem["proteins"]) / 100;
+      fats += (foodItem["quantity"] * foodItem["fats"]) / 100;
+      carbohydrates += (foodItem["quantity"] * foodItem["carbohydrates"]) / 100;
+    }
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: const Text("Editar Recepta"),
+        title: const Text("Editar recepta"),
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -171,16 +194,32 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 width: 70,
                 height: 70,
               ),
-              const RelativeSizedBox(height: 0.5),
-              Text(
-                "Edita la Recepta",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
+              const RelativeSizedBox(height: 4),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CustomNumber(number: calories, width: 330, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
+                  RelativeSizedBox(height: 0.5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: CustomNumber(number: proteins, width: 107, icon: FontAwesomeIcons.drumstickBite, unit: "g", size: 13),
+                      ),
+                      RelativeSizedBox(width: 1),
+                      Expanded(
+                        child: CustomNumber(number: carbohydrates, width: 107, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+
+                      ),
+                      RelativeSizedBox(width: 1),
+                      Expanded(
+                        child: CustomNumber(number: fats, width: 107, icon: Icons.water_drop, unit: "g", size: 13),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               const RelativeSizedBox(height: 2),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,19 +248,23 @@ class _EditRecipePageState extends State<EditRecipePage> {
                       children: [
                         selectedFoodItems.isNotEmpty
                             ? ListView.builder(
-                                itemCount: selectedFoodItems.length,
+                                itemCount: selectedFoodItems.length + 1,
                                 itemBuilder: (context, index) {
+                                  if (index == selectedFoodItems.length) {
+                                    return const RelativeSizedBox(height: 8);
+                                  }
                                   final foodItem = selectedFoodItems[index];
                                   return Row(
                                     children: [
                                       Expanded(
                                         child: FoodItemCard(
-                                          key: ValueKey(Random().nextInt(1000000)),
+                                          key: ValueKey(foodItem["id"]),
                                           foodItem: foodItem,
                                           onSelect: (value) {
                                             setState(() {
                                               selectedFoodItems.removeAt(index);
                                             });
+                                            _calculateNutritionalInfo();
                                           },
                                           quantity: foodItem["quantity"],
                                           initiallySelected: true,
@@ -232,11 +275,12 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                           enableQuantitySelection: true,
                                           onChangeQuantity: (updatedQuantity) {
                                             if (updatedQuantity.isEmpty) {
-                                              foodItem["quantity"] = 100;
+                                              foodItem["quantity"] = 100.0;
                                             }
                                             else {
                                               foodItem["quantity"] = double.parse(updatedQuantity);
                                             }
+                                            _calculateNutritionalInfo();
                                           },
                                         ),
                                       ),
@@ -291,7 +335,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   ),
                   const RelativeSizedBox(height: 4)
                 ] else ...[
-                  const RelativeSizedBox(height: 10)
+                  const RelativeSizedBox(height: 5)
                 ]
               ],
             ],

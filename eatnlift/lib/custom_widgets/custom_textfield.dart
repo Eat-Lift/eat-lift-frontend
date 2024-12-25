@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 class CustomTextfield extends StatefulWidget {
   final TextEditingController controller;
   final String? hintText;
+  final IconData? hintIcon;
   final bool obscureText;
   final int maxLines;
   final bool isNumeric;
@@ -20,6 +21,7 @@ class CustomTextfield extends StatefulWidget {
     super.key,
     required this.controller,
     this.hintText,
+    this.hintIcon,
     this.obscureText = false,
     this.maxLines = 1,
     this.isNumeric = false,
@@ -40,63 +42,79 @@ class CustomTextfield extends StatefulWidget {
 class _CustomTextfieldState extends State<CustomTextfield> {
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      style: const TextStyle(fontWeight: FontWeight.bold),
-      controller: widget.controller,
-      maxLines: widget.maxLines,
-      obscureText: widget.obscureText,
-      textAlign: widget.centerText ? TextAlign.center : TextAlign.left,
-      keyboardType: widget.isNumeric
-          ? (widget.allowDecimal
-              ? const TextInputType.numberWithOptions(decimal: true)
-              : TextInputType.number)
-          : TextInputType.text,
-      inputFormatters: [
-        if (widget.isNumeric)
-          widget.allowDecimal
-              ? FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
-              : FilteringTextInputFormatter.digitsOnly,
-        if (widget.maxLength > 0) LengthLimitingTextInputFormatter(widget.maxLength),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        TextField(
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          controller: widget.controller,
+          maxLines: widget.maxLines,
+          obscureText: widget.obscureText,
+          textAlign: widget.centerText ? TextAlign.center : TextAlign.left,
+          keyboardType: widget.isNumeric
+              ? (widget.allowDecimal
+                  ? const TextInputType.numberWithOptions(decimal: true)
+                  : TextInputType.number)
+              : TextInputType.text,
+          inputFormatters: [
+            if (widget.isNumeric)
+              widget.allowDecimal
+                  ? FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                  : FilteringTextInputFormatter.digitsOnly,
+            if (widget.maxLength > 0) LengthLimitingTextInputFormatter(widget.maxLength),
+          ],
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 3,
+              ),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 3,
+              ),
+            ),
+            fillColor: Colors.grey.shade200,
+            filled: true,
+            hintText: widget.hintIcon == null
+                ? (widget.hintText != null
+                    ? (widget.controller.text.isEmpty && widget.unit != null
+                        ? "${widget.hintText} (${widget.unit})"
+                        : widget.hintText)
+                    : null)
+                : null,
+            hintStyle: TextStyle(color: Colors.grey[500]),
+            suffixText: widget.controller.text.isNotEmpty ? widget.unit : '',
+            suffixStyle: const TextStyle(fontWeight: FontWeight.bold),
+            suffixIcon: widget.icon != null
+                ? Icon(widget.icon, color: Colors.grey[500], size: 20)
+                : null,
+            contentPadding: EdgeInsets.symmetric(vertical: widget.height, horizontal: 10),
+          ),
+          onChanged: (value) {
+            setState(() {});
+            if (widget.onChanged != null) {
+              widget.onChanged!(value);
+            }
+          },
+          onSubmitted: (value) {
+            if (widget.onSubmitted != null) {
+              widget.onSubmitted!(value);
+            }
+          },
+        ),
+        if (widget.hintIcon != null && widget.controller.text.isEmpty)
+          Align(
+            alignment: Alignment.center,
+            child: Icon(
+              widget.hintIcon,
+              color: Colors.grey[500],
+              size: 24,
+            ),
+          ),
       ],
-      decoration: InputDecoration(
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 3,
-          ),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 3,
-          ),
-        ),
-        fillColor: Colors.grey.shade200,
-        filled: true,
-        hintText: widget.hintText != null
-            ? (widget.controller.text.isEmpty && widget.unit != null
-                ? "${widget.hintText} (${widget.unit})"
-                : widget.hintText)
-            : null,
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        suffixText: widget.controller.text.isNotEmpty ? widget.unit : '',
-        suffixStyle: const TextStyle(fontWeight: FontWeight.bold),
-        suffixIcon: widget.icon != null
-            ? Icon(widget.icon, color: Colors.grey[500], size: 20)
-            : null,
-        contentPadding: EdgeInsets.symmetric(vertical: widget.height, horizontal: 10),
-      ),
-      onChanged: (value) {
-        setState(() {});
-        if (widget.onChanged != null) {
-          widget.onChanged!(value);
-        }
-      },
-      onSubmitted: (value) {
-        if (widget.onSubmitted != null){
-          widget.onSubmitted!(value);
-        }
-      },
     );
   }
 }

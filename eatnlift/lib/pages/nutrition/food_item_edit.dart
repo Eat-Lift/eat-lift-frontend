@@ -1,6 +1,7 @@
 import 'package:eatnlift/models/food_item.dart';
 import 'package:eatnlift/services/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../custom_widgets/relative_sizedbox.dart';
 import '../../custom_widgets/custom_button.dart';
@@ -154,7 +155,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Aliment Actualitzat"),
+          title: const Text("Aliment actualitzat"),
           content: Text(message),
           actions: [
             TextButton(
@@ -182,12 +183,12 @@ class EditFoodItemState extends State<EditFoodItemPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: const Text("Editar Aliment"),
+        title: const Text("Editar aliment"),
       ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
               const RelativeSizedBox(height: 10),
@@ -198,7 +199,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
               ),
               const RelativeSizedBox(height: 0.5),
               Text(
-                "Edita l'Aliment",
+                "Edita l'aliment",
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -215,6 +216,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
               CustomTextfield(
                 controller: caloriesController,
                 hintText: "Caloríes",
+                hintIcon: Icons.local_fire_department,
                 isNumeric: true,
                 maxLength: 6,
                 unit: "kcal",
@@ -229,6 +231,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                     child: CustomTextfield(
                       controller: proteinsController,
                       hintText: "Proteïnes",
+                      hintIcon: FontAwesomeIcons.drumstickBite,
                       isNumeric: true,
                       maxLength: 6,
                       unit: "g",
@@ -241,6 +244,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                     child: CustomTextfield(
                       controller: carbohydratesController,
                       hintText: "Carbohidrats",
+                      hintIcon: FontAwesomeIcons.wheatAwn,
                       isNumeric: true,
                       maxLength: 6,
                       unit: "g",
@@ -253,6 +257,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                     child: CustomTextfield(
                       controller: fatsController,
                       hintText: "Greixos",
+                      hintIcon: Icons.water_drop,
                       isNumeric: true,
                       maxLength: 6,
                       unit: "g",
