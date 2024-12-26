@@ -93,7 +93,7 @@ class _EditRoutinePageState extends State<EditRoutinePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _buildRoutineContent(),
         ),
       ),
@@ -194,19 +194,20 @@ class _WeekDayEditSectionState extends State<WeekDayEditSection> {
         Stack(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 2.0),
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: Colors.white, width: 3),
               ),
+              constraints: const BoxConstraints(maxHeight: 155),
               child: widget.exercises.isNotEmpty
                   ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.exercises.length,
+                      itemCount: widget.exercises.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == widget.exercises.length) {
+                          return const RelativeSizedBox(height: 8);
+                        }
                         final exercise = widget.exercises[index];
                         return Column(
                           children: [

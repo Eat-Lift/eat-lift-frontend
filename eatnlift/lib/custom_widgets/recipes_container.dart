@@ -15,7 +15,7 @@ class RecipesContainer extends StatefulWidget {
   const RecipesContainer({
     super.key,
     required this.recipes,
-    this.height = 300,
+    this.height = 162,
     this.title,
     this.isUpdating = false,
     this.onCheck,
@@ -85,13 +85,11 @@ class _RecipesContainerState extends State<RecipesContainer> {
                 children: [
                   widget.recipes.isNotEmpty
                       ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: widget.recipes.length + 1,
                           itemBuilder: (context, index) {
                             if (widget.isUpdating) {
                               if (index == widget.recipes.length) {
-                                return const RelativeSizedBox(height: 7);
+                                return const RelativeSizedBox(height: 8);
                               }
                             }
                             else {

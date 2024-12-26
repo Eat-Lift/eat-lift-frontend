@@ -276,7 +276,7 @@ class _OfflineSessionPageState extends State<OfflineSessionPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text("Entrenament offline"),
+        title: Text("Entrenament"),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -297,7 +297,7 @@ class _OfflineSessionPageState extends State<OfflineSessionPage> {
           fit: StackFit.expand,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: isLoading
                   ? Column(
                       children: [

@@ -115,7 +115,7 @@ class _RecipeCardState extends State<RecipeCard> {
                           color: Colors.grey[800],
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                     ),
                   ),

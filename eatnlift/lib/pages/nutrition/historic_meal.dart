@@ -82,12 +82,12 @@ class _NutritionPageState extends State<HistoricMealPage> {
 
   Future<void> _calculateNutritionalInfo() async {
     if (meals != null) {
+      double totalCalories = 0.0;
+      double totalProteins = 0.0;
+      double totalFats = 0.0;
+      double totalCarbohydrates = 0.0;
       for (var meal in meals!) {
         String mealType = meal["meal_type"];
-        double totalCalories = 0.0;
-        double totalProteins = 0.0;
-        double totalFats = 0.0;
-        double totalCarbohydrates = 0.0;
 
         for (var item in meal["food_items"]) {
           var food = item["food_item"];

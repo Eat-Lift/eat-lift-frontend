@@ -164,7 +164,7 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.white, width: 3),
         boxShadow: [
           BoxShadow(
@@ -191,6 +191,8 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
           const SizedBox(height: 12),
@@ -216,6 +218,7 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
                           child: CustomTextfield(
                             controller: weightControllers[setIndex],
                             unit: "kg",
+                            hintText: "0.0",
                             centerText: true,
                             onChanged: (_) => _updateExercise(),
                             maxLength: 6,
@@ -233,6 +236,7 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
                           child: CustomTextfield(
                             controller: repsControllers[setIndex],
                             unit: "reps",
+                            hintText: "0",
                             centerText: true,
                             onChanged: (_) => _updateExercise(),
                             maxLength: 4,

@@ -105,7 +105,7 @@ class _EditUserPageState extends State<EditUserPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             children: [
               Column(

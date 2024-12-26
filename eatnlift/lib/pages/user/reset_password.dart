@@ -69,10 +69,14 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[300],
+        title: Text("Recuperar contrasenya"),   
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -124,7 +128,7 @@ class ResetPasswordPageState extends State<ResetPasswordPage> {
                 RelativeSizedBox(height: 25)
               ]
               else ...[
-                RelativeSizedBox(height: 30)
+                RelativeSizedBox(height: 25)
               ]
             ],
           ),

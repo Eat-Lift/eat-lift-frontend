@@ -217,16 +217,12 @@ class _RecipePageState extends State<RecipePage> {
                       ],
                     ),
                     RelativeSizedBox(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: 
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: ExpandableText(
-                          text: recipeData?["description"]?.isEmpty ?? true
-                              ? "Això està una mica buit"
-                              : recipeData?["description"],
-                        ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ExpandableText(
+                        text: recipeData?["description"]?.isEmpty ?? true
+                            ? "Això està una mica buit"
+                            : recipeData?["description"],
                       ),
                     ),
                     RelativeSizedBox(height: 2),

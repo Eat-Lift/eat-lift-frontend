@@ -230,19 +230,25 @@ class CheckPageState extends State<CheckPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (!isLoading) ...[
-                const RelativeSizedBox(height: 1),
                 const Icon(
                   Icons.monitor_weight_rounded,
                   size: 100,
                 ),
+                
+                Text(
+                  "Revisió",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                  ),
+                ),
 
-
-                const RelativeSizedBox(height: 5),
+                const RelativeSizedBox(height: 2),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -448,10 +454,10 @@ class CheckPageState extends State<CheckPage> {
                     height: 6,
                     color: Colors.red,
                   ),
-                  RelativeSizedBox(height: 10)
+                  RelativeSizedBox(height: 2)
                 ]
                 else ...[
-                  RelativeSizedBox(height: 15)
+                  RelativeSizedBox(height: 5)
                 ]
               ] else ...[
                 Align(

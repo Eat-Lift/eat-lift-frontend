@@ -140,10 +140,11 @@ class _ExercisePageState extends State<ExercisePage> {
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
                     }
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Exercici eliminat correctament")),
-                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Exercici eliminat correctament")),
+                      );
+                    }
                   } else {
                     throw Exception("Failed to delete exercise on the backend.");
                   }
@@ -151,10 +152,12 @@ class _ExercisePageState extends State<ExercisePage> {
                   if (context.mounted) {
                     Navigator.of(context).pop();
                   }
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Error: $e")),
-                  );
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error: $e")),
+                    );
+                  }
                 }
               },
               child: const Text("Eliminar"),
@@ -175,90 +178,93 @@ class _ExercisePageState extends State<ExercisePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             children: [
               if (!isLoading) ...[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RelativeSizedBox(height: 1),
-                    Row(
-                      children: [
-                        ExpandableImage(
-                          initialImageUrl: exerciseData?["picture"],
-                          width: 70,
-                          height: 70,
-                        ),
-                        RelativeSizedBox(width: 5),
-                        Flexible(
-                          child: Text(
-                            exerciseData?["name"] ?? '',
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 22,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RelativeSizedBox(height: 1),
+                      Row(
+                        children: [
+                          ExpandableImage(
+                            initialImageUrl: exerciseData?["picture"],
+                            width: 70,
+                            height: 70,
                           ),
-                        ),
-                      ],
-                    ),
-                    RelativeSizedBox(height: 1),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                          IconButton(
-                            icon: Icon(
-                              isSaved ? Icons.bookmark : Icons.bookmark_border,
-                              color: Colors.black,
+                          RelativeSizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              exerciseData?["name"] ?? '',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 22,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
                             ),
-                            tooltip: isSaved ? 'Unsave' : 'Save',
-                            onPressed: _toggleSaved,
                           ),
-                          if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
+                        ],
+                      ),
+                      RelativeSizedBox(height: 1),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.black),
-                              tooltip: 'Edit',
-                              onPressed: () async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditExercisePage(exercise: exerciseData),
-                                  )
-                                );
+                              icon: Icon(
+                                isSaved ? Icons.bookmark : Icons.bookmark_border,
+                                color: Colors.black,
+                              ),
+                              tooltip: isSaved ? 'Unsave' : 'Save',
+                              onPressed: _toggleSaved,
+                            ),
+                            if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.black),
+                                tooltip: 'Edit',
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditExercisePage(exercise: exerciseData),
+                                    )
+                                  );
 
-                                if (result == true){
-                                  _initPage();
-                                }
-                              },
-                            ),
-                          if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.black),
-                              tooltip: 'Delete',
-                              onPressed: _deleteExercise,
-                            ),
-                      ],
-                    ),
-                    RelativeSizedBox(height: 1),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: ExpandableText(
-                        text: exerciseData?["description"]?.isEmpty ?? true
-                            ? "Això està una mica buit"
-                            : exerciseData?["description"],
+                                  if (result == true){
+                                    _initPage();
+                                  }
+                                },
+                              ),
+                            if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.black),
+                                tooltip: 'Delete',
+                                onPressed: _deleteExercise,
+                              ),
+                        ],
                       ),
-                    ),
-                    RelativeSizedBox(height: 2),
-                    Center(
-                      child: HumanBody(
-                        width: 350,
-                        height: 450,
-                        overlayMuscles: exerciseData!["trained_muscles"],
+                      RelativeSizedBox(height: 1),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ExpandableText(
+                          text: exerciseData?["description"]?.isEmpty ?? true
+                              ? "Això està una mica buit"
+                              : exerciseData?["description"],
+                        ),
                       ),
-                    ),
-                  ],
+                      RelativeSizedBox(height: 2),
+                      Center(
+                        child: HumanBody(
+                          width: 350,
+                          height: 450,
+                          overlayMuscles: exerciseData!["trained_muscles"],
+                        ),
+                      ),
+                      RelativeSizedBox(height: 2),
+                    ],
+                  ),
                 ),
               ]
               else ...[

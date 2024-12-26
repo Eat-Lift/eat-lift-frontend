@@ -374,7 +374,7 @@ class _NutritionPageState extends State<NutritionPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (!isLoading && userData != null) ...[
-                    RelativeSizedBox(height: 2),
+                    RelativeSizedBox(height: 3),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

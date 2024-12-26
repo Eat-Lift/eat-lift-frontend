@@ -261,7 +261,7 @@ class _SessionPageState extends State<SessionPage> {
           fit: StackFit.expand,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: isLoading
                   ? Column(
                       children: [
@@ -302,7 +302,7 @@ class _SessionPageState extends State<SessionPage> {
                               );
                             },
                           ),
-                          RelativeSizedBox(height: 15),
+                          RelativeSizedBox(height: 17),
                         ],
                       ),
                     ),

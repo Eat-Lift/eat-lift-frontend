@@ -205,6 +205,7 @@ class _UserPageState extends State<UserPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (!isLoading && userData != null) ...[
+                  RelativeSizedBox(height: 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -227,7 +228,7 @@ class _UserPageState extends State<UserPage> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
                         RelativeSizedBox(height: 1),

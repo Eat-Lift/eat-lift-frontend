@@ -31,9 +31,9 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
 
   final List<Widget> _pages = [
-    const TrainingPage(),
     const NutritionPage(),
     const UserPage(),
+    const TrainingPage(),
   ];
 
   @override
@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 Center(
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 20),
+                      RelativeSizedBox(height: 17),
                       Icon(
                         Icons.warning_amber_rounded,
                         size: 200,

@@ -228,7 +228,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                           color: Colors.grey[800],
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                     ),
                   ),
@@ -289,7 +289,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['calories'], width: 283, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
+                  CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['calories'], width: 290, icon: Icons.local_fire_department, unit: "kcal", isCentered: true, size: 13),
                   RelativeSizedBox(height: 0.5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

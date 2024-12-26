@@ -63,6 +63,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
 
   void toggleCreateMode(bool isExerciseSelected) {
     setState(() {
+      response = {};
       isCreatingExercise = isExerciseSelected;
     });
   }
@@ -215,74 +216,76 @@ class TrainingCreateState extends State<TrainingCreatePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isCreatingExercise) ...[
-                ExpandableImage(
-                  initialImageUrl: initialImagePath,
-                  onImageSelected: (imageFile) {
-                    setState(() {
-                      _selectedImage = imageFile;
-                    });
-                  },
-                  editable: true,
-                  width: 70,
-                  height: 70,
-                ),
-              ] else ...[
-                const Icon(
-                  FontAwesomeIcons.heartPulse,
-                  size: 100,
-                  color: Colors.black,
-                ),
-              ],
-              const RelativeSizedBox(height: 0.5),
-              Text(
-                isCreatingExercise ? "Crea un Exercici" : "Crea un entrenament",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
-              ),
-              const RelativeSizedBox(height: 2),
-              YinYangToggle(
-                isLeftSelected: isCreatingExercise,
-                leftText: "Exercici",
-                rightText: "Entrenament",
-                onToggle: toggleCreateMode,
-                height: 57,
-              ),
-              const RelativeSizedBox(height: 2),
-              if (isCreatingExercise) ...[
-                _buildExerciseForm(),
-              ] else ...[
-                _buildWorkoutForm(),
-              ],
-              const RelativeSizedBox(height: 2),
-              CustomButton(
-                text: isCreatingExercise? "Crear exercici" : "Crear entrenament",
-                onTap: _submitData,
-              ),
-              const RelativeSizedBox(height: 2),
-              if (isCreating) ...[
-                RotatingImage(),
-                const RelativeSizedBox(height: 2),
-              ]
-              else ...[
-                if (response.isNotEmpty && !response["success"]) ...[
-                  MessagesBox(
-                    messages: response["errors"],
-                    height: 6,
-                    color: Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isCreatingExercise) ...[
+                  ExpandableImage(
+                    initialImageUrl: initialImagePath,
+                    onImageSelected: (imageFile) {
+                      setState(() {
+                        _selectedImage = imageFile;
+                      });
+                    },
+                    editable: true,
+                    width: 70,
+                    height: 70,
                   ),
-                  const RelativeSizedBox(height: 4)
                 ] else ...[
-                  const RelativeSizedBox(height: 10)
+                  const Icon(
+                    FontAwesomeIcons.heartPulse,
+                    size: 100,
+                    color: Colors.black,
+                  ),
+                ],
+                const RelativeSizedBox(height: 0.5),
+                Text(
+                  isCreatingExercise ? "Crea un Exercici" : "Crea un entrenament",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                  ),
+                ),
+                const RelativeSizedBox(height: 2),
+                YinYangToggle(
+                  isLeftSelected: isCreatingExercise,
+                  leftText: "Exercici",
+                  rightText: "Entrenament",
+                  onToggle: toggleCreateMode,
+                  height: 57,
+                ),
+                const RelativeSizedBox(height: 2),
+                if (isCreatingExercise) ...[
+                  _buildExerciseForm(),
+                ] else ...[
+                  _buildWorkoutForm(),
+                ],
+                const RelativeSizedBox(height: 2),
+                CustomButton(
+                  text: isCreatingExercise? "Crear exercici" : "Crear entrenament",
+                  onTap: _submitData,
+                ),
+                const RelativeSizedBox(height: 2),
+                if (isCreating) ...[
+                  RotatingImage(),
+                  const RelativeSizedBox(height: 2),
                 ]
+                else ...[
+                  if (response.isNotEmpty && !response["success"]) ...[
+                    MessagesBox(
+                      messages: response["errors"],
+                      height: 6,
+                      color: Colors.red,
+                    ),
+                    const RelativeSizedBox(height: 4)
+                  ] else ...[
+                    const RelativeSizedBox(height: 10)
+                  ]
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

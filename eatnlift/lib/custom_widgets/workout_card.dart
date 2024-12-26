@@ -112,7 +112,7 @@ class _WorkoutCardState extends State<WorkoutCard> {
                           color: Colors.grey[800],
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                     ),
                   ),

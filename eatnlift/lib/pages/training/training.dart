@@ -165,14 +165,14 @@ class _TrainingPageState extends State<TrainingPage> {
           children: [
             SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (!isLoading) ...[
-                        RelativeSizedBox(height: 4),
+                        RelativeSizedBox(height: 3),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -224,7 +224,7 @@ class _TrainingPageState extends State<TrainingPage> {
                             ),
                           ],
                         ),
-                        RelativeSizedBox(height: 3),
+                        RelativeSizedBox(height: 4),
                         GridView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -254,7 +254,6 @@ class _TrainingPageState extends State<TrainingPage> {
                             );
                           },
                         ),
-                        RelativeSizedBox(height: 1),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -293,7 +292,7 @@ class _TrainingPageState extends State<TrainingPage> {
                             ),
                           ],
                         ),
-                        RelativeSizedBox(height: 3),
+                        RelativeSizedBox(height: 17),
                       ] else ...[
                         Column(
                           children: [
@@ -320,7 +319,9 @@ class _TrainingPageState extends State<TrainingPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const SessionPage()),
-                  );
+                  ).then((_) {
+                    _initializePage();
+                  });
                 },
               ),
             ),

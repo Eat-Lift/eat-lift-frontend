@@ -77,6 +77,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       isSearchingExercises = isExersiceSelected;
       searchController.clear();
     });
+    _onSearchChanged();
   }
 
   void _onSearchChanged() {
@@ -126,10 +127,6 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
 
   Future<void> _searchWorkouts() async {
     final query = searchController.text;
-    if (query.isEmpty) {
-      if (mounted) setState(() => workouts?.clear());
-      return;
-    }
     final apiTrainingService = ApiTrainingService();
     final response = await apiTrainingService.getWorkouts(query);
     if (response["success"]) {
@@ -206,7 +203,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
           isSelectable: widget.isCreating,
           isCreating: widget.isCreating,
           onSelect: _onSelectItem,
-          clickable: false,
+          clickable: !widget.offline,
         );
       },
     );
@@ -258,7 +255,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
               if (widget.searchExercises && widget.searchWorkouts) ...[

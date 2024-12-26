@@ -274,7 +274,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text("Nutrició offline"),
+        title: Text("Nutrició"),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -292,7 +292,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -360,7 +360,7 @@ class _OfflineMealPageState extends State<OfflineMealPage> {
                           fatsCurrent: nutritionalInfo?["GENERAL"]?["fats"],
                           carbsTarget: userData["carbohydrates"].toDouble(),
                           carbsCurrent: nutritionalInfo?["GENERAL"]?["carbohydrates"],
-                          size: 160,
+                          size: 140,
                           barThickness: 15,
                         ),
                       ],

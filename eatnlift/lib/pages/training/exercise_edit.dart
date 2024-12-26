@@ -91,7 +91,7 @@ class EditExerciseState extends State<EditExercisePage> {
 
     final exercise = {
       "name": exerciseNameController.text.trim(),
-      "descripció": exerciseDescriptionController.text.trim(),
+      "description": exerciseDescriptionController.text.trim(),
       "trained_muscles": selectedMuscles,
     };
 
@@ -127,7 +127,7 @@ class EditExerciseState extends State<EditExercisePage> {
       final updatedExercise = Exercise(
         id: widget.exercise!["id"],
         name: exercise["name"].toString(),
-        description: exercise["descripció"].toString(),
+        description: exercise["description"].toString(),
         user: widget.exercise!["user"].toString(),
         trainedMuscles: (exercise["trained_muscles"] as List<dynamic>).map((e) => e.toString()).toList(),
       );
@@ -150,7 +150,7 @@ class EditExerciseState extends State<EditExercisePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -167,7 +167,7 @@ class EditExerciseState extends State<EditExercisePage> {
               ),
               const RelativeSizedBox(height: 0.5),
               const Text(
-                "Edita un Exercici",
+                "Edita l'exercici",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 24,

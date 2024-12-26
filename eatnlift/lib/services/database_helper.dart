@@ -61,11 +61,11 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE user_profile (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        calories INTEGER,
-        proteins INTEGER,
-        fats INTEGER,
-        carbohydrates INTEGER
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        calories INTEGER CHECK(calories >= 0),
+        proteins INTEGER CHECK(calories >= 0),
+        fats INTEGER CHECK(calories >= 0),
+        carbohydrates IINTEGER CHECK(calories >= 0)
       )
     ''');
 
@@ -126,8 +126,10 @@ class DatabaseHelper {
 
   Future<void> insertFoodItem(FoodItem item) async {
     final db = await instance.database;
-    await db.insert('food_items', item.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'food_items', item.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace
+    );
   }
 
   Future<List<FoodItem>> fetchFoodItems() async {
@@ -671,11 +673,8 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
       final response = await apiService.getSession(currentUserId!, formattedDate);
 
       if (response["success"]) {
-        final sessionsFromBackend = response["sessions"] as List<dynamic>? ?? [];
-
-        for (final sessionData in sessionsFromBackend) {
-          await databaseHelper.saveSessionFromBackend(sessionData);
-        }
+        final sessionFromBackend = response["session"] as Map<String, dynamic>? ?? {};
+        await databaseHelper.saveSessionFromBackend(sessionFromBackend);
       } else {
         print("Failed to fetch sessions from backend: ${response['errors']}");
       }
@@ -757,7 +756,7 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
       final response = await apiService.getSavedFoodItems();
 
       if (response["success"]) {
-        final savedFoodItems = response["saved_food_items"] as List<dynamic>? ?? [];
+        final savedFoodItems = response["foodItems"] as List<dynamic>? ?? [];
 
         for (final foodItemData in savedFoodItems) {
           final existingFoodItem = await databaseHelper.fetchFoodItemsByName(foodItemData["name"]);
@@ -777,7 +776,7 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
               carbohydrates: foodItemData["carbohydrates"] is double
                   ? foodItemData["carbohydrates"]
                   : double.tryParse(foodItemData["carbohydrates"].toString()) ?? 0.0,
-              user: foodItemData["user"],
+              user: foodItemData["creator"].toString(),
             );
             await databaseHelper.insertFoodItem(foodItem);
           }
@@ -799,17 +798,17 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
       final response = await apiService.getSavedExercises();
 
       if (response["success"]) {
-        final savedExercises = response["saved_exercises"] as List<dynamic>? ?? [];
+        final savedExercises = response["exercises"] as List<dynamic>? ?? [];
 
         for (final exerciseData in savedExercises) {
           final existingExercise = await databaseHelper.fetchExercisesByName(exerciseData["name"]);
 
           if (existingExercise.isEmpty) {
             final exercise = Exercise(
-              id: exerciseData["id"], // Include backend ID
+              id: exerciseData["id"],
               name: exerciseData["name"],
               description: exerciseData["description"],
-              user: exerciseData["user"],
+              user: exerciseData["user"].toString(),
               trainedMuscles: List<String>.from(exerciseData["trained_muscles"] ?? []),
             );
 
@@ -873,6 +872,7 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
     await getSavedFoodItems();
     await getSavedExercises();
     await getPersonalInformation();
+    await printDatabase();
   }
 
   Future<void> deleteDatabaseFile() async {
@@ -880,4 +880,49 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
     final path = join(dbPath, 'app_database.db');
     await deleteDatabase(path);
   }
+
+
+  Future<void> printDatabase() async {
+    // Open or get the database instance
+    final db = await openDatabase(
+      'app_database.db',
+      version: 1,
+      onCreate: (db, version) async {
+        await _createDB(db, version);
+      },
+    );
+
+    // List of all tables to print
+    final tables = [
+      'food_items',
+      'exercises',
+      'user_profile',
+      'meals',
+      'food_item_meals',
+      'sessions',
+      'session_exercises',
+      'session_sets',
+    ];
+
+    for (final table in tables) {
+      try {
+        // Query the table
+        final results = await db.query(table);
+
+        // Print table name and its contents
+        print('Contents of $table:');
+        if (results.isEmpty) {
+          print('  (No data)');
+        } else {
+          for (var row in results) {
+            print('  $row');
+          }
+        }
+      } catch (e) {
+        // Catch any errors (e.g., if the table doesn't exist)
+        print('Error reading $table: $e');
+      }
+    }
+  }
+
 }

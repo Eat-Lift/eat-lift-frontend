@@ -52,6 +52,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
 
   void toggleCreateMode(bool isFoodItemSelected) {
     setState(() {
+      response = {};
       isCreatingFoodItem = isFoodItemSelected;
     });
   }

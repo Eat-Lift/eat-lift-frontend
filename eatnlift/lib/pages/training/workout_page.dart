@@ -142,7 +142,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Stack(
             children: [
               if (!isLoading) ...[
@@ -220,10 +220,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(color: Colors.white, width: 3),
                         ),
+                        constraints: BoxConstraints(
+                          minHeight: 0,
+                          maxHeight: 162,
+                        ),
                         child: exercises!.isNotEmpty
                             ? ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: exercises!.length,
                                 itemBuilder: (context, index) {
                                   final exerciseKey = exercises!.keys.elementAt(index);

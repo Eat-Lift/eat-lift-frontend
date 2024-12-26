@@ -83,7 +83,7 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: const Text("Pla nutricional"),
+        title: const Text("Editar pla"),
         actions: 
           [
             Padding(
@@ -99,50 +99,56 @@ class _EditNutritionalPlanPageState extends State<EditNutritionalPlanPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Stack(
-            children: [
-              if (isLoading) ...[
-                Align(
-                  child: RotatingImage(),
-                ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                if (isLoading) ...[
+                  Align(
+                    child: RotatingImage(),
+                  ),
+                ]
+                else ...[
+                  Column(
+                    children: [
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
+                        title: "Esmorzar",
+                        isUpdating: true,
+                        onCheck: onCheck,
+                        height: 155,
+                      ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
+                        title: "Dinar",
+                        isUpdating: true,
+                        onCheck: onCheck,
+                        height: 155,
+                      ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
+                        title: "Berenar",
+                        isUpdating: true,
+                        onCheck: onCheck,
+                        height: 155,
+                      ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
+                        title: "Sopar",
+                        isUpdating: true,
+                        onCheck: onCheck,
+                        height: 155,
+                      ),
+                      RelativeSizedBox(height: 2),
+                    ],
+                  ),
+                ]
               ]
-              else ...[
-                Column(
-                  children: [
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
-                      title: "Esmorzar",
-                      isUpdating: true,
-                      onCheck: onCheck,
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
-                      title: "Dinar",
-                      isUpdating: true,
-                      onCheck: onCheck,
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
-                      title: "Berenar",
-                      isUpdating: true,
-                      onCheck: onCheck,
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
-                      title: "Sopar",
-                      isUpdating: true,
-                      onCheck: onCheck,
-                    ),
-                    RelativeSizedBox(height: 1),
-                  ],
-                ),
-              ]
-            ]
+            ),
           ),
         ),
       ),

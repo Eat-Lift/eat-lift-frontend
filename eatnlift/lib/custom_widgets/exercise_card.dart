@@ -87,7 +87,7 @@ class _ExerciseCardState extends State<ExerciseCard> {
                           color: Colors.grey[800],
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                     ),
                   ),

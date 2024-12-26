@@ -97,53 +97,55 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Stack(
-            children: [
-              if(!isLoading) ...[
-                Column(
-                  children: [
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
-                      title: "Esmorzar",
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
-                      title: "Dinar",
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
-                      title: "Berenar",
-                    ),
-                    RelativeSizedBox(height: 1),
-                    RecipesContainer(
-                      recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
-                      title: "Sopar",
-                    ),
-                    RelativeSizedBox(height: 1),
-                  ],
-                ),
-              ]
-              else ...[
-                Column(
-                  children: [
-                    RelativeSizedBox(height: 25),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          RelativeSizedBox(height: 10),
-                          RotatingImage(),   
-                        ],
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                if(!isLoading) ...[
+                  Column(
+                    children: [
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "ESMORZAR").toList(),
+                        title: "Esmorzar",
                       ),
-                    ),
-                  ]
-                ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "DINAR").toList(),
+                        title: "Dinar",
+                      ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "BERENAR").toList(),
+                        title: "Berenar",
+                      ),
+                      RelativeSizedBox(height: 1),
+                      RecipesContainer(
+                        recipes: recipes.where((recipe) => recipe["meal_type"] == "SOPAR").toList(),
+                        title: "Sopar",
+                      ),
+                      RelativeSizedBox(height: 3),
+                    ],
+                  ),
+                ]
+                else ...[
+                  Column(
+                    children: [
+                      RelativeSizedBox(height: 25),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            RelativeSizedBox(height: 10),
+                            RotatingImage(),   
+                          ],
+                        ),
+                      ),
+                    ]
+                  ),
+                ]
               ]
-            ]
+            ),
           ),
         ),
       ),

@@ -75,7 +75,7 @@ class _RoutinePageState extends State<RoutinePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: isLoading
               ? _buildLoadingIndicator()
               : _buildRoutineContent(),
@@ -162,16 +162,17 @@ class WeekDaySection extends StatelessWidget {
           ),
         ),
         Container(
-          margin: const EdgeInsets.symmetric(vertical: 2.0),
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
             border: Border.all(color: Colors.white, width: 3),
           ),
+          constraints: BoxConstraints(
+                minHeight: 0,
+                maxHeight: 162,
+          ),
           child: ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
             itemCount: exercises.length,
             itemBuilder: (context, index) {
               final exercise = exercises[index];

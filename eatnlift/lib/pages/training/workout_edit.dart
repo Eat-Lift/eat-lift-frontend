@@ -109,7 +109,7 @@ class EditWorkoutState extends State<EditWorkoutPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -120,7 +120,7 @@ class EditWorkoutState extends State<EditWorkoutPage> {
               ),
               const RelativeSizedBox(height: 0.5),
               Text(
-                "Edita un entrenament",
+                "Edita l'entrenament",
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -170,18 +170,25 @@ class EditWorkoutState extends State<EditWorkoutPage> {
         const RelativeSizedBox(height: 1),
         Container(
           height: 180,
-          padding: const EdgeInsets.all(7.0),
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(4),
             border: Border.all(color: Colors.white, width: 3),
           ),
+          constraints: BoxConstraints(
+            minHeight: 0,
+            maxHeight: 155,
+          ),
           child: Stack(
             children: [
               selectedExercises.isNotEmpty
                   ? ListView.builder(
-                      itemCount: selectedExercises.length,
+                      itemCount: selectedExercises.length + 1,
                       itemBuilder: (context, index) {
+                        if (index == selectedExercises.length) {
+                          return const RelativeSizedBox(height: 8);
+                        }
                         final exercise = selectedExercises[index];
                         return Row(
                           children: [
