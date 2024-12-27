@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'session_storage.dart';
 
 class ApiTrainingService {
-  final String baseUrl = "http://192.168.1.136:8000/training";
+  final String baseUrl = "https://eat-lift-backend.onrender.com/training";
+  //final String baseUrl = "http://192.168.1.136:8000/training";
   
   // Exercises
   Future<Map<String, dynamic>> createExercise(Map<String, Object> exercise) async {

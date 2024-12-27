@@ -74,7 +74,7 @@ class _HistoricSessionPageState extends State<HistoricSessionPage> {
         child: isLoading
             ? Center(child: RotatingImage(),)
             : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListView.builder(
                   itemCount: sessionExercises?.length ?? 0,
                   itemBuilder: (context, index) {
