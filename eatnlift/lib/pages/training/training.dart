@@ -238,20 +238,31 @@ class _TrainingPageState extends State<TrainingPage> {
                           itemBuilder: (context, index) {
                             final exercise = exercisesWeights[index];
                             final color = graphColors[index % graphColors.length];
-
-                            return SingleGraphWidget(
-                              title: exercise["name"], 
-                              dataPoints: (exercise["weights"] as List).cast<double>(), 
-                              lineColor: color, 
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ExercisePage(exerciseId: exercise["id"]),
-                                  ),
-                                );
-                              },
-                            );
+                            final points = (exercise["weights"] as List).cast<double>();
+                            if (points.length > 2){
+                              return SingleGraphWidget(
+                                title: exercise["name"], 
+                                dataPoints: (exercise["weights"] as List).cast<double>(), 
+                                lineColor: color, 
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ExercisePage(exerciseId: exercise["id"]),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                            else {
+                              return Text(
+                                "No hi ha dades suficients",
+                                style: TextStyle(fontSize: 12, color: Colors.grey),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }
                           },
                         ),
                         Column(

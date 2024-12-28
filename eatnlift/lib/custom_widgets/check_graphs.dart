@@ -85,9 +85,19 @@ class CheckGraphs extends StatelessWidget {
                 SizedBox(
                   width: 130,
                   height: 130,
-                  child: LineChart(
-                    createChart(weightData, Colors.red),
-                  ),
+                  child: weightData.length > 2 
+                  ? LineChart(
+                      createChart(weightData, Colors.red),
+                    )
+                  : const Center(
+                      child: Text(
+                        "No hi ha dades suficients",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ),
               ],
             ),
@@ -102,9 +112,19 @@ class CheckGraphs extends StatelessWidget {
                 SizedBox(
                   width: 130,
                   height: 130,
-                  child: LineChart(
-                    createChart(bodyFatData, Colors.orange),
-                  ),
+                  child: bodyFatData.length > 2
+                  ? LineChart(
+                      createChart(bodyFatData, Colors.orange),
+                    )
+                  : const Center(
+                      child: Text(
+                        "No hi ha dades suficients",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ),
               ],
             ),

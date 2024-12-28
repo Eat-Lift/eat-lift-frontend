@@ -58,6 +58,14 @@ class _ExerciseCardState extends State<ExerciseCard> {
             )
           );
         }
+        else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExercisePage(exercise: widget.exercise, isCreating: widget.isCreating),
+            )
+          );
+        }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),

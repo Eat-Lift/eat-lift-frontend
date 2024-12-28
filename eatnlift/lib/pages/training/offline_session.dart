@@ -66,11 +66,6 @@ class _OfflineSessionPageState extends State<OfflineSessionPage> {
     });
   }
 
-  String _capitalizeFirstLetter(String input) {
-    if (input.isEmpty) return input;
-    return '${input[0].toUpperCase()}${input.substring(1)}';
-  }
-
   Future<void> _fetchCurrentUserId() async {
     final userId = await sessionStorage.getUserId();
     currentUserId = userId;
@@ -326,6 +321,7 @@ class _OfflineSessionPageState extends State<OfflineSessionPage> {
                               return ExerciseSetCard(
                                 key: ValueKey(exerciseItem["exercise"]['id']),
                                 exerciseItem: exerciseItem,
+                                offline: true,
                                 onExerciseUpdated: (updatedExerciseItem) {
                                   setState(() {
                                     if (updatedExerciseItem["sets"].isEmpty) {

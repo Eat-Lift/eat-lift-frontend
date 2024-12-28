@@ -78,7 +78,7 @@ class SessionCheckWrapper extends StatelessWidget {
             child: RotatingImage(),
           );
         } else if (snapshot.hasData && snapshot.data == true) {
-          return const HomePage(initialIndex: 0);
+          return const HomePage(initialIndex: 1);
         } else {
           return const LoginPage();
         }

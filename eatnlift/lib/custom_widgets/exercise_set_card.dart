@@ -8,12 +8,14 @@ class ExerciseSetCard extends StatefulWidget {
   final Map<String, dynamic> exerciseItem;
   final Function(Map<String, dynamic>) onExerciseUpdated;
   final bool isEditable;
+  final bool offline;
 
   const ExerciseSetCard({
     super.key,
     required this.exerciseItem,
     required this.onExerciseUpdated,
     this.isEditable = true,
+    this.offline = false,
   });
 
   @override
@@ -178,13 +180,33 @@ class ExerciseSetCardState extends State<ExerciseSetCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ExercisePage(exerciseId: exercise["id"]),
-              ),
-            ),
+            onTap: () => {
+              if (widget.offline) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                      ExercisePage(exercise: {
+                        "id": exercise["id"],
+                        "name": exercise["name"],
+                        "description": exercise["description"],
+                        "user": exercise["user"],
+                        "trained_muscles": exercise["trained_muscles"]?.split(',') ?? [],
+                      }
+                    ),
+                  ),
+                ),
+              }
+              else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ExercisePage(exerciseId: exercise["id"]),
+                  ),
+                ),
+              }
+            },
             child: Text(
               exerciseName,
               style: const TextStyle(

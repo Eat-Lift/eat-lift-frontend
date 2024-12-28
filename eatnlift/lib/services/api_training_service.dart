@@ -88,7 +88,8 @@ class ApiTrainingService {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> exercises = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      List<dynamic> exercises = json.decode(decodedData);
       return {
         "success": true,
         "exercises": exercises,
@@ -110,7 +111,8 @@ class ApiTrainingService {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> exercise = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> exercise = json.decode(decodedData);
       return {
         "success": true,
         "exercise": exercise,
@@ -132,7 +134,8 @@ class ApiTrainingService {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> exercises = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      List<dynamic> exercises = json.decode(decodedData);
       return {
         "success": true,
         "exercises": exercises,
@@ -261,7 +264,8 @@ Future<Map<String, dynamic>> getExerciseWeight(String exerciseId) async {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> weights = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> weights = json.decode(decodedData);
       return {
         "success": true,
         "weight": weights,
@@ -353,7 +357,8 @@ Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> workouts = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      List<dynamic> workouts = json.decode(decodedData);
       return {
         "success": true,
         "workouts": workouts,
@@ -375,7 +380,8 @@ Future<Map<String, dynamic>> createWorkout(Map<String, Object> workout) async {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> workout = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> workout = json.decode(decodedData);
       return {
         "success": true,
         "workout": workout,

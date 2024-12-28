@@ -14,13 +14,15 @@ import '../../models/exercise.dart';
 import '../../services/database_helper.dart';
 
 class ExercisePage extends StatefulWidget {
-  final int exerciseId;
+  final int? exerciseId;
   final bool isCreating;
+  final Map<String, dynamic>? exercise;
 
   const ExercisePage({
     super.key,
-    required this.exerciseId,
+    this.exerciseId,
     this.isCreating = true,
+    this.exercise,
   });
 
   @override
@@ -59,15 +61,22 @@ class _ExercisePageState extends State<ExercisePage> {
   }
 
   Future<void> _fetchExerciseData() async {
-    final apiService = ApiTrainingService();
-    final exercise = await apiService.getExercise(widget.exerciseId.toString());
-    exerciseData = exercise["exercise"];
+    if (widget.exercise != null){
+        exerciseData = widget.exercise;
+    }
+    else if (widget.exerciseId != null) {
+      final apiService = ApiTrainingService();
+      final exercise = await apiService.getExercise(widget.exerciseId.toString());
+      exerciseData = exercise["exercise"];
+    }
   }
 
   Future<void> _fetchSaved() async {
-    final apiService = ApiTrainingService();
-    final response = await apiService.getExerciseSaved(widget.exerciseId.toString());
-    isSaved = response["is_saved"];
+    if (widget.exerciseId != null) {
+      final apiService = ApiTrainingService();
+      final response = await apiService.getExerciseSaved(widget.exerciseId.toString());
+      isSaved = response["is_saved"];
+    }
   }
 
   void _toggleSaved() async {
@@ -134,7 +143,7 @@ class _ExercisePageState extends State<ExercisePage> {
                   final response = await apiService.deleteExercise(widget.exerciseId.toString());
 
                   if (response["success"]) {
-                    await databaseHelper.deleteExerciseById(widget.exerciseId);
+                    await databaseHelper.deleteExerciseById(exerciseData?["id"]);
 
                     if (context.mounted) {
                       Navigator.of(context).pop();
@@ -212,14 +221,15 @@ class _ExercisePageState extends State<ExercisePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            IconButton(
-                              icon: Icon(
-                                isSaved ? Icons.bookmark : Icons.bookmark_border,
-                                color: Colors.black,
+                            if (widget.exerciseId != null)
+                              IconButton(
+                                icon: Icon(
+                                  isSaved ? Icons.bookmark : Icons.bookmark_border,
+                                  color: Colors.black,
+                                ),
+                                tooltip: isSaved ? 'Unsave' : 'Save',
+                                onPressed: _toggleSaved,
                               ),
-                              tooltip: isSaved ? 'Unsave' : 'Save',
-                              onPressed: _toggleSaved,
-                            ),
                             if (currentUserId == exerciseData?["user"].toString() && !widget.isCreating)
                               IconButton(
                                 icon: const Icon(Icons.edit, color: Colors.black),

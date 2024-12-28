@@ -85,10 +85,10 @@ class _FoodItemCardState extends State<FoodItemCard> {
   Future<void> _fetchSavedState() async {
     final apiService = ApiNutritionService();
     final result = await apiService.getFoodItemSaved(widget.foodItem["id"].toString());
-    if(result["success"]) {
+    if(result["success"] && mounted) {
       setState(() {
-        isSaved = result["is_saved"];
-        loading = false;
+          isSaved = result["is_saved"];
+          loading = false;
       });
     }
   }
@@ -328,7 +328,7 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       IconButton(
                         icon: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_border,
-                          color: Colors.grey.shade200,
+                          color: Colors.grey.shade300,
                         ),
                         onPressed: () {},
                       ),

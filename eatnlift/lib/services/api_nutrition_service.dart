@@ -87,7 +87,8 @@ class ApiNutritionService {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> foodItemsJson = json.decode(response.body);
+      final decodedBody = utf8.decode(response.bodyBytes);
+      List<dynamic> foodItemsJson = json.decode(decodedBody);
       return {
         "success": true,
         "foodItems": foodItemsJson,
@@ -109,7 +110,8 @@ class ApiNutritionService {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> foodItemsJson = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes);
+        List<dynamic> foodItemsJson = json.decode(decodedBody);
         return {
           "success": true,
           "foodItems": foodItemsJson,
@@ -334,7 +336,8 @@ class ApiNutritionService {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> recipesJson = json.decode(response.body);
+      final decodedBody = utf8.decode(response.bodyBytes);
+      List<dynamic> recipesJson = json.decode(decodedBody);
       return {
         "success": true,
         "recipes": recipesJson,
