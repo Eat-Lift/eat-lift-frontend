@@ -92,6 +92,7 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
       initialDate: DateTime(2002),
       firstDate: DateTime(1900),
       lastDate: DateTime(2023),
+      locale: const Locale('ca', ''),
       builder: (BuildContext context, Widget? child) {
       return Theme(
         data: ThemeData.light().copyWith(
@@ -371,8 +372,8 @@ class PersonalInfoPageState extends State<PersonalInfoPage> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 10),
-                      RotatingImage(),   
+                      RotatingImage(),
+                      RelativeSizedBox(height: 17),   
                     ],
                   ),
                 ),
