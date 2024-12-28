@@ -72,29 +72,81 @@ class _HomePageState extends State<HomePage> {
             index: _currentIndex,
             children: _pages,
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.restaurant),
-                label: 'Nutrició',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Usuari',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.fitness_center),
-                label: 'Entrenament',
-              ),
-            ],
+          bottomNavigationBar: SizedBox(
+            height: 54,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              backgroundColor: Colors.black,
+              selectedItemColor: Colors.black,
+              unselectedItemColor: Colors.white,
+              items: [
+                BottomNavigationBarItem(
+                  icon: _currentIndex == 0
+                      ? Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Icon(
+                              Icons.restaurant,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      : Icon(Icons.restaurant, size: 20),
+                  label: 'Nutrició',
+                ),
+                BottomNavigationBarItem(
+                  icon: _currentIndex == 1
+                      ? Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      : Icon(Icons.person, size: 20),
+                  label: 'Usuari',
+                ),
+                BottomNavigationBarItem(
+                  icon: _currentIndex == 2
+                      ? Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Icon(
+                              Icons.fitness_center,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      : Icon(Icons.fitness_center, size: 20),
+                  label: 'Entrenament',
+                ),
+              ],
+            ),
+
           ),
         );
       }
