@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/relative_sizedbox.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
 import 'package:eatnlift/services/session_storage.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,15 @@ class _HistoricSessionPageState extends State<HistoricSessionPage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: isLoading
-            ? Center(child: RotatingImage(),)
+            ? Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      RelativeSizedBox(height: 30),   
+                      RotatingImage(),
+                    ],
+                  ),
+                )
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListView.builder(
