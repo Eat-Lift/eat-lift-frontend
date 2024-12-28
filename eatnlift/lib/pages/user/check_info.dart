@@ -208,9 +208,8 @@ class CheckInfoPageState extends State<CheckInfoPage> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      RelativeSizedBox(height: 10),
                       RotatingImage(),
-                      RelativeSizedBox(height: 15),   
+                      RelativeSizedBox(height: 18),   
                     ],
                   ),
                 ),

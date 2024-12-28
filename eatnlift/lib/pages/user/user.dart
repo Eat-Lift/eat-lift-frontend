@@ -340,7 +340,7 @@ class _UserPageState extends State<UserPage> {
                         alignment: Alignment.center,
                         child: Column(
                           children: [
-                            RelativeSizedBox(height: 4),
+                            RelativeSizedBox(height: 5),
                             RotatingImage(),   
                           ],
                         ),
