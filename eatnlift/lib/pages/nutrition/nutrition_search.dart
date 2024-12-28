@@ -266,6 +266,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
       itemBuilder: (context, index) {
         final recipe = recipes[index];
         return RecipeCard(
+          key: ValueKey(recipe["id"]),
           isCreating: widget.isCreating,
           recipe: recipe,
           isAddable: widget.isCreating && widget.searchFoodItems,

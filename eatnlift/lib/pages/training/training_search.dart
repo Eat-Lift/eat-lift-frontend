@@ -194,6 +194,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       itemBuilder: (context, index) {
         final exercise = exercises[index];
         return ExerciseCard(
+          key: ValueKey(exercise["id"]),
           exercise: exercise,
           initiallySelected: widget.selectedExercises?.firstWhere(
                 (selectedItem) => selectedItem['id'] == exercise['id'],
@@ -215,6 +216,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
       itemBuilder: (context, index) {
         final workout = workouts[index];
         return WorkoutCard(
+          key: ValueKey(workout["id"]),
           workout: workout,
           isCreating: widget.isCreating,
           isAddable: widget.isCreating,
