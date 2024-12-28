@@ -78,7 +78,7 @@ class EditWorkoutState extends State<EditWorkoutPage> {
 
     final exercise = {
       "name": workoutNameController.text.trim(),
-      "descripció": workoutDescriptionController.text.trim(),
+      "description": workoutDescriptionController.text.trim(),
       "exercises": selectedExercises.map((item) => item["id"]).toList(),
     };
 

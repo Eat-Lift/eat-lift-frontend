@@ -255,12 +255,24 @@ class _TrainingPageState extends State<TrainingPage> {
                               );
                             }
                             else {
-                              return Text(
-                                "No hi ha dades suficients",
-                                style: TextStyle(fontSize: 12, color: Colors.grey),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              return Column(
+                                children: [
+                                  Text(
+                                    exercise["name"],
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  RelativeSizedBox(height: 5),
+                                  SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      "No hi ha dades suficients",
+                                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ]
                               );
                             }
                           },
