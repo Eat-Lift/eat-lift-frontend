@@ -103,6 +103,7 @@ class _TrainingPageState extends State<TrainingPage> {
             ),
             const SizedBox(height: 10),
             TableCalendar(
+              locale: 'ca',
               startingDayOfWeek: StartingDayOfWeek.monday,
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
@@ -141,13 +142,13 @@ class _TrainingPageState extends State<TrainingPage> {
                 formatButtonVisible: false,
                 titleCentered: true,
                 titleTextFormatter: (date, locale) => 
-                    DateFormat('MMMM yyyy').format(date),
+                    DateFormat('MMMM yyyy', 'ca').format(date),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
+              child: Text("Tanca"),
             ),
           ],
         ),
@@ -182,7 +183,9 @@ class _TrainingPageState extends State<TrainingPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const TrainingSearchPage(isCreating: false)),
-                                );
+                                ).then((_){
+                                  _initializePage();
+                                });
                               },
                               size: 70,
                             ),
@@ -239,7 +242,7 @@ class _TrainingPageState extends State<TrainingPage> {
                             final exercise = exercisesWeights[index];
                             final color = graphColors[index % graphColors.length];
                             final points = (exercise["weights"] as List).cast<double>();
-                            if (points.length > 2){
+                            if (points.length >= 2){
                               return SingleGraphWidget(
                                 title: exercise["name"], 
                                 dataPoints: (exercise["weights"] as List).cast<double>(), 

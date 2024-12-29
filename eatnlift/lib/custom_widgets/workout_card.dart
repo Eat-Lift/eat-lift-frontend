@@ -12,6 +12,7 @@ class WorkoutCard extends StatefulWidget {
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(List<Map<String, dynamic>>)? onAdd;
   final bool isCreating;
+  final VoidCallback? onTap;
 
   const WorkoutCard({
     super.key,
@@ -22,6 +23,7 @@ class WorkoutCard extends StatefulWidget {
     this.onSelect,
     this.onAdd,
     this.isCreating = true,
+    this.onTap,
   });
 
   @override
@@ -82,7 +84,9 @@ class _WorkoutCardState extends State<WorkoutCard> {
           MaterialPageRoute(
             builder: (context) => WorkoutPage(workoutId: widget.workout["id"], isCreating: widget.isCreating),
           )
-        );
+        ).then((_){
+          widget.onTap!();
+        });
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),

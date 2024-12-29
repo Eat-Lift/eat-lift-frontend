@@ -9,6 +9,7 @@ class ExerciseCard extends StatefulWidget {
   final void Function(Map<String, dynamic>, String)? onSelect;
   final bool isCreating;
   final bool clickable;
+  final VoidCallback? onTap;
 
   const ExerciseCard({
     super.key,
@@ -18,6 +19,7 @@ class ExerciseCard extends StatefulWidget {
     this.onSelect,
     this.isCreating = true,
     this.clickable = true,
+    this.onTap,
   });
 
   @override
@@ -55,8 +57,10 @@ class _ExerciseCardState extends State<ExerciseCard> {
             context,
             MaterialPageRoute(
               builder: (context) => ExercisePage(exerciseId: widget.exercise["id"], isCreating: widget.isCreating),
-            )
-          );
+            ),
+          ).then((_){
+            widget.onTap!();
+          });
         }
         else {
           Navigator.push(

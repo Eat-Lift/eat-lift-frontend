@@ -136,7 +136,7 @@ class _NutritionalPlanPageState extends State<NutritionalPlanPage> {
                         alignment: Alignment.center,
                         child: Column(
                           children: [
-                            RelativeSizedBox(height: 10),
+                            RelativeSizedBox(height: 6),
                             RotatingImage(),   
                           ],
                         ),

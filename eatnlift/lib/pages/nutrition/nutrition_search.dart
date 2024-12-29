@@ -255,6 +255,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
               }
             }
           },
+          onTap: _onSearchChanged,
         );
       },
     );
@@ -278,6 +279,7 @@ class NutritionSearchPageState extends State<NutritionSearchPage> {
             orElse: () => {'selected': false},
           )['selected'] ??
           false,
+          onTap: _onSearchChanged,
         );
       },
     );

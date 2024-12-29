@@ -92,7 +92,7 @@ class _RoutinePageState extends State<RoutinePage> {
           alignment: Alignment.center,
           child: Column(
             children: [
-              SizedBox(height: 10),
+              RelativeSizedBox(height: 27),
               RotatingImage(),
             ],
           ),

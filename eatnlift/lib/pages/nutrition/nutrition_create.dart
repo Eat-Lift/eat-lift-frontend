@@ -235,7 +235,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Aliment Creat"),
+          title: const Text("Aliment creat"),
           content: Text(message),
           actions: [
             TextButton(

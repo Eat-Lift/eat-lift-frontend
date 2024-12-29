@@ -27,6 +27,7 @@ class FoodItemCard extends StatefulWidget {
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(String)? onChangeQuantity;
   final void Function(String)? onSubmittedQuantity;
+  final VoidCallback? onTap;
 
   const FoodItemCard({
     super.key,
@@ -44,6 +45,7 @@ class FoodItemCard extends StatefulWidget {
     this.onDelete,
     this.onSubmittedQuantity,
     this.enableQuantityEdit = true,
+    this.onTap,
   });
 
   @override
@@ -163,6 +165,9 @@ class _FoodItemCardState extends State<FoodItemCard> {
 
                   if (context.mounted) {
                     Navigator.of(context).pop();
+                  }
+                  if (widget.onTap != null) {
+                    widget.onTap!();
                   }
                 } else {
                   if (context.mounted) {
@@ -299,12 +304,12 @@ class _FoodItemCardState extends State<FoodItemCard> {
                       ),
                       RelativeSizedBox(width: 1),
                       Expanded(
-                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'], width: 92, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
+                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'], width: 92, icon: FontAwesomeIcons.wheatAwn, unit: "g", size: 13),
 
                       ),
                       RelativeSizedBox(width: 1),
                       Expanded(
-                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['carbohydrates'], width: 92, icon: Icons.water_drop, unit: "g", size: 13),
+                        child: CustomNumber(number: (safeParseDouble(quantityController.text) / 100) * widget.foodItem['fats'], width: 92, icon: Icons.water_drop, unit: "g", size: 13),
                       ),
                     ],
                   ),
@@ -343,7 +348,9 @@ class _FoodItemCardState extends State<FoodItemCard> {
                             MaterialPageRoute(
                               builder: (context) => EditFoodItemPage(foodItem: widget.foodItem),
                             )
-                          );
+                          ).then((_){
+                            widget.onTap!();
+                          });
                         },
                       ),
                     if (widget.isEditable && isCreator)

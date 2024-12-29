@@ -85,7 +85,7 @@ class CheckGraphs extends StatelessWidget {
                 SizedBox(
                   width: 130,
                   height: 130,
-                  child: weightData.length > 2 
+                  child: weightData.length >= 2 
                   ? LineChart(
                       createChart(weightData, Colors.red),
                     )
@@ -112,7 +112,7 @@ class CheckGraphs extends StatelessWidget {
                 SizedBox(
                   width: 130,
                   height: 130,
-                  child: bodyFatData.length > 2
+                  child: bodyFatData.length >= 2
                   ? LineChart(
                       createChart(bodyFatData, Colors.orange),
                     )

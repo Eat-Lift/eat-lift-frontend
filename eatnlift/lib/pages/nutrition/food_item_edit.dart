@@ -140,10 +140,13 @@ class EditFoodItemState extends State<EditFoodItemPage> {
         user: widget.foodItem["creator"].toString(),
       );
 
+      final updatedData = foodItem.toJson();
+      updatedData.remove('id');
+
       await databaseHelper.updateFoodItemByNameAndUser(
         name: foodItem.name,
         user: foodItem.user,
-        updatedData: foodItem.toJson(),
+        updatedData: updatedData,
       );
 
       _showSuccessDialog("L'aliment s'ha actualitzat correctament");

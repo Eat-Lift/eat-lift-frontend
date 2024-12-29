@@ -72,6 +72,8 @@ class CheckPageState extends State<CheckPage> {
   int? height;
   String? genre;
 
+  Map<String, dynamic>? lastCheck;
+
 
   @override
   void initState() {
@@ -98,9 +100,77 @@ class CheckPageState extends State<CheckPage> {
       setState(() {
         height = result?["user"]["height"];
         genre = result?["user"]["genre"];
+      });
+    }
+    
+    final resultLastCheck = await apiService.getLastCheck();
+    if (resultLastCheck["success"]) {
+      setState(() {
+        lastCheck = resultLastCheck["check"];
+        // Weight
+        if (lastCheck?["weight"] != null) {
+          selectedWeight = lastCheck?["weight"];
+          selectedWeightController.text = lastCheck!["weight"].toString();
+        }
+
+        // Bodyfat
+        if (lastCheck?["bodyfat"] != null) {
+          selectedBodyfat = lastCheck?["bodyfat"];
+          selectedBodyfatController.text = lastCheck!["bodyfat"].toString();
+        }
+
+        // Neck
+        if (lastCheck?["neck"] != null) {
+          selectedNeck = lastCheck?["neck"];
+          selectedNeckController.text = lastCheck!["neck"].toString();
+        }
+
+        // Shoulders
+        if (lastCheck?["shoulders"] != null) {
+          selectedShoulders = lastCheck?["shoulders"];
+          selectedShouldersController.text = lastCheck!["shoulders"].toString();
+        }
+
+        // Arm
+        if (lastCheck?["arm"] != null) {
+          selectedArm = lastCheck?["arm"];
+          selectedArmController.text = lastCheck!["arm"].toString();
+        }
+
+        // Chest
+        if (lastCheck?["chest"] != null) {
+          selectedChest = lastCheck?["chest"];
+          selectedChestController.text = lastCheck!["chest"].toString();
+        }
+
+        // Waist
+        if (lastCheck?["waist"] != null) {
+          selectedWaist = lastCheck?["waist"];
+          selectedWaistController.text = lastCheck!["waist"].toString();
+        }
+
+        // Hip
+        if (lastCheck?["hip"] != null) {
+          selectedHip = lastCheck?["hip"];
+          selectedHipController.text = lastCheck!["hip"].toString();
+        }
+
+        // Thigh
+        if (lastCheck?["thigh"] != null) {
+          selectedThigh = lastCheck?["thigh"];
+          selectedThighController.text = lastCheck!["thigh"].toString();
+        }
+
+        // Calves
+        if (lastCheck?["calf"] != null) {
+          selectedCalf = lastCheck?["calf"];
+          selectedCalfController.text = lastCheck!["calf"].toString();
+        }
+
         isLoading = false;
       });
     }
+
   }
 
   void calcularPercentatgeDeGreix(String mock) {
@@ -464,7 +534,8 @@ class CheckPageState extends State<CheckPage> {
                   alignment: Alignment.center,
                   child: Column(
                     children: [
-                      RotatingImage(),   
+                      RotatingImage(),  
+                      RelativeSizedBox(height: 17), 
                     ],
                   ),
                 ),

@@ -155,12 +155,27 @@ class DatabaseHelper {
   }) async {
     final db = await instance.database;
 
-    await db.update(
+    final existingRecord = await db.query(
       'food_items',
-      updatedData,
       where: 'name = ? AND user = ?',
       whereArgs: [name, user],
     );
+
+    if (existingRecord.isNotEmpty) {
+      final existingData = existingRecord.first;
+      final mergedData = {...existingData, ...updatedData};
+
+      mergedData['id'] = existingData['id'];
+
+      await db.update(
+        'food_items',
+        mergedData,
+        where: 'name = ? AND user = ?',
+        whereArgs: [name, user],
+      );
+    } else {
+      throw Exception("No matching record found to update");
+    }
   }
 
   Future<List<Map<String, dynamic>>> fetchFoodItemsByName(String query) async {
@@ -859,8 +874,10 @@ Future<void> saveMealFromBackend(Map<String, dynamic> mealData) async {
     await db.delete('session_sets');
     await db.delete('sessions');
     await db.delete('food_items');
+    await db.delete('food_item_meals');
     await db.delete('exercises');
     await db.delete('user_profile');
+
   }
 
   Future<void> syncDatabase() async {

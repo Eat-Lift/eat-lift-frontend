@@ -49,9 +49,12 @@ class _HomePageState extends State<HomePage> {
     });
     await _checkInternet();
     await _fetchCurrentUserId();
-    setState(() {
-      isLoading = false;
-    });
+    
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchCurrentUserId() async {
@@ -88,64 +91,77 @@ class _HomePageState extends State<HomePage> {
               unselectedItemColor: Colors.white,
               items: [
                 BottomNavigationBarItem(
-                  icon: _currentIndex == 0
-                      ? Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Icon(
-                              Icons.restaurant,
-                              color: Colors.black,
-                              size: 20,
+                  icon: SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: _currentIndex == 0
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
                             ),
-                          ),
-                        )
-                      : Icon(Icons.restaurant, size: 20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Icon(
+                                Icons.restaurant,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                            ),
+                          )
+                        : Icon(Icons.restaurant, size: 20),
+                  ),
                   label: 'Nutrició',
                 ),
                 BottomNavigationBarItem(
-                  icon: _currentIndex == 1
-                      ? Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.black,
-                              size: 20,
+                  icon: SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: _currentIndex == 1
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
                             ),
-                          ),
-                        )
-                      : Icon(Icons.person, size: 20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                            ),
+                          )
+                        : Icon(Icons.person, size: 20),
+                  ),
                   label: 'Usuari',
                 ),
                 BottomNavigationBarItem(
-                  icon: _currentIndex == 2
-                      ? Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Icon(
-                              Icons.fitness_center,
-                              color: Colors.black,
-                              size: 20,
+                  icon: SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: _currentIndex == 2
+                        ? Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
                             ),
-                          ),
-                        )
-                      : Icon(Icons.fitness_center, size: 20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Icon(
+                                Icons.fitness_center,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                            ),
+                          )
+                        : Icon(Icons.fitness_center, size: 20),
+                  ),
                   label: 'Entrenament',
                 ),
               ],
             ),
+
 
           ),
         );
@@ -181,24 +197,24 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             RoundButton(
                               size: 100,
-                              icon: FontAwesomeIcons.dumbbell,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const OfflineSessionPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                            RoundButton(
-                              size: 100,
                               icon: Icons.restaurant,
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => const OfflineMealPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                            RoundButton(
+                              size: 100,
+                              icon: FontAwesomeIcons.dumbbell,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const OfflineSessionPage(),
                                   ),
                                 );
                               },

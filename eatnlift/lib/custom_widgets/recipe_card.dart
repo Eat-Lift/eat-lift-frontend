@@ -12,6 +12,7 @@ class RecipeCard extends StatefulWidget {
   final void Function(Map<String, dynamic>)? onSelect;
   final void Function(List<Map<String, dynamic>>)? onAdd;
   final bool isCreating;
+  final VoidCallback? onTap;
 
   const RecipeCard({
     super.key,
@@ -22,6 +23,7 @@ class RecipeCard extends StatefulWidget {
     this.onSelect,
     this.onAdd,
     this.isCreating = true,
+    this.onTap,
   });
 
   @override
@@ -85,7 +87,9 @@ class _RecipeCardState extends State<RecipeCard> {
           MaterialPageRoute(
             builder: (context) => RecipePage(recipeId: widget.recipe["id"], isCreating: widget.isCreating),
           )
-        );
+        ).then((_){
+          widget.onTap!();
+        });
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),

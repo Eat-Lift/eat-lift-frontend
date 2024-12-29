@@ -205,7 +205,6 @@ class _UserPageState extends State<UserPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (!isLoading && userData != null) ...[
-                  RelativeSizedBox(height: 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -285,7 +284,9 @@ class _UserPageState extends State<UserPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => const CheckPage()),
-                                  );
+                                  ).then((_) {
+                                    _initPage();
+                                  });
                                 },
                                 icon: FontAwesomeIcons.chartLine,
                                 height: 40,

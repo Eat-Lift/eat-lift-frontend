@@ -384,7 +384,9 @@ class _NutritionPageState extends State<NutritionPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => const NutritionSearchPage(isCreating: false)),
-                            );
+                            ).then((_){
+                              _initializePage();
+                            });
                           },
                           size: 70
                         ),

@@ -92,7 +92,7 @@ class CheckInfoPageState extends State<CheckInfoPage> {
                       child: CustomNumberText(
                         title: "Pes:",
                         number: checkInfo?["weight"], 
-                        unit: "cm"
+                        unit: "kg"
                       ),
                     ),
                   ]  

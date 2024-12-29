@@ -205,6 +205,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
           isCreating: widget.isCreating,
           onSelect: _onSelectItem,
           clickable: !widget.offline,
+          onTap: _onSearchChanged,
         );
       },
     );
@@ -221,6 +222,7 @@ class TrainingSearchPageState extends State<TrainingSearchPage> {
           isCreating: widget.isCreating,
           isAddable: widget.isCreating,
           onAdd: _onAddWorkout,
+          onTap: _onSearchChanged,
         );
       },
     );
