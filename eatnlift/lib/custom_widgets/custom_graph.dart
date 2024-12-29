@@ -6,6 +6,8 @@ class SingleGraphWidget extends StatelessWidget {
   final List<double> dataPoints;
   final Color lineColor;
   final VoidCallback onTap;
+  final double width;
+  final double height;
 
   const SingleGraphWidget({
     super.key,
@@ -13,6 +15,8 @@ class SingleGraphWidget extends StatelessWidget {
     required this.dataPoints,
     required this.lineColor,
     required this.onTap,
+    this.width = 130,
+    this.height = 130,
   });
 
   LineChartData createChart(List<FlSpot> spots, Color lineColor) {
@@ -94,8 +98,8 @@ class SingleGraphWidget extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          width: 130,
-          height: 130,
+          width: width,
+          height: height,
           child: LineChart(
             createChart(spots, lineColor),
           ),

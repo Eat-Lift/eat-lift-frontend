@@ -434,7 +434,10 @@ class DatabaseHelper {
         'session_exercises',
         where: 'session_id = ?',
         whereArgs: [sessionId],
+        orderBy: 'id ASC',
       );
+
+      print("Session Exercises: $sessionExercises");
 
       final List<Map<String, dynamic>> exercisesWithSets = [];
 

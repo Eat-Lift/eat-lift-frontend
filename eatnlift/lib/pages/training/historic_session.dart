@@ -85,8 +85,11 @@ class _HistoricSessionPageState extends State<HistoricSessionPage> {
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListView.builder(
-                  itemCount: sessionExercises?.length ?? 0,
+                  itemCount: sessionExercises!.length + 1 ?? 0,
                   itemBuilder: (context, index) {
+                    if (index == sessionExercises!.length){
+                      return RelativeSizedBox(height: 3);
+                    }
                     final exerciseItem = sessionExercises![index];
                     return ExerciseSetCard(
                       key: ValueKey(exerciseItem["exercise"]['id']),

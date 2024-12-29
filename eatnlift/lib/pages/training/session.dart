@@ -129,6 +129,8 @@ class _SessionPageState extends State<SessionPage> {
         "exercise": {
           "id": newExercise["id"],
           "name": newExercise["name"],
+          "description": newExercise["description"],
+          "user": newExercise["user"],
         },
         "sets": [
           {"weight": 0.0, "reps": 0},

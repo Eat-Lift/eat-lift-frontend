@@ -1,3 +1,4 @@
+import 'package:eatnlift/custom_widgets/custom_graph.dart';
 import 'package:eatnlift/custom_widgets/expandable_text.dart';
 import 'package:eatnlift/custom_widgets/human_body.dart';
 import 'package:eatnlift/custom_widgets/rotating_logo.dart';
@@ -32,7 +33,8 @@ class ExercisePage extends StatefulWidget {
 class _ExercisePageState extends State<ExercisePage> {
   final SessionStorage sessionStorage = SessionStorage();
   String? currentUserId;
-  
+  List<Map<String, dynamic>> exercisesWeights = [];
+
   late Map<String, dynamic>? exerciseData;
   bool isLoading = true;
   bool isSaved = false;
@@ -264,6 +266,20 @@ class _ExercisePageState extends State<ExercisePage> {
                               : exerciseData?["description"],
                         ),
                       ),
+                      if (exerciseData!["weights"] != null && exerciseData!["weights"].length >= 2) ...[
+                        RelativeSizedBox(height: 2),
+                        Align(
+                          alignment: Alignment.center,
+                          child: SingleGraphWidget(
+                            title: exerciseData!["name"], 
+                            dataPoints: (exerciseData!["weights"] as List).cast<double>(), 
+                            lineColor: Colors.orange, 
+                            onTap: () {},
+                            width: 260,
+                            height: 260,
+                          ),
+                        ),
+                      ],
                       RelativeSizedBox(height: 2),
                       Center(
                         child: HumanBody(
