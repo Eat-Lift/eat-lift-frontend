@@ -335,22 +335,24 @@ class _TrainingPageState extends State<TrainingPage> {
                 ),
               ),
             ),
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: RoundButton(
-                size: 100,
-                icon: FontAwesomeIcons.dumbbell,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SessionPage()),
-                  ).then((_) {
-                    _initializePage();
-                  });
-                },
+            if (!isLoading) ...[
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: RoundButton(
+                  size: 100,
+                  icon: FontAwesomeIcons.dumbbell,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SessionPage()),
+                    ).then((_) {
+                      _initializePage();
+                    });
+                  },
+                ),
               ),
-            ),
+            ]
           ],
         ),
       ),
