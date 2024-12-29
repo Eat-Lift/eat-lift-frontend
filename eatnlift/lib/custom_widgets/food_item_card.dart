@@ -233,12 +233,12 @@ class _FoodItemCardState extends State<FoodItemCard> {
                           color: Colors.grey[800],
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                        maxLines: 3,
                       ),
                     ),
                   ),
-                  Spacer(),
                   if (widget.enableQuantitySelection) ...[
+                    RelativeSizedBox(width: 1),
                     SizedBox(
                       width: 80,
                       height: 40,
