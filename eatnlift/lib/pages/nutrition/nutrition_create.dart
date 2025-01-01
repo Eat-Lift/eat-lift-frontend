@@ -42,6 +42,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
 
   bool isCreatingFoodItem = true;
   Map<String, dynamic> response = {};
+  int key = 0;
 
   bool isCreating = false;
 
@@ -73,7 +74,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         emptyField = true;
       }
 
-      final calories = int.tryParse(caloriesController.text) ?? 0;
+      final calories = double.tryParse(caloriesController.text) ?? 0;
       if (caloriesController.text.isEmpty || calories <= 0) {
         response["success"] = false;
         if (response.containsKey('errors')) {
@@ -363,7 +364,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
           controller: nameController,
           hintText: "Nom",
           centerText: true,
-          maxLength: 30,
+          maxLength: 60,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(
@@ -472,7 +473,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
         CustomTextfield(
           controller: recipeNameController,
           hintText: "Nom",
-          maxLength: 30,
+          maxLength: 60,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(
@@ -504,7 +505,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                           children: [
                             Expanded(
                               child: FoodItemCard(
-                                key: ValueKey(foodItem["id"]),
+                                key: ValueKey(foodItem["id"] + key + index),
                                 foodItem: foodItem,
                                 onSelect: (value) {
                                   setState(() {
@@ -517,7 +518,7 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                                 enableQuantitySelection: true,
                                 onChangeQuantity: (updatedQuantity) {
                                   if (updatedQuantity.isEmpty) {
-                                    foodItem["quantity"] = 100;
+                                    foodItem["quantity"] = 100.0;
                                   }
                                   else {
                                     foodItem["quantity"] = double.parse(updatedQuantity);
@@ -547,7 +548,9 @@ class NutritionCreateState extends State<NutritionCreatePage> {
                       MaterialPageRoute(
                         builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
                       ),
-                    );
+                    ).then((_){
+                      ++key;
+                    });
                   },
                 ),
               ),

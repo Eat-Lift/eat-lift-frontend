@@ -158,7 +158,7 @@ class EditWorkoutState extends State<EditWorkoutPage> {
         CustomTextfield(
           controller: workoutNameController,
           hintText: "Nom",
-          maxLength: 50,
+          maxLength: 60,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(

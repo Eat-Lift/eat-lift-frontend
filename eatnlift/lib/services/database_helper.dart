@@ -173,8 +173,6 @@ class DatabaseHelper {
         where: 'name = ? AND user = ?',
         whereArgs: [name, user],
       );
-    } else {
-      throw Exception("No matching record found to update");
     }
   }
 

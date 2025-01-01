@@ -252,7 +252,7 @@ class _RecipePageState extends State<RecipePage> {
                     ),
                     RelativeSizedBox(height: 2),
                     Container(
-                      height: 315,
+                      height: 360,
                       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 7.0),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -304,7 +304,7 @@ class _RecipePageState extends State<RecipePage> {
                       alignment: Alignment.center,
                       child: Column(
                         children: [
-                          RelativeSizedBox(height: 10),
+                          RelativeSizedBox(height: 5),
                           RotatingImage(),   
                         ],
                       ),

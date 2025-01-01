@@ -43,6 +43,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
   double fats = 0;
   double carbohydrates = 0;
 
+  int key = 0;
+
   @override
   void initState() {
     super.initState();
@@ -226,7 +228,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   CustomTextfield(
                     controller: recipeNameController,
                     hintText: "Nom",
-                    maxLength: 50,
+                    maxLength: 60,
                   ),
                   const RelativeSizedBox(height: 0.5),
                   CustomTextfield(
@@ -258,7 +260,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                     children: [
                                       Expanded(
                                         child: FoodItemCard(
-                                          key: ValueKey(foodItem["id"]),
+                                          key: ValueKey(foodItem["id"] + key + index),
                                           foodItem: foodItem,
                                           onSelect: (value) {
                                             setState(() {
@@ -305,7 +307,9 @@ class _EditRecipePageState extends State<EditRecipePage> {
                                 MaterialPageRoute(
                                   builder: (context) => NutritionSearchPage(isCreating: true, selectedFoodItems: selectedFoodItems, onCheck: onCheck),
                                 ),
-                              );
+                              ).then((_){
+                                ++key;
+                              });
                             },
                           ),
                         ),

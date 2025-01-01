@@ -298,7 +298,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
         CustomTextfield(
           controller: exerciseNameController,
           hintText: "Nom",
-          maxLength: 30,
+          maxLength: 60,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(
@@ -330,7 +330,7 @@ class TrainingCreateState extends State<TrainingCreatePage> {
         CustomTextfield(
           controller: workoutNameController,
           hintText: "Nom",
-          maxLength: 50,
+          maxLength: 60,
         ),
         const RelativeSizedBox(height: 0.5),
         CustomTextfield(

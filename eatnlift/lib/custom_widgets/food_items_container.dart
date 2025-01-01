@@ -30,7 +30,7 @@ class FoodItemsContainer extends StatefulWidget {
     this.enableQuantityEdit = true,
     this.isSelectable = true,
     this.offline = false,
-    this.size = 178,
+    this.size = 205,
   });
 
   @override

@@ -213,7 +213,7 @@ class EditFoodItemState extends State<EditFoodItemPage> {
                 controller: nameController,
                 hintText: "Nom",
                 centerText: true,
-                maxLength: 30,
+                maxLength: 60,
               ),
               const RelativeSizedBox(height: 0.5),
               CustomTextfield(
