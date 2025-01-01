@@ -221,7 +221,9 @@ class _TrainingPageState extends State<TrainingPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const RoutinePage()),
-                                );
+                                ).then((_) {
+                                  _initializePage();
+                                });
                               },
                               size: 70,
                             ),
